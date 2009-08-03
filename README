@@ -1,0 +1,16 @@
+== Ottoman
+
+Ottoman is intended to be an easy to use open source library for .NET applications 
+using CouchDB for persistence.  Please excuse the mess, this is a new project and 
+we are trying to get everything in order.  We will be setting up a project site,
+mailing list, and issue tracker.  This will be an active open source project and 
+backed by a company.  We have big plans for this library.
+
+== License
+
+Ottoman is copyright (c) 2007-2009 SineSignal, LLC.  We are still deciding what 
+license we will release Ottoman under.
+
+---
+The Ottoman Dev Team
+http://sinesignal.com
