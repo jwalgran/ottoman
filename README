@@ -6,6 +6,24 @@ we are trying to get everything in order.  We will be setting up a project site,
 mailing list, and issue tracker.  This will be an active open source project and 
 backed by a company.  We have big plans for this library.
 
+== Building
+
+To run the automated build tasks, you will need to have ruby installed on your local 
+machine.  You can download the one click installer for windows from here:
+
+	http://www.ruby-lang.org/en/downloads/
+	
+After installation, make sure you grab the rake gem by running at a command prompt:
+
+	gem install rake
+
+Once you've cloned the repository to your local machine you're ready to run the automated 
+build scripts.  Open a command prompt and navigate to the directory of your cloned 
+repository (Hint:  The location of build.cmd).  Then you can run the build commands 
+by typing without the quotes:
+
+	To compile:  Type "build compile" or just "build" and hit enter.
+
 == License
 
 Copyright 2007-2009 SineSignal, LLC.
