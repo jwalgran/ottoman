@@ -23,6 +23,7 @@ repository (Hint:  The location of build.cmd).  Then you can run the build comma
 by typing without the quotes:
 
 	To compile:  Type "build compile" or just "build" and hit enter.
+	To test:  Type "build test" and hit enter
 
 == License
 
