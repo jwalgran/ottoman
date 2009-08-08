@@ -24,7 +24,7 @@ using MbUnit.Framework;
 namespace SineSignal.Ottoman.Tests.Unit
 {
 	[TestFixture]
-	public class ShrinkTests
+	public class CouchProxyTests
 	{
 		/*
 		 *
@@ -36,75 +36,75 @@ namespace SineSignal.Ottoman.Tests.Unit
 		[ExpectedArgumentNullException]
 		public void Should_throw_argument_null_exception_when_url_is_null_or_empty_string()
 		{
-			Shrink shrink = new Shrink(null);
+			CouchProxy couchProxy = new CouchProxy(null);
 		}
-		
+
 		[Test]
 		[ExpectedArgumentException]
 		public void Should_throw_argument_exception_when_url_is_a_random_string()
 		{
-			Shrink shrink = new Shrink("some string value");
+			CouchProxy couchProxy = new CouchProxy("some string value");
 		}
-		
+
 		[Test]
 		[ExpectedArgumentException]
 		public void Should_throw_argument_exception_when_url_is_relative()
 		{
-			Shrink shrink = new Shrink("../somepath");
+			CouchProxy couchProxy = new CouchProxy("../somepath");
 		}
-		
+
 		[Test]
 		[ExpectedArgumentException]
 		public void Should_throw_argument_exception_when_url_is_not_using_http_or_https_scheme()
 		{
 			string url = "ftp://127.0.0.1/somepath";
-			
-			Shrink shrink = new Shrink(url);
 
-			Assert.IsNotNull(shrink.CouchUri);
-			Assert.AreEqual(url, shrink.CouchUri.ToString());
+			CouchProxy couchProxy = new CouchProxy(url);
+
+			Assert.IsNotNull(couchProxy.Uri);
+			Assert.AreEqual(url, couchProxy.Uri.ToString());
 		}
-		
+
 		[Test]
 		public void Should_set_uri_for_couch_location_when_given_a_valid_http_uri()
 		{
 			string url = "http://127.0.0.1:5984/";
-			
-			Shrink shrink = new Shrink(url);
 
-			Assert.AreEqual(url, shrink.CouchUri.ToString());
-			Assert.AreEqual("http", shrink.CouchUri.Scheme);
+			CouchProxy couchProxy = new CouchProxy(url);
+
+			Assert.AreEqual(url, couchProxy.Uri.ToString());
+			Assert.AreEqual("http", couchProxy.Uri.Scheme);
 		}
 
 		[Test]
 		public void Should_set_uri_for_couch_location_when_given_a_valid_https_uri()
 		{
 			string url = "https://domain.com:5984/";
-			
-			Shrink shrink = new Shrink(url);
 
-			Assert.AreEqual(url, shrink.CouchUri.ToString());
-			Assert.AreEqual("https", shrink.CouchUri.Scheme);
+			CouchProxy couchProxy = new CouchProxy(url);
+
+			Assert.AreEqual(url, couchProxy.Uri.ToString());
+			Assert.AreEqual("https", couchProxy.Uri.Scheme);
 		}
 	}
-	
-	public class Shrink
+
+	public class CouchProxy
 	{
-		private readonly Uri _couchUri;
-		
-		public Uri CouchUri { get { return _couchUri; } }
-		
-		public Shrink(string couchUrl)
+		private readonly Uri _uri;
+
+		public Uri Uri { get { return _uri; } }
+
+		public CouchProxy(string couchUrl)
 		{
 			// Validate input
 			if (String.IsNullOrEmpty(couchUrl))
 				throw new ArgumentNullException("couchUrl", "The value cannot be null or an empty string.");
 
-			bool isValidUri = Uri.TryCreate(couchUrl, UriKind.Absolute, out _couchUri);
+			bool isValidUri = Uri.TryCreate(couchUrl, UriKind.Absolute, out _uri);
 			if (!isValidUri)
 				throw new ArgumentException("The value is invalid, please pass a valid Uri.", "couchUrl");
-			
-			if (!_couchUri.Scheme.Equals("http") && !_couchUri.Scheme.Equals("https"))
+
+			if (!_uri.Scheme.Equals("http") && !_uri.Scheme.Equals("https"))
 				throw new ArgumentException("The value is not using the http or https protocol.  This is not allowed since CouchDB uses REST and Http for communication.", "couchUrl");
 		}
 	}
