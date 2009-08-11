@@ -1,6 +1,6 @@
 #region License
 
-// <copyright file="Proxy.cs" company="SineSignal, LLC.">
+// <copyright file="RestProxy.cs" company="SineSignal, LLC.">
 //   Copyright 2007-2009 SineSignal, LLC.
 //       Licensed under the Apache License, Version 2.0 (the "License");
 //       you may not use this file except in compliance with the License.
@@ -20,29 +20,19 @@
 
 using System;
 
-namespace SineSignal.Ottoman
+namespace SineSignal.Ottoman.Proxies
 {
-	public class Proxy : IProxy
+	/// <summary>
+	/// Used for creating RESTFUL web requests.
+	/// </summary>
+	public class RestProxy : IRestProxy
 	{
-		private readonly Uri _uri;
-
-		public Uri Uri { get { return _uri; } }
-
-		public Proxy(string url)
-		{
-			// Validate input
-			if (String.IsNullOrEmpty(url))
-				throw new ArgumentNullException("url", "The value cannot be null or an empty string.");
-
-			bool isValidUri = Uri.TryCreate(url, UriKind.Absolute, out _uri);
-			if (!isValidUri)
-				throw new ArgumentException("The value is invalid, please pass a valid Uri.", "url");
-
-			if (!_uri.Scheme.Equals("http") && !_uri.Scheme.Equals("https"))
-				throw new ArgumentException("The value is not using the http or https protocol.  This is not allowed since CouchDB uses REST and Http for communication.", "url");
-		}
-
-		public string Put(string path)
+		/// <summary>
+		/// Creates a PUT request for the specified URL.
+		/// </summary>
+		/// <param name="url">The URL to make the request to.</param>
+		/// <returns>The response from the URL the request was made.</returns>
+		public IWebResponse Put(Uri url)
 		{
 			throw new NotImplementedException();
 		}

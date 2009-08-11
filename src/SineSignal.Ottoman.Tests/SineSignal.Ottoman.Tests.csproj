@@ -59,7 +59,7 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Unit\CouchInstanceTests.cs" />
-    <Compile Include="Unit\ProxyTests.cs" />
+    <Compile Include="Unit\Proxies\RestProxyTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SineSignal.Ottoman\SineSignal.Ottoman.csproj">

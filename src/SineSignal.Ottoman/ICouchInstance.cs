@@ -18,11 +18,18 @@
 
 #endregion
 
+using System;
+
+using SineSignal.Ottoman.Proxies;
+using SineSignal.Ottoman.Serializers;
+
 namespace SineSignal.Ottoman
 {
 	public interface ICouchInstance
 	{
-		IProxy Proxy { get; }
+		Uri Url { get; }
+		IRestProxy RestProxy { get; }
+		ISerializer Serializer { get; }
 		void CreateDatabase(string name);
 	}
 }

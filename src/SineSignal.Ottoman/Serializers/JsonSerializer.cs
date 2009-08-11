@@ -1,6 +1,6 @@
 #region License
 
-// <copyright file="IProxy.cs" company="SineSignal, LLC.">
+// <copyright file="JsonSerializer.cs" company="SineSignal, LLC.">
 //   Copyright 2007-2009 SineSignal, LLC.
 //       Licensed under the Apache License, Version 2.0 (the "License");
 //       you may not use this file except in compliance with the License.
@@ -20,11 +20,22 @@
 
 using System;
 
-namespace SineSignal.Ottoman
+namespace SineSignal.Ottoman.Serializers
 {
-	public interface IProxy
+	/// <summary>
+	/// An adapter around the JSON serialization library being used by Ottoman.
+	/// </summary>
+	public class JsonSerializer : ISerializer
 	{
-		Uri Uri { get; }
-		string Put(string path);
+		/// <summary>
+		/// Deserializes the specified JSON.
+		/// </summary>
+		/// <typeparam name="T">The type to map the JSON to.</typeparam>
+		/// <param name="json">The JSON to deserialize.</param>
+		/// <returns>T</returns>
+		public T Deserialize<T>(string json)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }
