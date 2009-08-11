@@ -1,6 +1,6 @@
 #region License
 
-// <copyright file="Proxy.cs" company="SineSignal, LLC.">
+// <copyright file="CouchInstance.cs" company="SineSignal, LLC.">
 //   Copyright 2007-2009 SineSignal, LLC.
 //       Licensed under the Apache License, Version 2.0 (the "License");
 //       you may not use this file except in compliance with the License.
@@ -22,29 +22,24 @@ using System;
 
 namespace SineSignal.Ottoman
 {
-	public class Proxy : IProxy
+	public class CouchInstance : ICouchInstance
 	{
-		private readonly Uri _uri;
+		public IProxy Proxy { get; private set; }
 
-		public Uri Uri { get { return _uri; } }
-
-		public Proxy(string url)
+		public CouchInstance(IProxy proxy)
 		{
-			// Validate input
-			if (String.IsNullOrEmpty(url))
-				throw new ArgumentNullException("url", "The value cannot be null or an empty string.");
+			if (proxy == null)
+				throw new ArgumentNullException("proxy", "The value cannot be null.");
 
-			bool isValidUri = Uri.TryCreate(url, UriKind.Absolute, out _uri);
-			if (!isValidUri)
-				throw new ArgumentException("The value is invalid, please pass a valid Uri.", "url");
-
-			if (!_uri.Scheme.Equals("http") && !_uri.Scheme.Equals("https"))
-				throw new ArgumentException("The value is not using the http or https protocol.  This is not allowed since CouchDB uses REST and Http for communication.", "url");
+			Proxy = proxy;
 		}
 
-		public string Put(string path)
+		public void CreateDatabase(string name)
 		{
-			throw new NotImplementedException();
+			if (String.IsNullOrEmpty(name))
+				throw new ArgumentNullException("name", "The value cannot be null or an empty string.");
+
+			string result = Proxy.Put(name);
 		}
 	}
 }

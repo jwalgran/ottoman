@@ -58,6 +58,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Unit\CouchInstanceTests.cs" />
     <Compile Include="Unit\ProxyTests.cs" />
   </ItemGroup>
   <ItemGroup>
