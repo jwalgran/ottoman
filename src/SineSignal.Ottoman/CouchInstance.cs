@@ -58,6 +58,11 @@ namespace SineSignal.Ottoman
 		/// <param name="url">The URL of the CouchDB server to be used by the API.</param>
 		/// <param name="restProxy">The proxy to use for talking to the CouchDB server.</param>
 		/// <param name="serializer">The serializer to use for deserializing responses from the proxy.</param>
+		/// <exception cref="ArgumentNullException">Throws an exception if the url parameter is null or empty string.</exception>
+		/// <exception cref="ArgumentException">Throws an exception if the url parameter is not a valid URI.</exception>
+		/// <exception cref="ArgumentException">Throws an exception if the url parameter doesn't use the HTTP or HTTPS protocol.</exception>
+		/// <exception cref="ArgumentNullException">Throws an exception if the restProxy parameter is null.</exception>
+		/// <exception cref="ArgumentNullException">Throws an exception if the serializer parameter is null.</exception>
 		public CouchInstance(string url, IRestProxy restProxy, ISerializer serializer)
 		{
 			// Validate input
@@ -85,6 +90,7 @@ namespace SineSignal.Ottoman
 		/// Creates a database in CouchDB with the given name.
 		/// </summary>
 		/// <param name="name">The name of the database to create.</param>
+		/// <exception cref="ArgumentNullException">Throws an exception if the name parameter is null or empty string.</exception>
 		/// <exception cref="CannotCreateDatabaseException">Throws an exception if the database cannot be created.</exception> 
 		public void CreateDatabase(string name)
 		{
