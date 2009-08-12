@@ -32,27 +32,22 @@ namespace SineSignal.Ottoman.Tests.Unit.Proxies
 	public class RestProxyTests
 	{
 		[Test]
-		[Ignore]
 		public void Should_create_web_request_with_a_put_method()
 		{
 			Uri url = new Uri("http://127.0.0.1:5984/test");
 			string body = "{\"ok\":true}";
-
-			var mockHttpRequest = new Mock<IHttpRequest>();
-			mockHttpRequest.Setup(x => x.Url).Returns(url);
-			mockHttpRequest.Setup(x => x.Method).Returns(WebRequestMethods.Http.Put);
 
 			var mockHttpResponse = new Mock<IHttpResponse>();
 			mockHttpResponse.Setup(x => x.StatusCode).Returns(HttpStatusCode.Created);
 			mockHttpResponse.Setup(x => x.Body).Returns(body);
 
 			var mockHttpClient = new Mock<IHttpClient>();
-			mockHttpClient.Setup(x => x.Request(mockHttpRequest.Object)).Returns(mockHttpResponse.Object);
+			mockHttpClient.Setup(x => x.Request(It.Is<IHttpRequest>(h => h.Url == url && h.Method == WebRequestMethods.Http.Put))).Returns(mockHttpResponse.Object);
 
 			IRestProxy restProxy = new RestProxy(mockHttpClient.Object);
 			IHttpResponse response = restProxy.Put(url);
 
-			mockHttpClient.Verify(x => x.Request(mockHttpRequest.Object));
+			mockHttpClient.Verify(x => x.Request(It.Is<IHttpRequest>(h => h.Url == url && h.Method == WebRequestMethods.Http.Put)));
 
 			Assert.IsNotNull(response);
 			Assert.AreEqual(mockHttpResponse.Object, response);
