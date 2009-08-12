@@ -91,11 +91,15 @@ namespace SineSignal.Ottoman
 		/// </summary>
 		/// <param name="name">The name of the database to create.</param>
 		/// <exception cref="ArgumentNullException">Throws an exception if the name parameter is null or empty string.</exception>
-		/// <exception cref="CannotCreateDatabaseException">Throws an exception if the database cannot be created.</exception> 
+		/// <exception cref="CannotCreateDatabaseException">Throws an exception if the database cannot be created.</exception>
 		public void CreateDatabase(string name)
 		{
 			if (String.IsNullOrEmpty(name))
 				throw new ArgumentNullException("name", "The value cannot be null or an empty string.");
+			
+			// TODO:  We need to UrlEncode the name, to take care of special characters like _, $, (, ), +, -, and /.
+			// We just introduced a limitation with this API.  System.Net.Uri, does not handle the encoding correctly.  Hold off on this for now.
+			// Until we can figure out a way to do this, we need a regex to check for these characters and throw an ArgumentException
 
 			UriBuilder requestUrl = new UriBuilder(Url);
 			requestUrl.Path = name;
