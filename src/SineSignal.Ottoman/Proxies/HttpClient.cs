@@ -25,8 +25,16 @@ using System.Text;
 
 namespace SineSignal.Ottoman.Proxies
 {
+	/// <summary>
+	/// A wrapper class for making <see cref="HttpWebRequest" />'s.
+	/// </summary>
 	public class HttpClient : IHttpClient
 	{
+		/// <summary>
+		/// Makes a HttpWebRequest with the specified IHttpRequest.
+		/// </summary>
+		/// <param name="httpRequest">The IHttpRequest to use to create the HttpWebRequest.</param>
+		/// <returns><see cref="IHttpResponse" /></returns>
 		public IHttpResponse Request(IHttpRequest httpRequest)
 		{
 			HttpWebRequest httpWebRequest = WebRequest.Create(httpRequest.Url) as HttpWebRequest;

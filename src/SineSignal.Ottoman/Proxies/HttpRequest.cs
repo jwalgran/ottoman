@@ -22,19 +22,53 @@ using System;
 
 namespace SineSignal.Ottoman.Proxies
 {
+	/// <summary>
+	/// Models information used for creating web requests.
+	/// </summary>
 	public class HttpRequest : IHttpRequest
 	{
+		/// <summary>
+		/// Gets or sets the URL used.
+		/// </summary>
+		/// <value>The URL.</value>
 		public Uri Url { get; private set; }
+
+		/// <summary>
+		/// Gets or sets the method used.
+		/// </summary>
+		/// <value>The method.</value>
 		public string Method { get; private set; }
+
+		/// <summary>
+		/// Gets or sets the content type used.
+		/// </summary>
+		/// <value>The content type.</value>
 		public string ContentType { get; private set; }
+
+		/// <summary>
+		/// Gets or sets the post data used.
+		/// </summary>
+		/// <value>The post data.</value>
 		public string PostData { get; private set; }
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="HttpRequest"/> class.
+		/// </summary>
+		/// <param name="url">The URL.</param>
+		/// <param name="method">The method.</param>
 		public HttpRequest(Uri url, string method)
 		{
 			Url = url;
 			Method = method;
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="HttpRequest"/> class.
+		/// </summary>
+		/// <param name="url">The URL.</param>
+		/// <param name="method">The method.</param>
+		/// <param name="contentType">Type of the content.</param>
+		/// <param name="postData">The post data.</param>
 		public HttpRequest(Uri url, string method, string contentType, string postData)
 		{
 			Url = url;

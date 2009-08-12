@@ -22,11 +22,29 @@ using System.Net;
 
 namespace SineSignal.Ottoman.Proxies
 {
+	/// <summary>
+	/// Models <see cref="HttpWebResponse" /> to allow testability within the code.  We can 
+	/// easily pass this around after a request has been made and a response has been received.
+	/// </summary>
 	public class HttpResponse : IHttpResponse
 	{
+		/// <summary>
+		/// Gets or sets the <see cref="HttpStatusCode" /> for the response.
+		/// </summary>
+		/// <value>The status code.</value>
 		public HttpStatusCode StatusCode { get; private set; }
+
+		/// <summary>
+		/// Gets or sets the body for the response.
+		/// </summary>
+		/// <value>The body.</value>
 		public string Body { get; private set; }
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="HttpResponse"/> class.
+		/// </summary>
+		/// <param name="statusCode">The status code.</param>
+		/// <param name="body">The body.</param>
 		public HttpResponse(HttpStatusCode statusCode, string body)
 		{
 			StatusCode = statusCode;
