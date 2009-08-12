@@ -100,7 +100,7 @@ namespace SineSignal.Ottoman
 			UriBuilder requestUrl = new UriBuilder(Url);
 			requestUrl.Path = name;
 
-			IWebResponse response = RestProxy.Put(requestUrl.Uri);
+			IHttpResponse response = RestProxy.Put(requestUrl.Uri);
 			
 			if (response.StatusCode != HttpStatusCode.Created)
 			{

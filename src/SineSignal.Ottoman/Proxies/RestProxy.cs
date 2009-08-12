@@ -19,6 +19,7 @@
 #endregion
 
 using System;
+using System.Net;
 
 namespace SineSignal.Ottoman.Proxies
 {
@@ -27,14 +28,21 @@ namespace SineSignal.Ottoman.Proxies
 	/// </summary>
 	public class RestProxy : IRestProxy
 	{
+		private readonly IHttpClient _httpClient;
+
+		public RestProxy(IHttpClient httpClient)
+		{
+			_httpClient = httpClient;
+		}
+
 		/// <summary>
 		/// Creates a PUT request for the specified URL.
 		/// </summary>
 		/// <param name="url">The URL to make the request to.</param>
 		/// <returns>The response from the URL the request was made.</returns>
-		public IWebResponse Put(Uri url)
+		public IHttpResponse Put(Uri url)
 		{
-			throw new NotImplementedException();
+			return _httpClient.Request(new HttpRequest(url, WebRequestMethods.Http.Put));
 		}
 	}
 }

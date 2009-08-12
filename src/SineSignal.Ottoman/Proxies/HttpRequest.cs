@@ -1,6 +1,6 @@
 #region License
 
-// <copyright file="IRestProxy.cs" company="SineSignal, LLC.">
+// <copyright file="HttpRequest.cs" company="SineSignal, LLC.">
 //   Copyright 2007-2009 SineSignal, LLC.
 //       Licensed under the Apache License, Version 2.0 (the "License");
 //       you may not use this file except in compliance with the License.
@@ -22,8 +22,25 @@ using System;
 
 namespace SineSignal.Ottoman.Proxies
 {
-	public interface IRestProxy
+	public class HttpRequest : IHttpRequest
 	{
-		IHttpResponse Put(Uri url);
+		public Uri Url { get; private set; }
+		public string Method { get; private set; }
+		public string ContentType { get; private set; }
+		public string PostData { get; private set; }
+
+		public HttpRequest(Uri url, string method)
+		{
+			Url = url;
+			Method = method;
+		}
+
+		public HttpRequest(Uri url, string method, string contentType, string postData)
+		{
+			Url = url;
+			Method = method;
+			ContentType = contentType;
+			PostData = postData;
+		}
 	}
 }

@@ -35,7 +35,11 @@ namespace SineSignal.Ottoman
 		/// <returns cref="ICouchInstance">A instatiated CouchInstance.</returns>
 		public static ICouchInstance Create(string couchUrl)
 		{
-			return new CouchInstance(couchUrl, new RestProxy(), new JsonSerializer());
+			IHttpClient webClient = new HttpClient();
+			IRestProxy restProxy = new RestProxy(webClient);
+			ISerializer serializer = new JsonSerializer();
+			
+			return new CouchInstance(couchUrl, restProxy, serializer);
 		}
 	}
 }

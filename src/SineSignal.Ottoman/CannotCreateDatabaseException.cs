@@ -41,7 +41,7 @@ namespace SineSignal.Ottoman
 		/// Gets or sets the raw response from the CouchDB server.
 		/// </summary>
 		/// <value>The raw response.</value>
-		public IWebResponse RawResponse { get; private set; }
+		public IHttpResponse RawResponse { get; private set; }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="CannotCreateDatabaseException"/> class.
@@ -49,7 +49,7 @@ namespace SineSignal.Ottoman
 		/// <param name="databaseName">Name of the database.</param>
 		/// <param name="error">The error that CouchDB gave.</param>
 		/// <param name="rawResponse">The raw response from the CouchDB server.</param>
-		public CannotCreateDatabaseException(string databaseName, ICouchError error, IWebResponse rawResponse) : base(String.Format(ExceptionMessageFormat, databaseName))
+		public CannotCreateDatabaseException(string databaseName, ICouchError error, IHttpResponse rawResponse) : base(String.Format(ExceptionMessageFormat, databaseName))
 		{
 			Error = error;
 			RawResponse = rawResponse;

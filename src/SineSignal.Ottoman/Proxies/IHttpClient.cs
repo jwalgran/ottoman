@@ -1,6 +1,6 @@
 #region License
 
-// <copyright file="IWebResponse.cs" company="SineSignal, LLC.">
+// <copyright file="IHttpClient.cs" company="SineSignal, LLC.">
 //   Copyright 2007-2009 SineSignal, LLC.
 //       Licensed under the Apache License, Version 2.0 (the "License");
 //       you may not use this file except in compliance with the License.
@@ -18,13 +18,10 @@
 
 #endregion
 
-using System.Net;
-
 namespace SineSignal.Ottoman.Proxies
 {
-	public interface IWebResponse
+	public interface IHttpClient
 	{
-		HttpStatusCode StatusCode { get; }
-		string Body { get; }
+		IHttpResponse Request(IHttpRequest httpRequest);
 	}
 }

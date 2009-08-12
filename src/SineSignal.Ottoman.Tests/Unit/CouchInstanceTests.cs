@@ -182,12 +182,12 @@ namespace SineSignal.Ottoman.Tests.Unit
 			requestUrl.Path = databaseName;
 			string body = "{\"ok\":true}";
 
-			var mockRestResponse = new Mock<IWebResponse>();
-			mockRestResponse.Setup(x => x.StatusCode).Returns(HttpStatusCode.Created);
-			mockRestResponse.Setup(x => x.Body).Returns(body);
+			var mockHttpResponse = new Mock<IHttpResponse>();
+			mockHttpResponse.Setup(x => x.StatusCode).Returns(HttpStatusCode.Created);
+			mockHttpResponse.Setup(x => x.Body).Returns(body);
 			
 			var mockRestProxy = new Mock<IRestProxy>();
-			mockRestProxy.Setup(x => x.Put(requestUrl.Uri)).Returns(mockRestResponse.Object);
+			mockRestProxy.Setup(x => x.Put(requestUrl.Uri)).Returns(mockHttpResponse.Object);
 
 			var mockSerializer = new Mock<ISerializer>();
 			
@@ -206,12 +206,12 @@ namespace SineSignal.Ottoman.Tests.Unit
 			requestUrl.Path = databaseName;
 			string body = "{\"error\":\"file_exists\",\"reason\":\"The database could not be created, the file already exists.\"}";
 
-			var mockRestResponse = new Mock<IWebResponse>();
-			mockRestResponse.Setup(x => x.StatusCode).Returns(HttpStatusCode.PreconditionFailed);
-			mockRestResponse.Setup(x => x.Body).Returns(body);
+			var mockHttpResponse = new Mock<IHttpResponse>();
+			mockHttpResponse.Setup(x => x.StatusCode).Returns(HttpStatusCode.PreconditionFailed);
+			mockHttpResponse.Setup(x => x.Body).Returns(body);
 
 			var mockRestProxy = new Mock<IRestProxy>();
-			mockRestProxy.Setup(x => x.Put(requestUrl.Uri)).Returns(mockRestResponse.Object);
+			mockRestProxy.Setup(x => x.Put(requestUrl.Uri)).Returns(mockHttpResponse.Object);
 
 			var mockSerializer = new Mock<ISerializer>();
 			mockSerializer.Setup(x => x.Deserialize<CouchError>(body)).Returns(new CouchError("file_exists", "The database could not be created, the file already exists."));
@@ -230,7 +230,7 @@ namespace SineSignal.Ottoman.Tests.Unit
 			Assert.AreEqual(String.Format("Failed to create database '{0}'", databaseName), cannotCreateDatabaseException.Message);
 			Assert.AreEqual("file_exists", cannotCreateDatabaseException.Error.Error);
 			Assert.AreEqual("The database could not be created, the file already exists.", cannotCreateDatabaseException.Error.Reason);
-			Assert.AreEqual(mockRestResponse.Object, cannotCreateDatabaseException.RawResponse);
+			Assert.AreEqual(mockHttpResponse.Object, cannotCreateDatabaseException.RawResponse);
 
 			mockRestProxy.Verify(x => x.Put(requestUrl.Uri), Times.AtLeastOnce());
 			mockSerializer.Verify(x => x.Deserialize<CouchError>(body), Times.AtLeastOnce());
