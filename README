@@ -24,6 +24,47 @@ by typing without the quotes:
 
 	To compile:  Type "build compile" or just "build" and hit enter.
 	To test:  Type "build test" and hit enter
+	
+== Using
+
+The current state of Ottoman allows you to manage databases on your CouchDB server.  All you 
+need to get started, is the URL to the CouchDB server you want to connect to:
+
+	ICouchInstance couchInstance = CouchFactory.Create("http://127.0.0.1:5984/");
+
+Once you have an instance of CouchInstance, you can start manipulating the databases on your 
+CouchDB server.
+
+To create a database:
+	
+	couchInstance.CreateDatabase("test");
+	
+	If Ottoman was not able to create a database, a CannotCreateDatabaseException will 
+	be thrown with the details of what happened.
+	
+To retrieve a database:
+
+	ICouchDatabase couchDatabase = couchInstance.GetDatabase("test");
+	
+	You can view info about your database with the ICouchDatabase instance.  The next major 
+	feature will allow you to manage documents within a database, by using your ICouchDatabase 
+	instance.  For example:
+	
+		User user = couchDatabase.GetDocument<User>("id");
+	
+	If Ottoman was not able to retrieve a database, a CannotGetDatabaseException will 
+	be thrown with the details of what happened.
+
+To delete a database:
+
+	couchInstance.DeleteDatabase("test");
+	
+	If Ottoman was not able to delete a database, a CannotDeleteDatabaseException will 
+	be thrown with the details of what happened.
+
+To retrieve a list of databases:
+	
+	string[] databases = couchInstance.GetDatabases();
 
 == License
 
