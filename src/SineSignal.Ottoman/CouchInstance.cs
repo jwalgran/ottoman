@@ -118,6 +118,7 @@ namespace SineSignal.Ottoman
 		/// </summary>
 		/// <param name="name">The name of the database to delete.</param>
 		/// <exception cref="ArgumentNullException">Throws an exception if the name parameter is null or empty string.</exception>
+		/// <exception cref="CannotDeleteDatabaseException">Throws an exception if the database cannot be deleted.</exception>
 		public void DeleteDatabase(string name)
 		{
 			if (String.IsNullOrEmpty(name))
