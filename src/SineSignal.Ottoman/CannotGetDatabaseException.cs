@@ -26,21 +26,9 @@ namespace SineSignal.Ottoman
 	/// <summary>
 	/// A custom exception type to use for handling when a database cannot be retrieved from CouchDB.
 	/// </summary>
-	public class CannotGetDatabaseException : Exception
+	public class CannotGetDatabaseException : CouchException
 	{
-		public const string ExceptionMessageFormat = "Failed to get database '{0}'";
-
-		/// <summary>
-		/// The error that CouchDB gave.
-		/// </summary>
-		/// <value>The error.</value>
-		public ICouchError CouchError { get; private set; }
-
-		/// <summary>
-		/// Gets or sets the raw response from the CouchDB server.
-		/// </summary>
-		/// <value>The raw response.</value>
-		public IHttpResponse RawResponse { get; private set; }
+		private const string ExceptionMessageFormat = "Failed to get database '{0}'";
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="CannotDeleteDatabaseException"/> class.
@@ -49,10 +37,8 @@ namespace SineSignal.Ottoman
 		/// <param name="couchError">The error that CouchDB gave.</param>
 		/// <param name="rawResponse">The raw response from the CouchDB server.</param>
 		public CannotGetDatabaseException(string databaseName, ICouchError couchError, IHttpResponse rawResponse)
-			: base(String.Format(ExceptionMessageFormat, databaseName))
+			: base(String.Format(ExceptionMessageFormat, databaseName), couchError, rawResponse)
 		{
-			CouchError = couchError;
-			RawResponse = rawResponse;
 		}
 	}
 }
