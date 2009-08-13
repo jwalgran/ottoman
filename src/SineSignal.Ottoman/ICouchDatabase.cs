@@ -1,6 +1,6 @@
 #region License
 
-// <copyright file="IRestProxy.cs" company="SineSignal, LLC.">
+// <copyright file="ICouchDatabase.cs" company="SineSignal, LLC.">
 //   Copyright 2007-2009 SineSignal, LLC.
 //       Licensed under the Apache License, Version 2.0 (the "License");
 //       you may not use this file except in compliance with the License.
@@ -18,14 +18,18 @@
 
 #endregion
 
-using System;
-
-namespace SineSignal.Ottoman.Proxies
+namespace SineSignal.Ottoman
 {
-	public interface IRestProxy
+	public interface ICouchDatabase
 	{
-		IHttpResponse Put(Uri url);
-		IHttpResponse Delete(Uri url);
-		IHttpResponse Get(Uri url);
+		string Name { get; set; }
+		int DocCount { get; set; }
+		int DocDelCount { get; set; }
+		int UpdateSequence { get; set; }
+		int PurgeSequence { get; set; }
+		bool CompactRunning { get; set; }
+		double DiskSize { get; set; }
+		string InstanceStartTime { get; set; }
+		int DiskFormatVersion { get; set; }
 	}
 }

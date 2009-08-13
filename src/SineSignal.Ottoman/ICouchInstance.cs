@@ -32,5 +32,7 @@ namespace SineSignal.Ottoman
 		ISerializer Serializer { get; }
 		void CreateDatabase(string name);
 		void DeleteDatabase(string name);
+		ICouchDatabase GetDatabase(string name);
+		string[] GetDatabases();
 	}
 }

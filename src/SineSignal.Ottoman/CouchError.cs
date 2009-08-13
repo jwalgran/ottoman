@@ -23,6 +23,10 @@ namespace SineSignal.Ottoman
 	/// <summary>
 	/// Models the response given by CouchDB when an error occurs.
 	/// </summary>
+	/// <remarks>
+	/// This is a sample response from CouchDB when an error occurs.
+	/// {"error":"not_found","reason":"missing"}
+	/// </remarks>
 	public class CouchError : ICouchError
 	{
 		/// <summary>

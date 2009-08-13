@@ -100,7 +100,6 @@ namespace SineSignal.Ottoman
 			// TODO:  We need to UrlEncode the name, to take care of special characters like _, $, (, ), +, -, and /.
 			// We just introduced a limitation with this API.  System.Net.Uri, does not handle the encoding correctly.  Hold off on this for now.
 			// Until we can figure out a way to do this, we need a regex to check for these characters and throw an ArgumentException
-
 			UriBuilder requestUrl = new UriBuilder(Url);
 			requestUrl.Path = name;
 
@@ -108,7 +107,7 @@ namespace SineSignal.Ottoman
 			
 			if (response.StatusCode != HttpStatusCode.Created)
 			{
-				CouchError error = Serializer.Deserialize<CouchError>(response.Body);
+				ICouchError error = Serializer.Deserialize<CouchError>(response.Body);
 				throw new CannotCreateDatabaseException(name, error, response);
 			}
 		}
@@ -127,7 +126,6 @@ namespace SineSignal.Ottoman
 			// TODO:  We need to UrlEncode the name, to take care of special characters like _, $, (, ), +, -, and /.
 			// We just introduced a limitation with this API.  System.Net.Uri, does not handle the encoding correctly.  Hold off on this for now.
 			// Until we can figure out a way to do this, we need a regex to check for these characters and throw an ArgumentException
-
 			UriBuilder requestUrl = new UriBuilder(Url);
 			requestUrl.Path = name;
 
@@ -135,9 +133,51 @@ namespace SineSignal.Ottoman
 
 			if (response.StatusCode != HttpStatusCode.OK)
 			{
-				CouchError error = Serializer.Deserialize<CouchError>(response.Body);
+				ICouchError error = Serializer.Deserialize<CouchError>(response.Body);
 				throw new CannotDeleteDatabaseException(name, error, response);
 			}
+		}
+
+		/// <summary>
+		/// Gets a database in CouchDB with the given name.
+		/// </summary>
+		/// <param name="name">The name of the database to get.</param>
+		/// <exception cref="ArgumentNullException">Throws an exception if the name parameter is null or empty string.</exception>
+		/// <exception cref="CannotGetDatabaseException">Throws an exception if the database cannot be retrieved.</exception>
+		public ICouchDatabase GetDatabase(string name)
+		{
+			if (String.IsNullOrEmpty(name))
+				throw new ArgumentNullException("name");
+
+			// TODO:  We need to UrlEncode the name, to take care of special characters like _, $, (, ), +, -, and /.
+			// We just introduced a limitation with this API.  System.Net.Uri, does not handle the encoding correctly.  Hold off on this for now.
+			// Until we can figure out a way to do this, we need a regex to check for these characters and throw an ArgumentException
+			UriBuilder requestUrl = new UriBuilder(Url);
+			requestUrl.Path = name;
+
+			IHttpResponse response = RestProxy.Get(requestUrl.Uri);
+
+			if (response.StatusCode != HttpStatusCode.OK)
+			{
+				ICouchError error = Serializer.Deserialize<CouchError>(response.Body);
+				throw new CannotGetDatabaseException(name, error, response);
+			}
+
+			return Serializer.Deserialize<CouchDatabase>(response.Body);
+		}
+
+		/// <summary>
+		/// Gets a list of databases on the CouchDB server.
+		/// </summary>
+		/// <returns>string[] of database names.</returns>
+		public string[] GetDatabases()
+		{
+			UriBuilder requestUrl = new UriBuilder(Url);
+			requestUrl.Path = "_all_dbs";
+
+			IHttpResponse response = RestProxy.Get(requestUrl.Uri);
+
+			return Serializer.Deserialize<string[]>(response.Body);
 		}
 	}
 }

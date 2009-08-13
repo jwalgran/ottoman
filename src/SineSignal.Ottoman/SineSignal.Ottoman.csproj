@@ -43,9 +43,12 @@
   <ItemGroup>
     <Compile Include="CannotCreateDatabaseException.cs" />
     <Compile Include="CannotDeleteDatabaseException.cs" />
+    <Compile Include="CannotGetDatabaseException.cs" />
+    <Compile Include="CouchDatabase.cs" />
     <Compile Include="CouchError.cs" />
     <Compile Include="CouchInstance.cs" />
     <Compile Include="CouchFactory.cs" />
+    <Compile Include="ICouchDatabase.cs" />
     <Compile Include="ICouchError.cs" />
     <Compile Include="ICouchInstance.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

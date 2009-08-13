@@ -74,5 +74,27 @@ namespace SineSignal.Ottoman.Tests.Unit.Proxies
 			Assert.IsNotNull(response);
 			Assert.AreEqual(mockHttpResponse.Object, response);
 		}
+
+		[Test]
+		public void Should_create_web_request_with_a_get_method()
+		{
+			Uri url = new Uri("http://127.0.0.1:5984/test");
+			string body = "{\"ok\":true}";
+
+			var mockHttpResponse = new Mock<IHttpResponse>();
+			mockHttpResponse.Setup(x => x.StatusCode).Returns(HttpStatusCode.OK);
+			mockHttpResponse.Setup(x => x.Body).Returns(body);
+
+			var mockHttpClient = new Mock<IHttpClient>();
+			mockHttpClient.Setup(x => x.Request(It.Is<IHttpRequest>(h => h.Url == url && h.Method == WebRequestMethods.Http.Get))).Returns(mockHttpResponse.Object);
+
+			IRestProxy restProxy = new RestProxy(mockHttpClient.Object);
+			IHttpResponse response = restProxy.Get(url);
+
+			mockHttpClient.Verify(x => x.Request(It.Is<IHttpRequest>(h => h.Url == url && h.Method == WebRequestMethods.Http.Get)));
+
+			Assert.IsNotNull(response);
+			Assert.AreEqual(mockHttpResponse.Object, response);
+		}
 	}
 }

@@ -233,7 +233,7 @@ namespace SineSignal.Ottoman.Tests.Unit
 		[Row(null)]
 		[Row("")]
 		[ExpectedArgumentNullException]
-		public void Should_throw_an_argument_null_exception_when_DeleteDatabase_is_called_with_an_empty_string(string name)
+		public void Should_throw_an_argument_null_exception_when_DeleteDatabase_is_called_with_a_null_or_empty_string(string name)
 		{
 			string url = GetValidUrl();
 			var mockRestProxy = new Mock<IRestProxy>();
@@ -304,6 +304,124 @@ namespace SineSignal.Ottoman.Tests.Unit
 
 			mockRestProxy.Verify(x => x.Delete(requestUrl.Uri), Times.AtLeastOnce());
 			mockSerializer.Verify(x => x.Deserialize<CouchError>(body), Times.AtLeastOnce());
+		}
+
+		[Test]
+		[Row(null)]
+		[Row("")]
+		[ExpectedArgumentNullException]
+		public void Should_throw_an_argument_null_exception_when_GetDatabase_is_called_with_a_null_or_empty_string(string name)
+		{
+			string url = GetValidUrl();
+			var mockRestProxy = new Mock<IRestProxy>();
+			var mockSerializer = new Mock<ISerializer>();
+
+			ICouchInstance couchInstance = new CouchInstance(url, mockRestProxy.Object, mockSerializer.Object);
+			ICouchDatabase database = couchInstance.GetDatabase(name);
+		}
+		
+		[Test]
+		[Row("test")]
+		public void Should_be_able_to_retrieve_a_couch_database_when_given_a_valid_name(string name)
+		{
+			string url = GetValidUrl();
+			UriBuilder requestUrl = new UriBuilder(new Uri(url));
+			requestUrl.Path = name;
+			string body = "{\"db_name\":\"test\",\"doc_count\":0,\"doc_del_count\":0,\"update_seq\":0,\"purge_seq\":0,\"compact_running\":false,\"disk_size\":79,\"instance_start_time\":\"1250175373642458\",\"disk_format_version\":4}";
+			
+			var mockHttpResponse = new Mock<IHttpResponse>();
+			mockHttpResponse.Setup(x => x.StatusCode).Returns(HttpStatusCode.OK);
+			mockHttpResponse.Setup(x => x.Body).Returns(body);
+			
+			var mockRestProxy = new Mock<IRestProxy>();
+			mockRestProxy.Setup(x => x.Get(requestUrl.Uri)).Returns(mockHttpResponse.Object);
+			
+			var mockSerializer = new Mock<ISerializer>();
+			mockSerializer.Setup(x => x.Deserialize<CouchDatabase>(body)).Returns(new CouchDatabase(name, 0, 0, 0, 0, false, 79, "1250175373642458", 4));
+
+			ICouchInstance couchInstance = new CouchInstance(url, mockRestProxy.Object, mockSerializer.Object);
+			ICouchDatabase database = couchInstance.GetDatabase(name);
+
+			mockRestProxy.Verify(x => x.Get(requestUrl.Uri), Times.AtLeastOnce());
+			mockSerializer.Verify(x => x.Deserialize<CouchDatabase>(body));
+
+			Assert.IsNotNull(database);
+			Assert.AreEqual(name, database.Name);
+			Assert.AreEqual(0, database.DocCount);
+			Assert.AreEqual(0, database.DocDelCount);
+			Assert.AreEqual(0, database.UpdateSequence);
+			Assert.AreEqual(0, database.PurgeSequence);
+			Assert.AreEqual(false, database.CompactRunning);
+			Assert.AreEqual(79, database.DiskSize);
+			Assert.AreEqual("1250175373642458", database.InstanceStartTime);
+			Assert.AreEqual(4, database.DiskFormatVersion);
+		}
+		
+		[Test]
+		public void Should_throw_cannot_get_database_exception_when_an_error_is_given_in_the_response()
+		{
+			string url = GetValidUrl();
+			string databaseName = "test";
+			UriBuilder requestUrl = new UriBuilder(new Uri(url));
+			requestUrl.Path = databaseName;
+			string body = "{\"error\":\"not_found\",\"reason\":\"no_db_file\"}";
+
+			var mockHttpResponse = new Mock<IHttpResponse>();
+			mockHttpResponse.Setup(x => x.StatusCode).Returns(HttpStatusCode.NotFound);
+			mockHttpResponse.Setup(x => x.Body).Returns(body);
+
+			var mockRestProxy = new Mock<IRestProxy>();
+			mockRestProxy.Setup(x => x.Get(requestUrl.Uri)).Returns(mockHttpResponse.Object);
+
+			var mockSerializer = new Mock<ISerializer>();
+			mockSerializer.Setup(x => x.Deserialize<CouchError>(body)).Returns(new CouchError("not_found", "no_db_file"));
+
+			CannotGetDatabaseException cannotGetDatabaseException = null;
+			try
+			{
+				ICouchInstance couchInstance = new CouchInstance(url, mockRestProxy.Object, mockSerializer.Object);
+				couchInstance.GetDatabase(databaseName);
+			}
+			catch (CannotGetDatabaseException e)
+			{
+				cannotGetDatabaseException = e;
+			}
+
+			Assert.AreEqual(String.Format("Failed to get database '{0}'", databaseName), cannotGetDatabaseException.Message);
+			Assert.AreEqual("not_found", cannotGetDatabaseException.CouchError.Error);
+			Assert.AreEqual("no_db_file", cannotGetDatabaseException.CouchError.Reason);
+			Assert.AreEqual(mockHttpResponse.Object, cannotGetDatabaseException.RawResponse);
+
+			mockRestProxy.Verify(x => x.Get(requestUrl.Uri), Times.AtLeastOnce());
+			mockSerializer.Verify(x => x.Deserialize<CouchError>(body), Times.AtLeastOnce());
+		}
+		
+		[Test]
+		public void Should_be_able_to_retrieve_a_list_of_databases()
+		{
+			string url = GetValidUrl();
+			UriBuilder requestUrl = new UriBuilder(new Uri(url));
+			requestUrl.Path = "_all_dbs";
+			string body = "[\"test1\",\"test2\"]";
+
+			var mockHttpResponse = new Mock<IHttpResponse>();
+			mockHttpResponse.Setup(x => x.StatusCode).Returns(HttpStatusCode.OK);
+			mockHttpResponse.Setup(x => x.Body).Returns(body);
+			
+			var mockRestProxy = new Mock<IRestProxy>();
+			mockRestProxy.Setup(x => x.Get(requestUrl.Uri)).Returns(mockHttpResponse.Object);
+			
+			var mockSerializer = new Mock<ISerializer>();
+			mockSerializer.Setup(x => x.Deserialize<string[]>(body)).Returns(new string[] {"test1", "test2"});
+
+			ICouchInstance couchInstance = new CouchInstance(url, mockRestProxy.Object, mockSerializer.Object);
+			string[] databases = couchInstance.GetDatabases();
+
+			mockRestProxy.Verify(x => x.Get(requestUrl.Uri));
+			mockSerializer.Verify(x => x.Deserialize<string[]>(body));
+
+			Assert.IsNotNull(databases);
+			Assert.AreEqual(2, databases.Length);
 		}
 
 		private string GetValidUrl()
