@@ -56,8 +56,18 @@ namespace SineSignal.Ottoman.Proxies
 				}
 			}
 
-			HttpWebResponse httpWebResponse = httpWebRequest.GetResponse() as HttpWebResponse;
+			HttpWebResponse httpWebResponse;
 			string response = String.Empty;
+			
+			try
+			{
+				httpWebResponse = httpWebRequest.GetResponse() as HttpWebResponse;
+			}
+			catch (WebException e)
+			{
+				httpWebResponse = e.Response as HttpWebResponse;
+			}
+			
 			using (StreamReader streamReader = new StreamReader(httpWebResponse.GetResponseStream()))
 			{
 				response = streamReader.ReadToEnd();

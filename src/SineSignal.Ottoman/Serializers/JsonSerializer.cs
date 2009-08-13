@@ -18,7 +18,7 @@
 
 #endregion
 
-using System;
+using Newtonsoft.Json;
 
 namespace SineSignal.Ottoman.Serializers
 {
@@ -35,7 +35,7 @@ namespace SineSignal.Ottoman.Serializers
 		/// <returns>T</returns>
 		public T Deserialize<T>(string json)
 		{
-			throw new NotImplementedException();
+			return JsonConvert.DeserializeObject<T>(json);
 		}
 	}
 }
