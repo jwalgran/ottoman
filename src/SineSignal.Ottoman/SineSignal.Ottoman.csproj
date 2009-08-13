@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CannotCreateDatabaseException.cs" />
+    <Compile Include="CannotDeleteDatabaseException.cs" />
     <Compile Include="CouchError.cs" />
     <Compile Include="CouchInstance.cs" />
     <Compile Include="CouchFactory.cs" />

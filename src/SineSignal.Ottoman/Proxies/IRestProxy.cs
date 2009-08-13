@@ -25,5 +25,6 @@ namespace SineSignal.Ottoman.Proxies
 	public interface IRestProxy
 	{
 		IHttpResponse Put(Uri url);
+		IHttpResponse Delete(Uri url);
 	}
 }

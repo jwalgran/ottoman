@@ -112,5 +112,31 @@ namespace SineSignal.Ottoman
 				throw new CannotCreateDatabaseException(name, error, response);
 			}
 		}
+
+		/// <summary>
+		/// Deletes a database in CouchDB with the given name.
+		/// </summary>
+		/// <param name="name">The name of the database to delete.</param>
+		/// <exception cref="ArgumentNullException">Throws an exception if the name parameter is null or empty string.</exception>
+		public void DeleteDatabase(string name)
+		{
+			if (String.IsNullOrEmpty(name))
+				throw new ArgumentNullException("name");
+
+			// TODO:  We need to UrlEncode the name, to take care of special characters like _, $, (, ), +, -, and /.
+			// We just introduced a limitation with this API.  System.Net.Uri, does not handle the encoding correctly.  Hold off on this for now.
+			// Until we can figure out a way to do this, we need a regex to check for these characters and throw an ArgumentException
+
+			UriBuilder requestUrl = new UriBuilder(Url);
+			requestUrl.Path = name;
+
+			IHttpResponse response = RestProxy.Delete(requestUrl.Uri);
+
+			if (response.StatusCode != HttpStatusCode.OK)
+			{
+				CouchError error = Serializer.Deserialize<CouchError>(response.Body);
+				throw new CannotDeleteDatabaseException(name, error, response);
+			}
+		}
 	}
 }

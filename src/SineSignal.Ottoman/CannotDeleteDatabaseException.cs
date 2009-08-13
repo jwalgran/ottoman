@@ -1,6 +1,6 @@
 #region License
 
-// <copyright file="CannotCreateDatabaseException.cs" company="SineSignal, LLC.">
+// <copyright file="CannotDeleteDatabaseException.cs" company="SineSignal, LLC.">
 //   Copyright 2007-2009 SineSignal, LLC.
 //       Licensed under the Apache License, Version 2.0 (the "License");
 //       you may not use this file except in compliance with the License.
@@ -25,11 +25,11 @@ using SineSignal.Ottoman.Proxies;
 namespace SineSignal.Ottoman
 {
 	/// <summary>
-	/// A custom exception type to use for handling when a database cannot be created in CouchDB.
+	/// A custom exception type to use for handling when a database cannot be deleted in CouchDB.
 	/// </summary>
-	public class CannotCreateDatabaseException : Exception
+	public class CannotDeleteDatabaseException : Exception
 	{
-		public const string ExceptionMessageFormat = "Failed to create database '{0}'";
+		public const string ExceptionMessageFormat = "Failed to delete database '{0}'";
 
 		/// <summary>
 		/// The error that CouchDB gave.
@@ -44,12 +44,12 @@ namespace SineSignal.Ottoman
 		public IHttpResponse RawResponse { get; private set; }
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="CannotCreateDatabaseException"/> class.
+		/// Initializes a new instance of the <see cref="CannotDeleteDatabaseException"/> class.
 		/// </summary>
 		/// <param name="databaseName">Name of the database.</param>
 		/// <param name="couchError">The error that CouchDB gave.</param>
 		/// <param name="rawResponse">The raw response from the CouchDB server.</param>
-		public CannotCreateDatabaseException(string databaseName, ICouchError couchError, IHttpResponse rawResponse) : base(String.Format(ExceptionMessageFormat, databaseName))
+		public CannotDeleteDatabaseException(string databaseName, ICouchError couchError, IHttpResponse rawResponse) : base(String.Format(ExceptionMessageFormat, databaseName))
 		{
 			CouchError = couchError;
 			RawResponse = rawResponse;

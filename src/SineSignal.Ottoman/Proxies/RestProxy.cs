@@ -44,5 +44,15 @@ namespace SineSignal.Ottoman.Proxies
 		{
 			return _httpClient.Request(new HttpRequest(url, WebRequestMethods.Http.Put));
 		}
+
+		/// <summary>
+		/// Creates a DELETE request for the specified URL.
+		/// </summary>
+		/// <param name="url">The URL to make the request to.</param>
+		/// <returns>The response from the URL the request was made.</returns>
+		public IHttpResponse Delete(Uri url)
+		{
+			return _httpClient.Request(new HttpRequest(url, "DELETE"));
+		}
 	}
 }

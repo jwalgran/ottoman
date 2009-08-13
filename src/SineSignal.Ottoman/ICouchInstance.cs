@@ -31,5 +31,6 @@ namespace SineSignal.Ottoman
 		IRestProxy RestProxy { get; }
 		ISerializer Serializer { get; }
 		void CreateDatabase(string name);
+		void DeleteDatabase(string name);
 	}
 }
