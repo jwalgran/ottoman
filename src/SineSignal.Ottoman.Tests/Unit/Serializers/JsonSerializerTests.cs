@@ -18,6 +18,8 @@
 
 #endregion
 
+using System;
+using System.Collections.Generic;
 using MbUnit.Framework;
 
 using SineSignal.Ottoman.Serializers;
@@ -59,5 +61,67 @@ namespace SineSignal.Ottoman.Tests.Unit.Serializers
 			Assert.AreEqual("1250175373642458", database.InstanceStartTime);
 			Assert.AreEqual(4, database.DiskFormatVersion);
 		}
+		
+		[Test]
+		public void Should_be_able_to_serialize_and_deserialize_objects()
+		{
+			var bobOriginal = new Worker {Id = 1, Name = "Bob", Login = "bbob", Hours = 40};
+			var aliceOriginal = new Worker { Id = 3, Name = "Alice", Login = "aalice", Hours = 40 };
+			var eveOriginal = new Worker { Id = 4, Name = "Eve", Login = "eeve", Hours = 20 };
+			var chrisOriginal = new Manager { Id = 2, Name = "Chris", Login = "cchandler", Subordinates = new List<Worker> { bobOriginal, aliceOriginal, eveOriginal } };
+
+			ISerializer serializer = new JsonSerializer();
+			string bobJson = serializer.Serialize<Worker>(bobOriginal);
+			string aliceJson = serializer.Serialize<Worker>(aliceOriginal);
+			string eveJson = serializer.Serialize<Worker>(eveOriginal);
+			string chrisJson = serializer.Serialize<Manager>(chrisOriginal);
+
+			var bobDeserialized = serializer.Deserialize<Worker>(bobJson);
+			var aliceDeserialized = serializer.Deserialize<Worker>(aliceJson);
+			var eveDeserialized = serializer.Deserialize<Worker>(eveJson);
+			var chrisDeserialized = serializer.Deserialize<Manager>(chrisJson);
+
+			Assert.AreEqual(bobOriginal, bobDeserialized);
+			Assert.AreEqual(aliceOriginal, aliceDeserialized);
+			Assert.AreEqual(eveOriginal, eveDeserialized);
+			Assert.AreEqual(chrisOriginal, chrisDeserialized);
+		}
+	}
+
+	public class Employee
+	{
+		public int Id { get; set; }
+		public string Name { get; set; }
+		public string Login { get; set; }
+
+		public override bool Equals(object obj)
+		{
+			Employee compareTo = obj as Employee;
+
+			if (compareTo != null)
+			{
+				if (Id == compareTo.Id && Name == compareTo.Name && Login == compareTo.Login)
+				{
+					return true;
+				}
+			}
+
+			return base.Equals(obj);
+		}
+
+		public override int GetHashCode()
+		{
+			return Id.GetHashCode();
+		}
+	}
+
+	public class Worker : Employee
+	{
+		public double Hours { get; set; }
+	}
+
+	public class Manager : Employee
+	{
+		public IList<Worker> Subordinates { get; set; }
 	}
 }

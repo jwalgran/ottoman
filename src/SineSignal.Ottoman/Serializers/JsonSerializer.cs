@@ -28,6 +28,40 @@ namespace SineSignal.Ottoman.Serializers
 	public class JsonSerializer : ISerializer
 	{
 		/// <summary>
+		/// Gets or sets the settings.
+		/// </summary>
+		/// <value>The settings.</value>
+		public JsonSerializerSettings Settings { get; private set; }
+
+		/// <summary>
+		/// Gets the type of the content.
+		/// </summary>
+		/// <value>The type of the content.</value>
+		public string ContentType
+		{
+			get { return "application/json"; }
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="JsonSerializer"/> class.
+		/// </summary>
+		public JsonSerializer()
+		{
+			Settings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore };
+		}
+
+		/// <summary>
+		/// Serializes the specified object to JSON.
+		/// </summary>
+		/// <typeparam name="T">Type of object</typeparam>
+		/// <param name="objectToSerialize">The object to serialize.</param>
+		/// <returns>A JSON formatted string</returns>
+		public string Serialize<T>(T objectToSerialize)
+		{
+			return JsonConvert.SerializeObject(objectToSerialize, Formatting.None, Settings);
+		}
+
+		/// <summary>
 		/// Deserializes the specified JSON.
 		/// </summary>
 		/// <typeparam name="T">The type to map the JSON to.</typeparam>

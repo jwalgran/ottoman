@@ -18,10 +18,15 @@
 
 #endregion
 
+using Newtonsoft.Json;
+
 namespace SineSignal.Ottoman.Serializers
 {
 	public interface ISerializer
 	{
+		JsonSerializerSettings Settings { get; }
+		string ContentType { get; }
+		string Serialize<T>(T objectToSerialize);
 		T Deserialize<T>(string content);
 	}
 }
