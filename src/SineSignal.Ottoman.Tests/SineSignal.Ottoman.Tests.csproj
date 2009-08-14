@@ -58,6 +58,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Unit\CouchDatabaseTests.cs" />
     <Compile Include="Unit\CouchInstanceTests.cs" />
     <Compile Include="Unit\Proxies\RestProxyTests.cs" />
     <Compile Include="Unit\Serializers\JsonSerializerTests.cs" />
