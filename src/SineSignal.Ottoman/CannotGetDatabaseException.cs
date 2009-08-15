@@ -19,7 +19,7 @@
 #endregion
 
 using System;
-using SineSignal.Ottoman.Proxies;
+using SineSignal.Ottoman.Proxy;
 
 namespace SineSignal.Ottoman
 {

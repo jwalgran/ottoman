@@ -1,6 +1,6 @@
 #region License
 
-// <copyright file="CouchInstance.cs" company="SineSignal, LLC.">
+// <copyright file="Server.cs" company="SineSignal, LLC.">
 //   Copyright 2007-2009 SineSignal, LLC.
 //       Licensed under the Apache License, Version 2.0 (the "License");
 //       you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@
 using System;
 using System.Net;
 
-using SineSignal.Ottoman.Proxies;
+using SineSignal.Ottoman.Proxy;
 using SineSignal.Ottoman.Serializers;
 
 namespace SineSignal.Ottoman
@@ -29,8 +29,8 @@ namespace SineSignal.Ottoman
 	/// <summary>
 	/// A class for managing CouchDB instances.  Use this class for creating, deleting, retrieving, and for listing databases on your CouchDB server.
 	/// </summary>
-	/// <remarks>Please use the CouchFactory.Create factory method for creating instances of this class.</remarks>
-	public class CouchInstance : ICouchInstance
+	/// <remarks>Please use the ServerFactory.Create factory method for creating instances of this class.</remarks>
+	public class Server : IServer
 	{
 		private readonly Uri _url;
 
@@ -53,7 +53,7 @@ namespace SineSignal.Ottoman
 		public ISerializer Serializer { get; private set; }
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="CouchInstance"/> class.
+		/// Initializes a new instance of the <see cref="Server"/> class.
 		/// </summary>
 		/// <param name="url">The URL of the CouchDB server to be used by the API.</param>
 		/// <param name="restProxy">The proxy to use for talking to the CouchDB server.</param>
@@ -63,7 +63,7 @@ namespace SineSignal.Ottoman
 		/// <exception cref="ArgumentException">Throws an exception if the url parameter doesn't use the HTTP or HTTPS protocol.</exception>
 		/// <exception cref="ArgumentNullException">Throws an exception if the restProxy parameter is null.</exception>
 		/// <exception cref="ArgumentNullException">Throws an exception if the serializer parameter is null.</exception>
-		public CouchInstance(string url, IRestProxy restProxy, ISerializer serializer)
+		public Server(string url, IRestProxy restProxy, ISerializer serializer)
 		{
 			// Validate input
 			if (String.IsNullOrEmpty(url))
@@ -144,7 +144,7 @@ namespace SineSignal.Ottoman
 		/// <param name="name">The name of the database to get.</param>
 		/// <exception cref="ArgumentNullException">Throws an exception if the name parameter is null or empty string.</exception>
 		/// <exception cref="CannotGetDatabaseException">Throws an exception if the database cannot be retrieved.</exception>
-		public ICouchDatabase GetDatabase(string name)
+		public IDatabase GetDatabase(string name)
 		{
 			if (String.IsNullOrEmpty(name))
 				throw new ArgumentNullException("name");
@@ -163,7 +163,7 @@ namespace SineSignal.Ottoman
 				throw new CannotGetDatabaseException(name, error, response);
 			}
 
-			return Serializer.Deserialize<CouchDatabase>(response.Body);
+			return Serializer.Deserialize<Database>(response.Body);
 		}
 
 		/// <summary>

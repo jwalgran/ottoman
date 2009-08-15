@@ -24,9 +24,9 @@ using System.Net;
 using MbUnit.Framework;
 using Moq;
 
-using SineSignal.Ottoman.Proxies;
+using SineSignal.Ottoman.Proxy;
 
-namespace SineSignal.Ottoman.Tests.Unit.Proxies
+namespace SineSignal.Ottoman.Tests.Unit.Proxy
 {
 	[TestFixture]
 	public class RestProxyTests

@@ -23,7 +23,7 @@ using System.IO;
 using System.Net;
 using System.Text;
 
-namespace SineSignal.Ottoman.Proxies
+namespace SineSignal.Ottoman.Proxy
 {
 	/// <summary>
 	/// A wrapper class for making <see cref="HttpWebRequest" />'s.
@@ -38,42 +38,51 @@ namespace SineSignal.Ottoman.Proxies
 		public IHttpResponse Request(IHttpRequest httpRequest)
 		{
 			HttpWebRequest httpWebRequest = WebRequest.Create(httpRequest.Url) as HttpWebRequest;
-			httpWebRequest.Method = httpRequest.Method;
-			httpWebRequest.Timeout = -1;
-
-			if (!String.IsNullOrEmpty(httpRequest.ContentType))
+			
+			if (httpWebRequest != null)
 			{
-				httpWebRequest.ContentType = httpRequest.ContentType;
-			}
+				httpWebRequest.Method = httpRequest.Method;
+				httpWebRequest.Timeout = -1;
 
-			if (!String.IsNullOrEmpty(httpRequest.PostData))
-			{
-				byte[] bytes = UTF8Encoding.UTF8.GetBytes(httpRequest.PostData);
-				httpWebRequest.ContentLength = bytes.Length;
-				using (Stream requestStream = httpWebRequest.GetRequestStream())
+				if (!String.IsNullOrEmpty(httpRequest.ContentType))
 				{
-					requestStream.Write(bytes, 0, bytes.Length);
+					httpWebRequest.ContentType = httpRequest.ContentType;
+				}
+
+				if (!String.IsNullOrEmpty(httpRequest.PostData))
+				{
+					byte[] bytes = Encoding.UTF8.GetBytes(httpRequest.PostData);
+					httpWebRequest.ContentLength = bytes.Length;
+					using (Stream requestStream = httpWebRequest.GetRequestStream())
+					{
+						requestStream.Write(bytes, 0, bytes.Length);
+					}
+				}
+
+				HttpWebResponse httpWebResponse;
+				string response;
+
+				try
+				{
+					httpWebResponse = httpWebRequest.GetResponse() as HttpWebResponse;
+				}
+				catch (WebException e)
+				{
+					httpWebResponse = e.Response as HttpWebResponse;
+				}
+
+				if (httpWebResponse != null)
+				{
+					using (StreamReader streamReader = new StreamReader(httpWebResponse.GetResponseStream()))
+					{
+						response = streamReader.ReadToEnd();
+					}
+
+					return new HttpResponse(httpWebResponse.StatusCode, response);
 				}
 			}
 
-			HttpWebResponse httpWebResponse;
-			string response = String.Empty;
-			
-			try
-			{
-				httpWebResponse = httpWebRequest.GetResponse() as HttpWebResponse;
-			}
-			catch (WebException e)
-			{
-				httpWebResponse = e.Response as HttpWebResponse;
-			}
-			
-			using (StreamReader streamReader = new StreamReader(httpWebResponse.GetResponseStream()))
-			{
-				response = streamReader.ReadToEnd();
-			}
-			
-			return new HttpResponse(httpWebResponse.StatusCode, response);
+			return null;
 		}
 	}
 }

@@ -1,6 +1,6 @@
 #region License
 
-// <copyright file="CouchInstanceTests.cs" company="SineSignal, LLC.">
+// <copyright file="ServerTests.cs" company="SineSignal, LLC.">
 //   Copyright 2007-2009 SineSignal, LLC.
 //       Licensed under the Apache License, Version 2.0 (the "License");
 //       you may not use this file except in compliance with the License.
@@ -24,14 +24,14 @@ using System.Net;
 using MbUnit.Framework;
 using Moq;
 
-using SineSignal.Ottoman.Proxies;
+using SineSignal.Ottoman.Proxy;
 using SineSignal.Ottoman.Serializers;
 
 namespace SineSignal.Ottoman.Tests.Unit
 {
 	// TODO:  Now that we have a pattern emerging, clean these tests up
 	[TestFixture]
-	public class CouchInstanceTests
+	public class ServerTests
 	{
 		[Test]
 		[Row(null)]
@@ -42,7 +42,7 @@ namespace SineSignal.Ottoman.Tests.Unit
 			var mockRestProxy = new Mock<IRestProxy>();
 			var mockSerializer = new Mock<ISerializer>();
 			
-			new CouchInstance(baseUrl, mockRestProxy.Object, mockSerializer.Object);
+			new Server(baseUrl, mockRestProxy.Object, mockSerializer.Object);
 		}
 
 		[Test]
@@ -52,7 +52,7 @@ namespace SineSignal.Ottoman.Tests.Unit
 			var mockRestProxy = new Mock<IRestProxy>();
 			var mockSerializer = new Mock<ISerializer>();
 			
-			new CouchInstance("some string value", mockRestProxy.Object, mockSerializer.Object);
+			new Server("some string value", mockRestProxy.Object, mockSerializer.Object);
 		}
 
 		[Test]
@@ -62,7 +62,7 @@ namespace SineSignal.Ottoman.Tests.Unit
 			var mockRestProxy = new Mock<IRestProxy>();
 			var mockSerializer = new Mock<ISerializer>();
 			
-			new CouchInstance("../somepath", mockRestProxy.Object, mockSerializer.Object);
+			new Server("../somepath", mockRestProxy.Object, mockSerializer.Object);
 		}
 
 		[Test]
@@ -74,10 +74,10 @@ namespace SineSignal.Ottoman.Tests.Unit
 			var mockRestProxy = new Mock<IRestProxy>();
 			var mockSerializer = new Mock<ISerializer>();
 			
-			ICouchInstance couchInstance = new CouchInstance(baseUrl, mockRestProxy.Object, mockSerializer.Object);
+			IServer couchServer = new Server(baseUrl, mockRestProxy.Object, mockSerializer.Object);
 
-			Assert.IsNotNull(couchInstance.Url);
-			Assert.AreEqual(baseUrl, couchInstance.Url.ToString());
+			Assert.IsNotNull(couchServer.Url);
+			Assert.AreEqual(baseUrl, couchServer.Url.ToString());
 		}
 
 		[Test]
@@ -88,10 +88,10 @@ namespace SineSignal.Ottoman.Tests.Unit
 			var mockRestProxy = new Mock<IRestProxy>();
 			var mockSerializer = new Mock<ISerializer>();
 
-			ICouchInstance couchInstance = new CouchInstance(baseUrl, mockRestProxy.Object, mockSerializer.Object);
+			IServer couchServer = new Server(baseUrl, mockRestProxy.Object, mockSerializer.Object);
 
-			Assert.AreEqual(baseUrl, couchInstance.Url.ToString());
-			Assert.AreEqual(expectedScheme, couchInstance.Url.Scheme);
+			Assert.AreEqual(baseUrl, couchServer.Url.ToString());
+			Assert.AreEqual(expectedScheme, couchServer.Url.Scheme);
 		}
 
 		[Test]
@@ -101,7 +101,7 @@ namespace SineSignal.Ottoman.Tests.Unit
 			string url = GetValidUrl();
 			var mockSerializer = new Mock<ISerializer>();
 			
-			new CouchInstance(url, null, mockSerializer.Object);
+			new Server(url, null, mockSerializer.Object);
 		}
 
 		[Test]
@@ -111,10 +111,10 @@ namespace SineSignal.Ottoman.Tests.Unit
 			var mockProxy = new Mock<IRestProxy>();
 			var mockSerializer = new Mock<ISerializer>();
 
-			ICouchInstance couchInstance = new CouchInstance(url, mockProxy.Object, mockSerializer.Object);
+			IServer couchServer = new Server(url, mockProxy.Object, mockSerializer.Object);
 
-			Assert.IsNotNull(couchInstance.RestProxy);
-			Assert.AreEqual(mockProxy.Object, couchInstance.RestProxy);
+			Assert.IsNotNull(couchServer.RestProxy);
+			Assert.AreEqual(mockProxy.Object, couchServer.RestProxy);
 		}
 
 		[Test]
@@ -124,7 +124,7 @@ namespace SineSignal.Ottoman.Tests.Unit
 			string url = GetValidUrl();
 			var mockProxy = new Mock<IRestProxy>();
 			
-			new CouchInstance(url, mockProxy.Object, null);
+			new Server(url, mockProxy.Object, null);
 		}
 
 		[Test]
@@ -134,10 +134,10 @@ namespace SineSignal.Ottoman.Tests.Unit
 			var mockProxy = new Mock<IRestProxy>();
 			var mockSerializer = new Mock<ISerializer>();
 
-			ICouchInstance couchInstance = new CouchInstance(url, mockProxy.Object, mockSerializer.Object);
+			IServer couchServer = new Server(url, mockProxy.Object, mockSerializer.Object);
 
-			Assert.IsNotNull(couchInstance.Serializer);
-			Assert.AreEqual(mockSerializer.Object, couchInstance.Serializer);
+			Assert.IsNotNull(couchServer.Serializer);
+			Assert.AreEqual(mockSerializer.Object, couchServer.Serializer);
 		}
 
 		[Test]
@@ -148,8 +148,8 @@ namespace SineSignal.Ottoman.Tests.Unit
 			var mockRestProxy = new Mock<IRestProxy>();
 			var mockSerializer = new Mock<ISerializer>();
 			
-			ICouchInstance couchInstance = new CouchInstance(url, mockRestProxy.Object, mockSerializer.Object);
-			couchInstance.CreateDatabase(null);
+			IServer couchServer = new Server(url, mockRestProxy.Object, mockSerializer.Object);
+			couchServer.CreateDatabase(null);
 		}
 
 		[Test]
@@ -161,9 +161,9 @@ namespace SineSignal.Ottoman.Tests.Unit
 			string url = GetValidUrl();
 			var mockRestProxy = new Mock<IRestProxy>();
 			var mockSerializer = new Mock<ISerializer>();
-			
-			ICouchInstance couchInstance = new CouchInstance(url, mockRestProxy.Object, mockSerializer.Object);
-			couchInstance.CreateDatabase(name);
+
+			IServer couchServer = new Server(url, mockRestProxy.Object, mockSerializer.Object);
+			couchServer.CreateDatabase(name);
 		}
 		
 		[Test]
@@ -183,9 +183,9 @@ namespace SineSignal.Ottoman.Tests.Unit
 			mockRestProxy.Setup(x => x.Put(requestUrl.Uri)).Returns(mockHttpResponse.Object);
 
 			var mockSerializer = new Mock<ISerializer>();
-			
-			ICouchInstance couchInstance = new CouchInstance(url, mockRestProxy.Object, mockSerializer.Object);
-			couchInstance.CreateDatabase(databaseName);
+
+			IServer couchServer = new Server(url, mockRestProxy.Object, mockSerializer.Object);
+			couchServer.CreateDatabase(databaseName);
 
 			mockRestProxy.Verify(x => x.Put(requestUrl.Uri), Times.AtLeastOnce());
 		}
@@ -212,8 +212,8 @@ namespace SineSignal.Ottoman.Tests.Unit
 			CannotCreateDatabaseException cannotCreateDatabaseException = null;
 			try
 			{
-				ICouchInstance couchInstance = new CouchInstance(url, mockRestProxy.Object, mockSerializer.Object);
-				couchInstance.CreateDatabase(databaseName);
+				IServer couchServer = new Server(url, mockRestProxy.Object, mockSerializer.Object);
+				couchServer.CreateDatabase(databaseName);
 			}
 			catch (CannotCreateDatabaseException e)
 			{
@@ -239,8 +239,8 @@ namespace SineSignal.Ottoman.Tests.Unit
 			var mockRestProxy = new Mock<IRestProxy>();
 			var mockSerializer = new Mock<ISerializer>();
 
-			ICouchInstance couchInstance = new CouchInstance(url, mockRestProxy.Object, mockSerializer.Object);
-			couchInstance.DeleteDatabase(name);
+			IServer couchServer = new Server(url, mockRestProxy.Object, mockSerializer.Object);
+			couchServer.DeleteDatabase(name);
 		}
 		
 		[Test]
@@ -261,8 +261,8 @@ namespace SineSignal.Ottoman.Tests.Unit
 
 			var mockSerializer = new Mock<ISerializer>();
 
-			ICouchInstance couchInstance = new CouchInstance(url, mockRestProxy.Object, mockSerializer.Object);
-			couchInstance.DeleteDatabase(databaseName);
+			IServer couchServer = new Server(url, mockRestProxy.Object, mockSerializer.Object);
+			couchServer.DeleteDatabase(databaseName);
 
 			mockRestProxy.Verify(x => x.Delete(requestUrl.Uri), Times.AtLeastOnce());
 		}
@@ -289,8 +289,8 @@ namespace SineSignal.Ottoman.Tests.Unit
 			CannotDeleteDatabaseException cannotDeleteDatabaseException = null;
 			try
 			{
-				ICouchInstance couchInstance = new CouchInstance(url, mockRestProxy.Object, mockSerializer.Object);
-				couchInstance.DeleteDatabase(databaseName);
+				IServer couchServer = new Server(url, mockRestProxy.Object, mockSerializer.Object);
+				couchServer.DeleteDatabase(databaseName);
 			}
 			catch (CannotDeleteDatabaseException e)
 			{
@@ -316,8 +316,8 @@ namespace SineSignal.Ottoman.Tests.Unit
 			var mockRestProxy = new Mock<IRestProxy>();
 			var mockSerializer = new Mock<ISerializer>();
 
-			ICouchInstance couchInstance = new CouchInstance(url, mockRestProxy.Object, mockSerializer.Object);
-			ICouchDatabase database = couchInstance.GetDatabase(name);
+			IServer couchServer = new Server(url, mockRestProxy.Object, mockSerializer.Object);
+			IDatabase database = couchServer.GetDatabase(name);
 		}
 		
 		[Test]
@@ -337,13 +337,13 @@ namespace SineSignal.Ottoman.Tests.Unit
 			mockRestProxy.Setup(x => x.Get(requestUrl.Uri)).Returns(mockHttpResponse.Object);
 			
 			var mockSerializer = new Mock<ISerializer>();
-			mockSerializer.Setup(x => x.Deserialize<CouchDatabase>(body)).Returns(new CouchDatabase(name, 0, 0, 0, 0, false, 79, "1250175373642458", 4));
+			mockSerializer.Setup(x => x.Deserialize<Database>(body)).Returns(new Database(name, 0, 0, 0, 0, false, 79, "1250175373642458", 4));
 
-			ICouchInstance couchInstance = new CouchInstance(url, mockRestProxy.Object, mockSerializer.Object);
-			ICouchDatabase database = couchInstance.GetDatabase(name);
+			IServer couchServer = new Server(url, mockRestProxy.Object, mockSerializer.Object);
+			IDatabase database = couchServer.GetDatabase(name);
 
 			mockRestProxy.Verify(x => x.Get(requestUrl.Uri), Times.AtLeastOnce());
-			mockSerializer.Verify(x => x.Deserialize<CouchDatabase>(body));
+			mockSerializer.Verify(x => x.Deserialize<Database>(body));
 
 			Assert.IsNotNull(database);
 			Assert.AreEqual(name, database.Name);
@@ -379,8 +379,8 @@ namespace SineSignal.Ottoman.Tests.Unit
 			CannotGetDatabaseException cannotGetDatabaseException = null;
 			try
 			{
-				ICouchInstance couchInstance = new CouchInstance(url, mockRestProxy.Object, mockSerializer.Object);
-				couchInstance.GetDatabase(databaseName);
+				IServer couchServer = new Server(url, mockRestProxy.Object, mockSerializer.Object);
+				couchServer.GetDatabase(databaseName);
 			}
 			catch (CannotGetDatabaseException e)
 			{
@@ -414,8 +414,8 @@ namespace SineSignal.Ottoman.Tests.Unit
 			var mockSerializer = new Mock<ISerializer>();
 			mockSerializer.Setup(x => x.Deserialize<string[]>(body)).Returns(new string[] {"test1", "test2"});
 
-			ICouchInstance couchInstance = new CouchInstance(url, mockRestProxy.Object, mockSerializer.Object);
-			string[] databases = couchInstance.GetDatabases();
+			IServer couchServer = new Server(url, mockRestProxy.Object, mockSerializer.Object);
+			string[] databases = couchServer.GetDatabases();
 
 			mockRestProxy.Verify(x => x.Get(requestUrl.Uri));
 			mockSerializer.Verify(x => x.Deserialize<string[]>(body));

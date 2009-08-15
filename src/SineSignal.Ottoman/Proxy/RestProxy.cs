@@ -21,7 +21,7 @@
 using System;
 using System.Net;
 
-namespace SineSignal.Ottoman.Proxies
+namespace SineSignal.Ottoman.Proxy
 {
 	/// <summary>
 	/// Used for creating RESTFUL web requests.

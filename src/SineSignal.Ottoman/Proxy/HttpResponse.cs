@@ -20,7 +20,7 @@
 
 using System.Net;
 
-namespace SineSignal.Ottoman.Proxies
+namespace SineSignal.Ottoman.Proxy
 {
 	/// <summary>
 	/// Models <see cref="HttpWebResponse" /> to allow testability within the code.  We can 

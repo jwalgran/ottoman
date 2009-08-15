@@ -20,7 +20,7 @@
 
 using System;
 
-namespace SineSignal.Ottoman.Proxies
+namespace SineSignal.Ottoman.Proxy
 {
 	/// <summary>
 	/// Models information used for creating web requests.

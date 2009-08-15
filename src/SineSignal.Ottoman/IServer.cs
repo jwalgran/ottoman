@@ -1,6 +1,6 @@
 #region License
 
-// <copyright file="ICouchInstance.cs" company="SineSignal, LLC.">
+// <copyright file="IServer.cs" company="SineSignal, LLC.">
 //   Copyright 2007-2009 SineSignal, LLC.
 //       Licensed under the Apache License, Version 2.0 (the "License");
 //       you may not use this file except in compliance with the License.
@@ -20,19 +20,19 @@
 
 using System;
 
-using SineSignal.Ottoman.Proxies;
+using SineSignal.Ottoman.Proxy;
 using SineSignal.Ottoman.Serializers;
 
 namespace SineSignal.Ottoman
 {
-	public interface ICouchInstance
+	public interface IServer
 	{
 		Uri Url { get; }
 		IRestProxy RestProxy { get; }
 		ISerializer Serializer { get; }
 		void CreateDatabase(string name);
 		void DeleteDatabase(string name);
-		ICouchDatabase GetDatabase(string name);
+		IDatabase GetDatabase(string name);
 		string[] GetDatabases();
 	}
 }

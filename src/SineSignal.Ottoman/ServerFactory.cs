@@ -1,6 +1,6 @@
 #region License
 
-// <copyright file="IRestProxy.cs" company="SineSignal, LLC.">
+// <copyright file="ServerFactory.cs" company="SineSignal, LLC.">
 //   Copyright 2007-2009 SineSignal, LLC.
 //       Licensed under the Apache License, Version 2.0 (the "License");
 //       you may not use this file except in compliance with the License.
@@ -18,14 +18,28 @@
 
 #endregion
 
-using System;
+using SineSignal.Ottoman.Proxy;
+using SineSignal.Ottoman.Serializers;
 
-namespace SineSignal.Ottoman.Proxies
+namespace SineSignal.Ottoman
 {
-	public interface IRestProxy
+	/// <summary>
+	/// Factory pattern for creating <see cref="Server" /> instances.
+	/// </summary>
+	public static class ServerFactory
 	{
-		IHttpResponse Put(Uri url);
-		IHttpResponse Delete(Uri url);
-		IHttpResponse Get(Uri url);
+		/// <summary>
+		/// Creates a Server instance.
+		/// </summary>
+		/// <param name="couchUrl">The url to your CouchDB server.</param>
+		/// <returns cref="IServer">A instatiated Server.</returns>
+		public static IServer Create(string couchUrl)
+		{
+			IHttpClient httpClient = new HttpClient();
+			IRestProxy restProxy = new RestProxy(httpClient);
+			ISerializer serializer = new JsonSerializer();
+			
+			return new Server(couchUrl, restProxy, serializer);
+		}
 	}
 }

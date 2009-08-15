@@ -1,6 +1,6 @@
 #region License
 
-// <copyright file="CouchDatabase.cs" company="SineSignal, LLC.">
+// <copyright file="Database.cs" company="SineSignal, LLC.">
 //   Copyright 2007-2009 SineSignal, LLC.
 //       Licensed under the Apache License, Version 2.0 (the "License");
 //       you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ namespace SineSignal.Ottoman
 	///	An example response from CouchDB:
 	/// "{\"db_name\":\"test\",\"doc_count\":0,\"doc_del_count\":0,\"update_seq\":0,\"purge_seq\":0,\"compact_running\":false,\"disk_size\":79,\"instance_start_time\":\"1250175373642458\",\"disk_format_version\":4}";
 	/// </remarks>
-	public class CouchDatabase : ICouchDatabase
+	public class Database : IDatabase
 	{
 		/// <summary>
 		/// Gets or sets the name of the database.
@@ -94,7 +94,7 @@ namespace SineSignal.Ottoman
 		[JsonProperty("disk_format_version")]
 		public int DiskFormatVersion { get; set; }
 
-		public CouchDatabase(string name, int docCount, int docDelCount, int updateSequence, int purgeSequence, bool compactRunning, double diskSize, string instanceStartTime, int diskFormatVersion)
+		public Database(string name, int docCount, int docDelCount, int updateSequence, int purgeSequence, bool compactRunning, double diskSize, string instanceStartTime, int diskFormatVersion)
 		{
 			Name = name;
 			DocCount = docCount;

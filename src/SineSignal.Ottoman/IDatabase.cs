@@ -1,6 +1,6 @@
 #region License
 
-// <copyright file="IHttpClient.cs" company="SineSignal, LLC.">
+// <copyright file="IDatabase.cs" company="SineSignal, LLC.">
 //   Copyright 2007-2009 SineSignal, LLC.
 //       Licensed under the Apache License, Version 2.0 (the "License");
 //       you may not use this file except in compliance with the License.
@@ -18,10 +18,18 @@
 
 #endregion
 
-namespace SineSignal.Ottoman.Proxies
+namespace SineSignal.Ottoman
 {
-	public interface IHttpClient
+	public interface IDatabase
 	{
-		IHttpResponse Request(IHttpRequest httpRequest);
+		string Name { get; set; }
+		int DocCount { get; set; }
+		int DocDelCount { get; set; }
+		int UpdateSequence { get; set; }
+		int PurgeSequence { get; set; }
+		bool CompactRunning { get; set; }
+		double DiskSize { get; set; }
+		string InstanceStartTime { get; set; }
+		int DiskFormatVersion { get; set; }
 	}
 }

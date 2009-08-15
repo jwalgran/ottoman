@@ -1,6 +1,6 @@
 #region License
 
-// <copyright file="CouchDatabaseTests.cs" company="SineSignal, LLC.">
+// <copyright file="DatabaseTests.cs" company="SineSignal, LLC.">
 //   Copyright 2007-2009 SineSignal, LLC.
 //       Licensed under the Apache License, Version 2.0 (the "License");
 //       you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ using MbUnit.Framework;
 namespace SineSignal.Ottoman.Tests.Unit
 {
 	[TestFixture]
-	public class CouchDatabaseTests
+	public class DatabaseTests
 	{
 		/* 
 		 * Now it's time for the interesting functionality of Ottoman.  Making it as seamless 
@@ -39,7 +39,7 @@ namespace SineSignal.Ottoman.Tests.Unit
 		 [Test]
 		 public void Should_be_able_to_create_document_when_createdocument_is_passed_an_object()
 		 {
-			 ICouchDatabase couchDatabase = new CouchDatabase("test", 0, 0, 0, 0, false, 79, "1250175373642458", 4);
+			 IDatabase couchDatabase = new Database("test", 0, 0, 0, 0, false, 79, "1250175373642458", 4);
 		 }
 	}
 }
