@@ -29,6 +29,15 @@ namespace SineSignal.Ottoman
 	public static class ServerFactory
 	{
 		/// <summary>
+		/// Creates a server instance with the default URL of http://127.0.0.1:5984/.
+		/// </summary>
+		/// <returns>A instantiated server.</returns>
+		public static IServer Create()
+		{
+			return Create("http://127.0.0.1:5984/");
+		}
+
+		/// <summary>
 		/// Creates a Server instance.
 		/// </summary>
 		/// <param name="couchUrl">The url to your CouchDB server.</param>
