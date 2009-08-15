@@ -423,6 +423,33 @@ namespace SineSignal.Ottoman.Tests.Unit
 			Assert.IsNotNull(databases);
 			Assert.AreEqual(2, databases.Length);
 		}
+		
+		[Test]
+		public void Should_be_able_to_retrieve_info_about_the_server()
+		{
+			string url = GetValidUrl();
+			Uri requestUrl = new Uri(url);
+			string body = "{\"couchdb\":\"Welcome\",\"version\":\"0.10.0a800465\"}";
+
+			var mockHttpResponse = new Mock<IHttpResponse>();
+			mockHttpResponse.Setup(x => x.StatusCode).Returns(HttpStatusCode.OK);
+			mockHttpResponse.Setup(x => x.Body).Returns(body);
+			
+			var mockRestProxy = new Mock<IRestProxy>();
+			mockRestProxy.Setup(x => x.Get(requestUrl)).Returns(mockHttpResponse.Object);
+			
+			var mockSerializer = new Mock<ISerializer>();
+			mockSerializer.Setup(x => x.Deserialize<ServerInfo>(body)).Returns(new ServerInfo("Welcome", "0.10.0a800465"));
+			
+			IServer couchServer = new Server(url, mockRestProxy.Object, mockSerializer.Object);
+			IServerInfo serverInfo = couchServer.Info();
+
+			mockRestProxy.Verify(x => x.Get(requestUrl));
+			mockSerializer.Verify(x => x.Deserialize<ServerInfo>(body));
+			
+			Assert.AreEqual("Welcome", serverInfo.Message);
+			Assert.AreEqual("0.10.0a800465", serverInfo.Version);
+		}
 
 		private string GetValidUrl()
 		{

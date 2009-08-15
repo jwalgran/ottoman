@@ -179,5 +179,16 @@ namespace SineSignal.Ottoman
 
 			return Serializer.Deserialize<string[]>(response.Body);
 		}
+
+		/// <summary>
+		/// Gets info about the CouchDB server.
+		/// </summary>
+		/// <returns><see cref="ServerInfo" /></returns>
+		public IServerInfo Info()
+		{
+			IHttpResponse response = RestProxy.Get(Url);
+
+			return Serializer.Deserialize<ServerInfo>(response.Body);
+		}
 	}
 }

@@ -43,6 +43,18 @@ namespace SineSignal.Ottoman.Tests.Unit.Serializers
 		}
 		
 		[Test]
+		public void Should_be_able_to_deserialize_a_new_ServerInfo_instance_from_json()
+		{
+			string json = "{\"couchdb\":\"Welcome\",\"version\":\"0.10.0a800465\"}";
+
+			ISerializer jsonSerializer = new JsonSerializer();
+			IServerInfo serverInfo = jsonSerializer.Deserialize<ServerInfo>(json);
+
+			Assert.AreEqual("Welcome", serverInfo.Message);
+			Assert.AreEqual("0.10.0a800465", serverInfo.Version);
+		}
+
+		[Test]
 		public void Should_be_able_to_deserialize_a_new_CouchDatabase_instance_from_json()
 		{
 			string json = "{\"db_name\":\"test\",\"doc_count\":0,\"doc_del_count\":0,\"update_seq\":0,\"purge_seq\":0,\"compact_running\":false,\"disk_size\":79,\"instance_start_time\":\"1250175373642458\",\"disk_format_version\":4}";
