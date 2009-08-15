@@ -6,6 +6,12 @@ we are trying to get everything in order.  We will be setting up a project site,
 mailing list, and issue tracker.  This will be an active open source project and 
 backed by a company.  We have big plans for this library.
 
+A little disclaimer:
+
+Ottoman at it's current state is pre-alpha software and still under heavy development. 
+Please be aware that important areas such as the public API may see backwards 
+incompatible changes between versions.
+
 == Building
 
 To run the automated build tasks, you will need to have ruby installed on your local 
@@ -25,12 +31,16 @@ by typing without the quotes:
 	To compile:  Type "build compile" or just "build" and hit enter.
 	To test:  Type "build test" and hit enter
 	
-== Using
+== Using/Examples
 
 The current state of Ottoman allows you to manage databases on your CouchDB server.  All you 
 need to get started, is the URL to the CouchDB server you want to connect to:
 
-	IServer couchServer = ServerFactory.Create("http://127.0.0.1:5984/");
+	IServer couchServer = ServerFactory.Create("http://couchdb.domain.com:5984/");
+	
+	or
+	
+	IServer couchServer = ServerFactory.Create();  // Uses the default URL of http://127.0.0.1:5984/
 
 Once you have an instance of Server, you can start manipulating the databases on your 
 CouchDB server.
