@@ -337,24 +337,25 @@ namespace SineSignal.Ottoman.Tests.Unit
 			mockRestProxy.Setup(x => x.Get(requestUrl.Uri)).Returns(mockHttpResponse.Object);
 			
 			var mockSerializer = new Mock<ISerializer>();
-			mockSerializer.Setup(x => x.Deserialize<Database>(body)).Returns(new Database(name, 0, 0, 0, 0, false, 79, "1250175373642458", 4));
+			mockSerializer.Setup(x => x.Deserialize<DatabaseInfo>(body)).Returns(new DatabaseInfo(name, 0, 0, 0, 0, false, 79, "1250175373642458", 4));
 
 			IServer couchServer = new Server(url, mockRestProxy.Object, mockSerializer.Object);
 			IDatabase database = couchServer.GetDatabase(name);
 
 			mockRestProxy.Verify(x => x.Get(requestUrl.Uri), Times.AtLeastOnce());
-			mockSerializer.Verify(x => x.Deserialize<Database>(body));
+			mockSerializer.Verify(x => x.Deserialize<DatabaseInfo>(body), Times.AtLeastOnce());
 
 			Assert.IsNotNull(database);
-			Assert.AreEqual(name, database.Name);
-			Assert.AreEqual(0, database.DocCount);
-			Assert.AreEqual(0, database.DocDelCount);
-			Assert.AreEqual(0, database.UpdateSequence);
-			Assert.AreEqual(0, database.PurgeSequence);
-			Assert.AreEqual(false, database.CompactRunning);
-			Assert.AreEqual(79, database.DiskSize);
-			Assert.AreEqual("1250175373642458", database.InstanceStartTime);
-			Assert.AreEqual(4, database.DiskFormatVersion);
+			Assert.AreEqual(couchServer, database.Server);
+			Assert.AreEqual(name, database.Info.Name);
+			Assert.AreEqual(0, database.Info.DocCount);
+			Assert.AreEqual(0, database.Info.DocDelCount);
+			Assert.AreEqual(0, database.Info.UpdateSequence);
+			Assert.AreEqual(0, database.Info.PurgeSequence);
+			Assert.AreEqual(false, database.Info.CompactRunning);
+			Assert.AreEqual(79, database.Info.DiskSize);
+			Assert.AreEqual("1250175373642458", database.Info.InstanceStartTime);
+			Assert.AreEqual(4, database.Info.DiskFormatVersion);
 		}
 		
 		[Test]
@@ -442,7 +443,7 @@ namespace SineSignal.Ottoman.Tests.Unit
 			mockSerializer.Setup(x => x.Deserialize<ServerInfo>(body)).Returns(new ServerInfo("Welcome", "0.10.0a800465"));
 			
 			IServer couchServer = new Server(url, mockRestProxy.Object, mockSerializer.Object);
-			IServerInfo serverInfo = couchServer.Info();
+			IServerInfo serverInfo = couchServer.GetInfo();
 
 			mockRestProxy.Verify(x => x.Get(requestUrl));
 			mockSerializer.Verify(x => x.Deserialize<ServerInfo>(body));

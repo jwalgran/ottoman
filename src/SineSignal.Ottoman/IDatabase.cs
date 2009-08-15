@@ -22,14 +22,8 @@ namespace SineSignal.Ottoman
 {
 	public interface IDatabase
 	{
-		string Name { get; set; }
-		int DocCount { get; set; }
-		int DocDelCount { get; set; }
-		int UpdateSequence { get; set; }
-		int PurgeSequence { get; set; }
-		bool CompactRunning { get; set; }
-		double DiskSize { get; set; }
-		string InstanceStartTime { get; set; }
-		int DiskFormatVersion { get; set; }
+		IServer Server { get; }
+		IDatabaseInfo Info { get; }
+		void UpdateInfo();
 	}
 }

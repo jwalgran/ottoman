@@ -1,6 +1,6 @@
 #region License
 
-// <copyright file="IServer.cs" company="SineSignal, LLC.">
+// <copyright file="IDatabaseInfo.cs" company="SineSignal, LLC.">
 //   Copyright 2007-2009 SineSignal, LLC.
 //       Licensed under the Apache License, Version 2.0 (the "License");
 //       you may not use this file except in compliance with the License.
@@ -18,22 +18,18 @@
 
 #endregion
 
-using System;
-
-using SineSignal.Ottoman.Proxy;
-using SineSignal.Ottoman.Serializers;
-
 namespace SineSignal.Ottoman
 {
-	public interface IServer
+	public interface IDatabaseInfo
 	{
-		Uri Url { get; }
-		IRestProxy RestProxy { get; }
-		ISerializer Serializer { get; }
-		void CreateDatabase(string name);
-		void DeleteDatabase(string name);
-		IDatabase GetDatabase(string name);
-		string[] GetDatabases();
-		IServerInfo GetInfo();
+		string Name { get; }
+		int DocCount { get; }
+		int DocDelCount { get; }
+		int UpdateSequence { get; }
+		int PurgeSequence { get; }
+		bool CompactRunning { get; }
+		double DiskSize { get; }
+		string InstanceStartTime { get; }
+		int DiskFormatVersion { get; }
 	}
 }

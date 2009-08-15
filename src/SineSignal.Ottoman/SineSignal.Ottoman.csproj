@@ -47,6 +47,8 @@
     <Compile Include="Database.cs" />
     <Compile Include="CouchError.cs" />
     <Compile Include="CouchException.cs" />
+    <Compile Include="DatabaseInfo.cs" />
+    <Compile Include="IDatabaseInfo.cs" />
     <Compile Include="IServerInfo.cs" />
     <Compile Include="Server.cs" />
     <Compile Include="ServerFactory.cs" />

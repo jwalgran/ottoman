@@ -27,7 +27,7 @@ using SineSignal.Ottoman.Serializers;
 namespace SineSignal.Ottoman
 {
 	/// <summary>
-	/// A class for managing CouchDB instances.  Use this class for creating, deleting, retrieving, and for listing databases on your CouchDB server.
+	/// A class for managing databases on a CouchDB server.  Use this class for creating, deleting, retrieving, and for listing databases on your CouchDB server.
 	/// </summary>
 	/// <remarks>Please use the ServerFactory.Create factory method for creating instances of this class.</remarks>
 	public class Server : IServer
@@ -98,7 +98,7 @@ namespace SineSignal.Ottoman
 				throw new ArgumentNullException("name", "The value cannot be null or an empty string.");
 			
 			// TODO:  We need to UrlEncode the name, to take care of special characters like _, $, (, ), +, -, and /.
-			// We just introduced a limitation with this API.  System.Net.Uri, does not handle the encoding correctly.  Hold off on this for now.
+			// We just introduced a limitation with this API.  System.Uri, does not handle the encoding correctly.  Hold off on this for now.
 			// Until we can figure out a way to do this, we need a regex to check for these characters and throw an ArgumentException
 			UriBuilder requestUrl = new UriBuilder(Url);
 			requestUrl.Path = name;
@@ -124,7 +124,7 @@ namespace SineSignal.Ottoman
 				throw new ArgumentNullException("name");
 
 			// TODO:  We need to UrlEncode the name, to take care of special characters like _, $, (, ), +, -, and /.
-			// We just introduced a limitation with this API.  System.Net.Uri, does not handle the encoding correctly.  Hold off on this for now.
+			// We just introduced a limitation with this API.  System.Uri, does not handle the encoding correctly.  Hold off on this for now.
 			// Until we can figure out a way to do this, we need a regex to check for these characters and throw an ArgumentException
 			UriBuilder requestUrl = new UriBuilder(Url);
 			requestUrl.Path = name;
@@ -150,7 +150,7 @@ namespace SineSignal.Ottoman
 				throw new ArgumentNullException("name");
 
 			// TODO:  We need to UrlEncode the name, to take care of special characters like _, $, (, ), +, -, and /.
-			// We just introduced a limitation with this API.  System.Net.Uri, does not handle the encoding correctly.  Hold off on this for now.
+			// We just introduced a limitation with this API.  System.Uri, does not handle the encoding correctly.  Hold off on this for now.
 			// Until we can figure out a way to do this, we need a regex to check for these characters and throw an ArgumentException
 			UriBuilder requestUrl = new UriBuilder(Url);
 			requestUrl.Path = name;
@@ -163,7 +163,9 @@ namespace SineSignal.Ottoman
 				throw new CannotGetDatabaseException(name, error, response);
 			}
 
-			return Serializer.Deserialize<Database>(response.Body);
+			IDatabaseInfo databaseInfo = Serializer.Deserialize<DatabaseInfo>(response.Body);
+			
+			return new Database(this, databaseInfo);
 		}
 
 		/// <summary>
@@ -184,7 +186,7 @@ namespace SineSignal.Ottoman
 		/// Gets info about the CouchDB server.
 		/// </summary>
 		/// <returns><see cref="ServerInfo" /></returns>
-		public IServerInfo Info()
+		public IServerInfo GetInfo()
 		{
 			IHttpResponse response = RestProxy.Get(Url);
 

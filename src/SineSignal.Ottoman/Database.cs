@@ -18,93 +18,56 @@
 
 #endregion
 
-using Newtonsoft.Json;
+using System;
+using SineSignal.Ottoman.Proxy;
 
 namespace SineSignal.Ottoman
 {
 	/// <summary>
-	/// Models the response from CouchDB when retrieving a database.
+	/// 
 	/// </summary>
-	/// <remarks>
-	///	An example response from CouchDB:
-	/// "{\"db_name\":\"test\",\"doc_count\":0,\"doc_del_count\":0,\"update_seq\":0,\"purge_seq\":0,\"compact_running\":false,\"disk_size\":79,\"instance_start_time\":\"1250175373642458\",\"disk_format_version\":4}";
-	/// </remarks>
 	public class Database : IDatabase
 	{
 		/// <summary>
-		/// Gets or sets the name of the database.
+		/// Gets or sets the server the database resides on.
 		/// </summary>
-		/// <value>The database name.</value>
-		[JsonProperty("db_name")]
-		public string Name { get; set; }
+		/// <value>The server.</value>
+		public IServer Server { get; private set; }
 
 		/// <summary>
-		/// Gets or sets the number of documents in the database.
+		/// Gets or sets the info for the database.
 		/// </summary>
-		/// <value>The doc count.</value>
-		[JsonProperty("doc_count")]
-		public int DocCount { get; set; }
-
-		/// <summary>
-		/// Gets or sets the number of documents that have been deleted in the database.
-		/// </summary>
-		/// <value>The doc delete count.</value>
-		[JsonProperty("doc_del_count")]
-		public int DocDelCount { get; set; }
-
-		/// <summary>
-		/// Gets or sets the update sequence.
-		/// </summary>
-		/// <value>The update sequence.</value>
-		[JsonProperty("update_seq")]
-		public int UpdateSequence { get; set; }
-
-		/// <summary>
-		/// Gets or sets the purge sequence.
-		/// </summary>
-		/// <value>The purge sequence.</value>
-		[JsonProperty("purge_seq")]
-		public int PurgeSequence { get; set; }
-
-		/// <summary>
-		/// Gets or sets a value indicating whether database compact is running.
-		/// </summary>
-		/// <value><c>true</c> if [compact running]; otherwise, <c>false</c>.</value>
-		[JsonProperty("compact_running")]
-		public bool CompactRunning { get; set; }
-
-		/// <summary>
-		/// Gets or sets the size of the disk space being used by the database.
-		/// </summary>
-		/// <value>The size being used on the disk.</value>
-		[JsonProperty("disk_size")]
-		public double DiskSize { get; set; }
-
-		/// <summary>
-		/// Gets or sets the instance start time.
-		/// </summary>
-		/// <value>The instance start time.</value>
-		[JsonProperty("instance_start_time")]
-		public string InstanceStartTime { get; set; }
-
-		/// <summary>
-		/// Gets or sets the disk format version.
-		/// </summary>
-		/// <value>The disk format version.</value>
-		[JsonProperty("disk_format_version")]
-		public int DiskFormatVersion { get; set; }
-
-		public Database(string name, int docCount, int docDelCount, int updateSequence, int purgeSequence, bool compactRunning, double diskSize, string instanceStartTime, int diskFormatVersion)
+		/// <value>The info.</value>
+		public IDatabaseInfo Info { get; private set; }
+		
+		private Uri Root
 		{
-			Name = name;
-			DocCount = docCount;
-			DocDelCount = docDelCount;
-			UpdateSequence = updateSequence;
-			PurgeSequence = purgeSequence;
-			CompactRunning = compactRunning;
-			DiskSize = diskSize;
-			InstanceStartTime = instanceStartTime;
-			DiskFormatVersion = diskFormatVersion;
+			get
+			{
+				UriBuilder uriBuilder = new UriBuilder(Server.Url);
+				uriBuilder.Path = Info.Name;
+				return uriBuilder.Uri;
+			}
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Database"/> class.
+		/// </summary>
+		/// <param name="server">The server the database resides on.</param>
+		/// <param name="info">The info about the database.</param>
+		public Database(IServer server, IDatabaseInfo info)
+		{
+			Server = server;
+			Info = info;
+		}
+
+		/// <summary>
+		/// Updates the info about the database from the server.
+		/// </summary>
+		public void UpdateInfo()
+		{
+			IHttpResponse response = Server.RestProxy.Get(Root);
+			Info = Server.Serializer.Deserialize<DatabaseInfo>(response.Body);
 		}
 	}
 }

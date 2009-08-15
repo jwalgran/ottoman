@@ -55,23 +55,23 @@ namespace SineSignal.Ottoman.Tests.Unit.Serializers
 		}
 
 		[Test]
-		public void Should_be_able_to_deserialize_a_new_CouchDatabase_instance_from_json()
+		public void Should_be_able_to_deserialize_a_new_DatabaseInfo_instance_from_json()
 		{
 			string json = "{\"db_name\":\"test\",\"doc_count\":0,\"doc_del_count\":0,\"update_seq\":0,\"purge_seq\":0,\"compact_running\":false,\"disk_size\":79,\"instance_start_time\":\"1250175373642458\",\"disk_format_version\":4}";
 
 			ISerializer jsonSerializer = new JsonSerializer();
-			IDatabase database = jsonSerializer.Deserialize<Database>(json);
+			IDatabaseInfo databaseInfo = jsonSerializer.Deserialize<DatabaseInfo>(json);
 
-			Assert.IsNotNull(database);
-			Assert.AreEqual("test", database.Name);
-			Assert.AreEqual(0, database.DocCount);
-			Assert.AreEqual(0, database.DocDelCount);
-			Assert.AreEqual(0, database.UpdateSequence);
-			Assert.AreEqual(0, database.PurgeSequence);
-			Assert.AreEqual(false, database.CompactRunning);
-			Assert.AreEqual(79, database.DiskSize);
-			Assert.AreEqual("1250175373642458", database.InstanceStartTime);
-			Assert.AreEqual(4, database.DiskFormatVersion);
+			Assert.IsNotNull(databaseInfo);
+			Assert.AreEqual("test", databaseInfo.Name);
+			Assert.AreEqual(0, databaseInfo.DocCount);
+			Assert.AreEqual(0, databaseInfo.DocDelCount);
+			Assert.AreEqual(0, databaseInfo.UpdateSequence);
+			Assert.AreEqual(0, databaseInfo.PurgeSequence);
+			Assert.AreEqual(false, databaseInfo.CompactRunning);
+			Assert.AreEqual(79, databaseInfo.DiskSize);
+			Assert.AreEqual("1250175373642458", databaseInfo.InstanceStartTime);
+			Assert.AreEqual(4, databaseInfo.DiskFormatVersion);
 		}
 		
 		[Test]
