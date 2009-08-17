@@ -46,6 +46,18 @@ namespace SineSignal.Ottoman.Proxy
 		}
 
 		/// <summary>
+		/// Creates a PUT request for the specified URL.
+		/// </summary>
+		/// <param name="url">The URL to make the request to.</param>
+		/// <param name="contentType">The content type of the body.</param>
+		/// <param name="body">The body of the request.</param>
+		/// <returns>The response from the URL the request was made.</returns>
+		public IHttpResponse Put(Uri url, string contentType, string body)
+		{
+			return _httpClient.Request(new HttpRequest(url, HttpMethod.Put, contentType, body));
+		}
+
+		/// <summary>
 		/// Creates a DELETE request for the specified URL.
 		/// </summary>
 		/// <param name="url">The URL to make the request to.</param>
