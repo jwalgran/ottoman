@@ -27,5 +27,6 @@ namespace SineSignal.Ottoman.Proxy
 		IHttpResponse Put(Uri url);
 		IHttpResponse Delete(Uri url);
 		IHttpResponse Get(Uri url);
+		IHttpResponse Post(Uri url, string contentType, string body);
 	}
 }

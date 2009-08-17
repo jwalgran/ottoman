@@ -64,5 +64,17 @@ namespace SineSignal.Ottoman.Proxy
 		{
 			return _httpClient.Request(new HttpRequest(url, HttpMethod.Get));
 		}
+
+		/// <summary>
+		/// Creates a POST request for the specified URL.
+		/// </summary>
+		/// <param name="url">The URL to make the request to.</param>
+		/// <param name="contentType">The content type in the body.</param>
+		/// <param name="body">The body of the request.</param>
+		/// <returns></returns>
+		public IHttpResponse Post(Uri url, string contentType, string body)
+		{
+			return _httpClient.Request(new HttpRequest(url, HttpMethod.Post, contentType, body));
+		}
 	}
 }
