@@ -50,6 +50,7 @@
     <Compile Include="DatabaseInfo.cs" />
     <Compile Include="IDatabaseInfo.cs" />
     <Compile Include="IServerInfo.cs" />
+    <Compile Include="Proxy\HttpMethod.cs" />
     <Compile Include="Server.cs" />
     <Compile Include="ServerFactory.cs" />
     <Compile Include="IDatabase.cs" />

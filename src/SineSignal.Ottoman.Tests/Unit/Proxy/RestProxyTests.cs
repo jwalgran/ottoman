@@ -42,12 +42,12 @@ namespace SineSignal.Ottoman.Tests.Unit.Proxy
 			mockHttpResponse.Setup(x => x.Body).Returns(body);
 
 			var mockHttpClient = new Mock<IHttpClient>();
-			mockHttpClient.Setup(x => x.Request(It.Is<IHttpRequest>(h => h.Url == url && h.Method == WebRequestMethods.Http.Put))).Returns(mockHttpResponse.Object);
+			mockHttpClient.Setup(x => x.Request(It.Is<IHttpRequest>(h => h.Url == url && h.Method == HttpMethod.Put))).Returns(mockHttpResponse.Object);
 
 			IRestProxy restProxy = new RestProxy(mockHttpClient.Object);
 			IHttpResponse response = restProxy.Put(url);
 
-			mockHttpClient.Verify(x => x.Request(It.Is<IHttpRequest>(h => h.Url == url && h.Method == WebRequestMethods.Http.Put)));
+			mockHttpClient.Verify(x => x.Request(It.Is<IHttpRequest>(h => h.Url == url && h.Method == HttpMethod.Put)));
 
 			Assert.IsNotNull(response);
 			Assert.AreEqual(mockHttpResponse.Object, response);
@@ -64,12 +64,12 @@ namespace SineSignal.Ottoman.Tests.Unit.Proxy
 			mockHttpResponse.Setup(x => x.Body).Returns(body);
 
 			var mockHttpClient = new Mock<IHttpClient>();
-			mockHttpClient.Setup(x => x.Request(It.Is<IHttpRequest>(h => h.Url == url && h.Method == "DELETE"))).Returns(mockHttpResponse.Object);
+			mockHttpClient.Setup(x => x.Request(It.Is<IHttpRequest>(h => h.Url == url && h.Method == HttpMethod.Delete))).Returns(mockHttpResponse.Object);
 
 			IRestProxy restProxy = new RestProxy(mockHttpClient.Object);
 			IHttpResponse response = restProxy.Delete(url);
 
-			mockHttpClient.Verify(x => x.Request(It.Is<IHttpRequest>(h => h.Url == url && h.Method == "DELETE")));
+			mockHttpClient.Verify(x => x.Request(It.Is<IHttpRequest>(h => h.Url == url && h.Method == HttpMethod.Delete)));
 
 			Assert.IsNotNull(response);
 			Assert.AreEqual(mockHttpResponse.Object, response);
@@ -86,12 +86,12 @@ namespace SineSignal.Ottoman.Tests.Unit.Proxy
 			mockHttpResponse.Setup(x => x.Body).Returns(body);
 
 			var mockHttpClient = new Mock<IHttpClient>();
-			mockHttpClient.Setup(x => x.Request(It.Is<IHttpRequest>(h => h.Url == url && h.Method == WebRequestMethods.Http.Get))).Returns(mockHttpResponse.Object);
+			mockHttpClient.Setup(x => x.Request(It.Is<IHttpRequest>(h => h.Url == url && h.Method == HttpMethod.Get))).Returns(mockHttpResponse.Object);
 
 			IRestProxy restProxy = new RestProxy(mockHttpClient.Object);
 			IHttpResponse response = restProxy.Get(url);
 
-			mockHttpClient.Verify(x => x.Request(It.Is<IHttpRequest>(h => h.Url == url && h.Method == WebRequestMethods.Http.Get)));
+			mockHttpClient.Verify(x => x.Request(It.Is<IHttpRequest>(h => h.Url == url && h.Method == HttpMethod.Get)));
 
 			Assert.IsNotNull(response);
 			Assert.AreEqual(mockHttpResponse.Object, response);

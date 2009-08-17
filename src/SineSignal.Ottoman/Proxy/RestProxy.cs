@@ -42,7 +42,7 @@ namespace SineSignal.Ottoman.Proxy
 		/// <returns>The response from the URL the request was made.</returns>
 		public IHttpResponse Put(Uri url)
 		{
-			return _httpClient.Request(new HttpRequest(url, WebRequestMethods.Http.Put));
+			return _httpClient.Request(new HttpRequest(url, HttpMethod.Put));
 		}
 
 		/// <summary>
@@ -52,7 +52,7 @@ namespace SineSignal.Ottoman.Proxy
 		/// <returns>The response from the URL the request was made.</returns>
 		public IHttpResponse Delete(Uri url)
 		{
-			return _httpClient.Request(new HttpRequest(url, "DELETE"));
+			return _httpClient.Request(new HttpRequest(url, HttpMethod.Delete));
 		}
 
 		/// <summary>
@@ -62,7 +62,7 @@ namespace SineSignal.Ottoman.Proxy
 		/// <returns>The response from the URL the request was made.</returns>
 		public IHttpResponse Get(Uri url)
 		{
-			return _httpClient.Request(new HttpRequest(url, WebRequestMethods.Http.Get));
+			return _httpClient.Request(new HttpRequest(url, HttpMethod.Get));
 		}
 	}
 }
