@@ -33,8 +33,10 @@ by typing without the quotes:
 	
 == Using/Examples
 
-The current state of Ottoman allows you to manage databases on your CouchDB server.  All you 
-need to get started, is the URL to the CouchDB server you want to connect to:
+I promise I will add integration tests soon.  The project is far enough along now, that they are 
+needed to make sure everything is working together.  The current state of Ottoman allows you to 
+manage databases on your CouchDB server and create documents.  All you need to get started, is 
+the URL to the CouchDB server you want to connect to:
 
 	IServer couchServer = ServerFactory.Create("http://couchdb.domain.com:5984/");
 	
@@ -75,6 +77,34 @@ To delete a database:
 To retrieve a list of databases:
 	
 	string[] databases = couchServer.GetDatabases();
+	
+To save a document:
+
+	This method will be used for creating and updating.  Right now we only have the creation 
+	step in place.  There is one convention used that you need to be aware of.  The method 
+	is expecting the ID of your object to have a protected or public property named Id.  
+	It also needs to be of type System.Guid.  The method will generate the Id and assign 
+	it for you.  We will add a feature later to generate Id's based on a generator, like 
+	NHibernate.  Also, if something goes wrong, we are not throwing an exception.  That 
+	is still on the TODO.  Otherwise, once you call save and all is well, you should see 
+	your object in the database using Futon.  See the Unit test for on how it works.
+	Once you have a database instance, like in the example above.  You can save an 
+	object to the server under that database:
+	
+	public class Foo
+	{
+		public Guid Id { get; protected set; }
+		
+		public Foo()
+		{
+			Id = Guid.Empty;
+		}
+	}
+	
+	Foo foo = new Foo();
+	couchDatabase.SaveDocument<Foo>(foo);
+	
+	That is it!
 
 == License
 

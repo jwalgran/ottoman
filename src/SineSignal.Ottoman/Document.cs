@@ -1,6 +1,6 @@
 #region License
 
-// <copyright file="IDatabase.cs" company="SineSignal, LLC.">
+// <copyright file="Document.cs" company="SineSignal, LLC.">
 //   Copyright 2007-2009 SineSignal, LLC.
 //       Licensed under the Apache License, Version 2.0 (the "License");
 //       you may not use this file except in compliance with the License.
@@ -18,13 +18,35 @@
 
 #endregion
 
+using System;
+using Newtonsoft.Json;
+
 namespace SineSignal.Ottoman
 {
-	public interface IDatabase
+	public class Document : IDocument
 	{
-		IServer Server { get; }
-		IDatabaseInfo Info { get; }
-		void UpdateInfo();
-		void SaveDocument<T>(T objectToPersist);
+		/// <summary>
+		/// Gets or sets the id.
+		/// </summary>
+		/// <value>The id.</value>
+		public Guid Id { get; private set; }
+
+		/// <summary>
+		/// Gets or sets the revision.
+		/// </summary>
+		/// <value>The revision.</value>
+		[JsonProperty("rev")]
+		public string Revision { get; private set; }
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Document"/> class.
+		/// </summary>
+		/// <param name="id">The id.</param>
+		/// <param name="revision">The revision.</param>
+		public Document(Guid id, string revision)
+		{
+			Id = id;
+			Revision = revision;
+		}
 	}
 }

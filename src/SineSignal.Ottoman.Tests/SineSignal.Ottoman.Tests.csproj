@@ -58,6 +58,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SampleDomain\Address.cs" />
+    <Compile Include="SampleDomain\Employee.cs" />
+    <Compile Include="SampleDomain\Manager.cs" />
+    <Compile Include="SampleDomain\Worker.cs" />
     <Compile Include="Unit\DatabaseTests.cs" />
     <Compile Include="Unit\ServerTests.cs" />
     <Compile Include="Unit\Proxy\RestProxyTests.cs" />

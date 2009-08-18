@@ -48,7 +48,9 @@
     <Compile Include="CouchError.cs" />
     <Compile Include="CouchException.cs" />
     <Compile Include="DatabaseInfo.cs" />
+    <Compile Include="Document.cs" />
     <Compile Include="IDatabaseInfo.cs" />
+    <Compile Include="IDocument.cs" />
     <Compile Include="IServerInfo.cs" />
     <Compile Include="Proxy\HttpMethod.cs" />
     <Compile Include="Server.cs" />

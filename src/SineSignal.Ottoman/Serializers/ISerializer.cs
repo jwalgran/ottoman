@@ -28,5 +28,7 @@ namespace SineSignal.Ottoman.Serializers
 		string ContentType { get; }
 		string Serialize<T>(T objectToSerialize);
 		T Deserialize<T>(string content);
+		string Remove(string json, string key);
+		string Add(string json, string key, string value);
 	}
 }

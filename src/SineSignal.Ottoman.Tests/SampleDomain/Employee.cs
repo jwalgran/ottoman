@@ -1,6 +1,6 @@
 #region License
 
-// <copyright file="IDatabase.cs" company="SineSignal, LLC.">
+// <copyright file="Employee.cs" company="SineSignal, LLC.">
 //   Copyright 2007-2009 SineSignal, LLC.
 //       Licensed under the Apache License, Version 2.0 (the "License");
 //       you may not use this file except in compliance with the License.
@@ -18,13 +18,41 @@
 
 #endregion
 
-namespace SineSignal.Ottoman
+using System;
+
+namespace SineSignal.Ottoman.Tests.SampleDomain
 {
-	public interface IDatabase
+	public class Employee
 	{
-		IServer Server { get; }
-		IDatabaseInfo Info { get; }
-		void UpdateInfo();
-		void SaveDocument<T>(T objectToPersist);
+		public Guid Id { get; protected set; }
+		public string Name { get; set; }
+		public string Login { get; set; }
+
+		public Employee(Guid id, string name, string login)
+		{
+			Id = id;
+			Name = name;
+			Login = login;
+		}
+
+		public override bool Equals(object obj)
+		{
+			Employee compareTo = obj as Employee;
+
+			if (compareTo != null)
+			{
+				if (Id == compareTo.Id && Name == compareTo.Name && Login == compareTo.Login)
+				{
+					return true;
+				}
+			}
+
+			return base.Equals(obj);
+		}
+
+		public override int GetHashCode()
+		{
+			return Id.GetHashCode();
+		}
 	}
 }

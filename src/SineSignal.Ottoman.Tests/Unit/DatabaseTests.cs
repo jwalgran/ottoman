@@ -19,6 +19,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Net;
 
 using MbUnit.Framework;
@@ -26,6 +27,7 @@ using Moq;
 
 using SineSignal.Ottoman.Proxy;
 using SineSignal.Ottoman.Serializers;
+using SineSignal.Ottoman.Tests.SampleDomain;
 
 namespace SineSignal.Ottoman.Tests.Unit
 {
@@ -84,8 +86,58 @@ namespace SineSignal.Ottoman.Tests.Unit
 		 *				Automatically generate ID and assign it to the object.
 		 *				Assigns a doc_type to the document, based on the type of the object passed in.
 		 *				Serializes the object to JSON.
-		 *				POSTS the JSON to the CouchDB server.
+		 *				PUTS the JSON to the CouchDB server.
 		 *				Verifies the POST and returns the object, otherwise throw exception.
 		 */
+		 [Test]
+		 [Row("test")]
+		 public void Should_be_able_to_create_document_when_given_an_object(string databaseName)
+		 {
+			string url = "http://127.0.0.1:5984/";
+			UriBuilder requestUrl = new UriBuilder(url);
+			requestUrl.Path = databaseName + "/" + "fe875b98-0ef2-42c2-9c7f-94ab94432250";
+		 	var manager = Manager.CreateManager();
+		 	Type type = typeof (Manager);
+		 	string docType = type.Name;
+		 	string json = "{\"Id\":\"fe875b98-0ef2-42c2-9c7f-94ab94432250\",\"Subordinates\":[{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":40.0,\"Id\":\"4c5b075c-b87e-46b9-9108-6dd3a647953b\",\"Name\":\"Bob\",\"Login\":\"bbob\"},{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":40.0,\"Id\":\"b14818db-c975-4109-a94a-452632ee161b\",\"Name\":\"Alice\",\"Login\":\"aalice\"},{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":20.0,\"Id\":\"8f0a0036-319f-49e6-83e7-f84971f9aa5c\",\"Name\":\"Eve\",\"Login\":\"eeve\"}],\"Name\":\"Chris\",\"Login\":\"cchandler\"}";
+		 	string jsonMinusId = "{\"Subordinates\":[{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":40.0,\"Id\":\"4c5b075c-b87e-46b9-9108-6dd3a647953b\",\"Name\":\"Bob\",\"Login\":\"bbob\"},{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":40.0,\"Id\":\"b14818db-c975-4109-a94a-452632ee161b\",\"Name\":\"Alice\",\"Login\":\"aalice\"},{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":20.0,\"Id\":\"8f0a0036-319f-49e6-83e7-f84971f9aa5c\",\"Name\":\"Eve\",\"Login\":\"eeve\"}],\"Name\":\"Chris\",\"Login\":\"cchandler\"}";
+		 	string jsonDocTypeAdded = "{\"Subordinates\":[{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":40.0,\"Id\":\"4c5b075c-b87e-46b9-9108-6dd3a647953b\",\"Name\":\"Bob\",\"Login\":\"bbob\"},{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":40.0,\"Id\":\"b14818db-c975-4109-a94a-452632ee161b\",\"Name\":\"Alice\",\"Login\":\"aalice\"},{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":20.0,\"Id\":\"8f0a0036-319f-49e6-83e7-f84971f9aa5c\",\"Name\":\"Eve\",\"Login\":\"eeve\"}],\"Name\":\"Chris\",\"Login\":\"cchandler\",\"doc_type\":\"" + docType + "\"}";
+		 	
+		 	var mockServer = new Mock<IServer>();
+		 	var mockDatabaseInfo = new Mock<IDatabaseInfo>();
+		 	var mockSerializer = new Mock<ISerializer>();
+		 	var mockRestProxy = new Mock<IRestProxy>();
+		 	var mockHttpResponse = new Mock<IHttpResponse>();
+		 	var mockDocument = new Mock<IDocument>();
+
+		 	mockServer.Setup(x => x.Serializer).Returns(mockSerializer.Object);
+		 	mockSerializer.Setup(x => x.Serialize(manager)).Returns(json);
+		 	mockSerializer.Setup(x => x.Remove(json, "Id")).Returns(jsonMinusId);
+		 	mockSerializer.Setup(x => x.Add(jsonMinusId, "doc_type", docType)).Returns(jsonDocTypeAdded);
+		 	mockServer.Setup(x => x.RestProxy).Returns(mockRestProxy.Object);
+		 	mockSerializer.Setup(x => x.ContentType).Returns("application/json");
+			mockRestProxy.Setup(x => x.Put(It.IsAny<Uri>(), "application/json", jsonDocTypeAdded)).Returns(mockHttpResponse.Object);
+		 	mockServer.Setup(x => x.Url).Returns(new Uri(url));
+		 	mockDatabaseInfo.Setup(x => x.Name).Returns(databaseName);
+		 	mockHttpResponse.Setup(x => x.StatusCode).Returns(HttpStatusCode.Created);
+			mockHttpResponse.Setup(x => x.Body).Returns("{\"ok\":true,\"id\":\"fe875b98-0ef2-42c2-9c7f-94ab94432250\",\"rev\":\"1-0eb046deef235498747e44e63846b739\"}");
+			mockSerializer.Setup(x => x.Deserialize<Document>(mockHttpResponse.Object.Body)).Returns(new Document(new Guid("fe875b98-0ef2-42c2-9c7f-94ab94432250"), "1-0eb046deef235498747e44e63846b739"));
+			
+			IDatabase database = new Database(mockServer.Object, mockDatabaseInfo.Object);
+		 	database.SaveDocument<Manager>(manager);
+		 	
+		 	mockServer.VerifyGet(x => x.Serializer);
+		 	mockSerializer.Verify(x => x.Serialize(manager));
+		 	mockSerializer.Verify(x => x.Remove(json, "Id"));
+		 	mockSerializer.Verify(x => x.Add(jsonMinusId, "doc_type", docType));
+		 	mockServer.VerifyGet(x => x.RestProxy);
+		 	mockSerializer.VerifyGet(x => x.ContentType);
+		 	mockRestProxy.Verify(x => x.Put(It.IsAny<Uri>(), "application/json", jsonDocTypeAdded));
+		 	mockHttpResponse.Verify(x => x.StatusCode);
+		 	mockSerializer.Verify(x => x.Deserialize<Document>(mockHttpResponse.Object.Body));
+		 	
+		 	Assert.AreNotEqual(manager.Id, default(Guid));
+		 	Assert.AreEqual(mockHttpResponse.Object.StatusCode, HttpStatusCode.Created);
+		 }
 	}
 }

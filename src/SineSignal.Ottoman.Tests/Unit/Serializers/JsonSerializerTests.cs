@@ -23,6 +23,7 @@ using System.Collections.Generic;
 using MbUnit.Framework;
 
 using SineSignal.Ottoman.Serializers;
+using SineSignal.Ottoman.Tests.SampleDomain;
 
 namespace SineSignal.Ottoman.Tests.Unit.Serializers
 {
@@ -77,10 +78,10 @@ namespace SineSignal.Ottoman.Tests.Unit.Serializers
 		[Test]
 		public void Should_be_able_to_serialize_and_deserialize_objects()
 		{
-			var bobOriginal = new Worker {Id = 1, Name = "Bob", Login = "bbob", Hours = 40};
-			var aliceOriginal = new Worker { Id = 3, Name = "Alice", Login = "aalice", Hours = 40 };
-			var eveOriginal = new Worker { Id = 4, Name = "Eve", Login = "eeve", Hours = 20 };
-			var chrisOriginal = new Manager { Id = 2, Name = "Chris", Login = "cchandler", Subordinates = new List<Worker> { bobOriginal, aliceOriginal, eveOriginal } };
+			var bobOriginal = new Worker(Guid.NewGuid(), "Bob", "bbob", new Address { Street = "123 Somewhere St.", City = "Kalamazoo", State = "MI", Zip = "12345" }, 40);
+			var aliceOriginal = new Worker(Guid.NewGuid(), "Alice", "aalice", new Address { Street = "123 Somewhere St.", City = "Kalamazoo", State = "MI", Zip = "12345" }, 40);
+			var eveOriginal = new Worker(Guid.NewGuid(), "Eve", "eeve", new Address { Street = "123 Somewhere St.", City = "Kalamazoo", State = "MI", Zip = "12345" }, 20);
+			var chrisOriginal = new Manager(default(Guid), "Chris", "cchandler", new List<Worker> { bobOriginal, aliceOriginal, eveOriginal });
 
 			ISerializer serializer = new JsonSerializer();
 			string bobJson = serializer.Serialize<Worker>(bobOriginal);
@@ -98,42 +99,18 @@ namespace SineSignal.Ottoman.Tests.Unit.Serializers
 			Assert.AreEqual(eveOriginal, eveDeserialized);
 			Assert.AreEqual(chrisOriginal, chrisDeserialized);
 		}
-	}
 
-	public class Employee
-	{
-		public int Id { get; set; }
-		public string Name { get; set; }
-		public string Login { get; set; }
-
-		public override bool Equals(object obj)
+		[Test]
+		public void Should_be_able_to_deserialize_a_new_Document_instance_from_json()
 		{
-			Employee compareTo = obj as Employee;
+			string json = "{\"ok\":true,\"id\":\"fe875b98-0ef2-42c2-9c7f-94ab94432250\",\"rev\":\"1-0eb046deef235498747e44e63846b739\"}";
 
-			if (compareTo != null)
-			{
-				if (Id == compareTo.Id && Name == compareTo.Name && Login == compareTo.Login)
-				{
-					return true;
-				}
-			}
+			ISerializer jsonSerializer = new JsonSerializer();
+			IDocument couchDocument = jsonSerializer.Deserialize<Document>(json);
 
-			return base.Equals(obj);
+			Assert.IsNotNull(couchDocument);
+			Assert.AreEqual(new Guid("fe875b98-0ef2-42c2-9c7f-94ab94432250"), couchDocument.Id);
+			Assert.AreEqual("1-0eb046deef235498747e44e63846b739", couchDocument.Revision);
 		}
-
-		public override int GetHashCode()
-		{
-			return Id.GetHashCode();
-		}
-	}
-
-	public class Worker : Employee
-	{
-		public double Hours { get; set; }
-	}
-
-	public class Manager : Employee
-	{
-		public IList<Worker> Subordinates { get; set; }
 	}
 }

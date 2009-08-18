@@ -19,7 +19,10 @@
 #endregion
 
 using System;
+using System.Net;
+
 using SineSignal.Ottoman.Proxy;
+using SineSignal.Ottoman.Serializers;
 
 namespace SineSignal.Ottoman
 {
@@ -68,6 +71,39 @@ namespace SineSignal.Ottoman
 		{
 			IHttpResponse response = Server.RestProxy.Get(Root);
 			Info = Server.Serializer.Deserialize<DatabaseInfo>(response.Body);
+		}
+
+		/// <summary>
+		/// Saves the document to the server.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="objectToPersist">The object to persist.</param>
+		public void SaveDocument<T>(T objectToPersist)
+		{
+			Type type = typeof(T);
+			
+			// TODO:  Add id generators, to generate the Id
+			Guid id = Guid.NewGuid();
+			type.GetProperty("Id").SetValue(objectToPersist, id, null);
+
+			ISerializer serializer = Server.Serializer;
+			string json = serializer.Serialize(objectToPersist);
+			string docType = type.Name;
+			json = serializer.Remove(json, "Id");
+			json = serializer.Add(json, "doc_type", docType);
+
+			IRestProxy restProxy = Server.RestProxy;
+			string contentType = serializer.ContentType;
+			UriBuilder uriBuilder = new UriBuilder(Root);
+			uriBuilder.Path = uriBuilder.Path + "/" + id;
+			IHttpResponse response = restProxy.Put(uriBuilder.Uri, contentType, json);
+			
+			if (response.StatusCode != HttpStatusCode.Created)
+			{
+				// TODO:  Throw exception based on body of response
+			}
+
+			IDocument document = serializer.Deserialize<Document>(response.Body);
 		}
 	}
 }

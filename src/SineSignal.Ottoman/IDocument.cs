@@ -1,6 +1,6 @@
 #region License
 
-// <copyright file="IDatabase.cs" company="SineSignal, LLC.">
+// <copyright file="IDocument.cs" company="SineSignal, LLC.">
 //   Copyright 2007-2009 SineSignal, LLC.
 //       Licensed under the Apache License, Version 2.0 (the "License");
 //       you may not use this file except in compliance with the License.
@@ -18,13 +18,13 @@
 
 #endregion
 
+using System;
+
 namespace SineSignal.Ottoman
 {
-	public interface IDatabase
+	public interface IDocument
 	{
-		IServer Server { get; }
-		IDatabaseInfo Info { get; }
-		void UpdateInfo();
-		void SaveDocument<T>(T objectToPersist);
+		Guid Id { get; }
+		string Revision { get; }
 	}
 }

@@ -1,6 +1,6 @@
 #region License
 
-// <copyright file="IDatabase.cs" company="SineSignal, LLC.">
+// <copyright file="Worker.cs" company="SineSignal, LLC.">
 //   Copyright 2007-2009 SineSignal, LLC.
 //       Licensed under the Apache License, Version 2.0 (the "License");
 //       you may not use this file except in compliance with the License.
@@ -18,13 +18,20 @@
 
 #endregion
 
-namespace SineSignal.Ottoman
+using System;
+
+namespace SineSignal.Ottoman.Tests.SampleDomain
 {
-	public interface IDatabase
+	public class Worker : Employee
 	{
-		IServer Server { get; }
-		IDatabaseInfo Info { get; }
-		void UpdateInfo();
-		void SaveDocument<T>(T objectToPersist);
+		public Address Address { get; set; }
+		public double Hours { get; set; }
+
+		public Worker(Guid id, string name, string login, Address address, double hours)
+			: base(id, name, login)
+		{
+			Address = address;
+			Hours = hours;
+		}
 	}
 }
