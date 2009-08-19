@@ -19,7 +19,6 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Net;
 
 using MbUnit.Framework;
@@ -31,6 +30,7 @@ using SineSignal.Ottoman.Tests.SampleDomain;
 
 namespace SineSignal.Ottoman.Tests.Unit
 {
+	// TODO:  Refactor these tests.  Testing too many things in each one.  Need to break them down more to make them more readable
 	[TestFixture]
 	public class DatabaseTests
 	{

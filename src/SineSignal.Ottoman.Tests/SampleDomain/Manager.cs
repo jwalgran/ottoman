@@ -35,10 +35,10 @@ namespace SineSignal.Ottoman.Tests.SampleDomain
 
 		public static Manager CreateManager()
 		{
-			var bobOriginal = new Worker(Guid.NewGuid(), "Bob", "bbob", new Address { Street = "123 Somewhere St.", City = "Kalamazoo", State = "MI", Zip = "12345" }, 40);
-			var aliceOriginal = new Worker(Guid.NewGuid(), "Alice", "aalice", new Address { Street = "123 Somewhere St.", City = "Kalamazoo", State = "MI", Zip = "12345" }, 40);
-			var eveOriginal = new Worker(Guid.NewGuid(), "Eve", "eeve", new Address { Street = "123 Somewhere St.", City = "Kalamazoo", State = "MI", Zip = "12345" }, 20);
-			var chrisOriginal = new Manager(default(Guid), "Chris", "cchandler", new List<Worker> { bobOriginal, aliceOriginal, eveOriginal });
+			var bobOriginal = new Worker(new Guid("6bcdea2f-2439-4785-ab59-2ee612435705"), "Bob", "bbob", new Address { Street = "123 Somewhere St.", City = "Kalamazoo", State = "MI", Zip = "12345" }, 40);
+			var aliceOriginal = new Worker(new Guid("b0d156c9-ea3f-4c4f-b49d-ab19bff64dd8"), "Alice", "aalice", new Address { Street = "123 Somewhere St.", City = "Kalamazoo", State = "MI", Zip = "12345" }, 40);
+			var eveOriginal = new Worker(new Guid("12b6dbbc-44e8-43c2-8142-11fc6c1d23df"), "Eve", "eeve", new Address { Street = "123 Somewhere St.", City = "Kalamazoo", State = "MI", Zip = "12345" }, 20);
+			var chrisOriginal = new Manager(new Guid("dfd6ef13-f8d2-4f9a-b265-0d8ecfe717b3"), "Chris", "cchandler", new List<Worker> { bobOriginal, aliceOriginal, eveOriginal });
 
 			return chrisOriginal;
 		}

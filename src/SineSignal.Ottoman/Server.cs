@@ -59,7 +59,7 @@ namespace SineSignal.Ottoman
 		/// <param name="restProxy">The proxy to use for talking to the CouchDB server.</param>
 		/// <param name="serializer">The serializer to use for deserializing responses from the proxy.</param>
 		/// <exception cref="ArgumentNullException">Throws an exception if the url parameter is null or empty string.</exception>
-		/// <exception cref="ArgumentException">Throws an exception if the url parameter is not a valid URI.</exception>
+		/// <exception cref="UriFormatException">Throws an exception if the url parameter is not a valid URI.</exception>
 		/// <exception cref="ArgumentException">Throws an exception if the url parameter doesn't use the HTTP or HTTPS protocol.</exception>
 		/// <exception cref="ArgumentNullException">Throws an exception if the restProxy parameter is null.</exception>
 		/// <exception cref="ArgumentNullException">Throws an exception if the serializer parameter is null.</exception>
@@ -71,7 +71,7 @@ namespace SineSignal.Ottoman
 
 			bool isValidUrl = Uri.TryCreate(url, UriKind.Absolute, out _url);
 			if (!isValidUrl)
-				throw new ArgumentException("The value is invalid, please pass a valid Uri.", "url");
+				throw new UriFormatException("The value is invalid, please pass a valid Uri.");
 
 			if (!_url.Scheme.Equals("http") && !_url.Scheme.Equals("https"))
 				throw new ArgumentException("The value is not using the http or https protocol.  This is not allowed since CouchDB uses REST and Http for communication.", "url");

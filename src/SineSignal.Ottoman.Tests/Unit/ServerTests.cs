@@ -29,9 +29,8 @@ using SineSignal.Ottoman.Serializers;
 
 namespace SineSignal.Ottoman.Tests.Unit
 {
-	// TODO:  Now that we have a pattern emerging, clean these tests up
-	[TestFixture]
-	public class ServerTests
+	[TestFixture] 
+	public class When_instantiating_a_new_server_instance
 	{
 		[Test]
 		[Row(null)]
@@ -39,29 +38,35 @@ namespace SineSignal.Ottoman.Tests.Unit
 		[ExpectedArgumentNullException]
 		public void Should_throw_argument_null_exception_when_url_is_null_or_empty_string(string baseUrl)
 		{
+			// Arrange
 			var mockRestProxy = new Mock<IRestProxy>();
 			var mockSerializer = new Mock<ISerializer>();
 			
+			// Act
 			new Server(baseUrl, mockRestProxy.Object, mockSerializer.Object);
 		}
 
 		[Test]
-		[ExpectedArgumentException]
-		public void Should_throw_argument_exception_when_url_is_a_random_string()
+		[ExpectedException(typeof(UriFormatException), "The value is invalid, please pass a valid Uri.")]
+		public void Should_throw_uri_format_exception_when_url_is_a_random_string()
 		{
+			// Arrange
 			var mockRestProxy = new Mock<IRestProxy>();
 			var mockSerializer = new Mock<ISerializer>();
 			
+			// Act
 			new Server("some string value", mockRestProxy.Object, mockSerializer.Object);
 		}
 
 		[Test]
-		[ExpectedArgumentException]
-		public void Should_throw_argument_exception_when_url_is_relative()
+		[ExpectedException(typeof(UriFormatException), "The value is invalid, please pass a valid Uri.")]
+		public void Should_throw_uri_format_exception_when_url_is_relative()
 		{
+			// Arrange
 			var mockRestProxy = new Mock<IRestProxy>();
 			var mockSerializer = new Mock<ISerializer>();
 			
+			// Act
 			new Server("../somepath", mockRestProxy.Object, mockSerializer.Object);
 		}
 
@@ -71,283 +76,320 @@ namespace SineSignal.Ottoman.Tests.Unit
 		[ExpectedArgumentException]
 		public void Should_throw_argument_exception_when_url_is_not_using_http_or_https_scheme(string baseUrl)
 		{
+			// Arrange
 			var mockRestProxy = new Mock<IRestProxy>();
 			var mockSerializer = new Mock<ISerializer>();
 			
-			IServer couchServer = new Server(baseUrl, mockRestProxy.Object, mockSerializer.Object);
-
-			Assert.IsNotNull(couchServer.Url);
-			Assert.AreEqual(baseUrl, couchServer.Url.ToString());
-		}
-
-		[Test]
-		[Row("http://127.0.0.1:5984/","http")]
-		[Row("https://domain.com:5984/","https")]
-		public void Should_set_uri_for_couch_location_when_given_a_valid_uri(string baseUrl, string expectedScheme)
-		{
-			var mockRestProxy = new Mock<IRestProxy>();
-			var mockSerializer = new Mock<ISerializer>();
-
-			IServer couchServer = new Server(baseUrl, mockRestProxy.Object, mockSerializer.Object);
-
-			Assert.AreEqual(baseUrl, couchServer.Url.ToString());
-			Assert.AreEqual(expectedScheme, couchServer.Url.Scheme);
+			// Act
+			new Server(baseUrl, mockRestProxy.Object, mockSerializer.Object);
 		}
 
 		[Test]
 		[ExpectedArgumentNullException]
 		public void Should_throw_argument_null_exception_when_proxy_is_null()
 		{
-			string url = GetValidUrl();
+			// Arrange
+			string url = "http://127.0.0.1:5984/";
 			var mockSerializer = new Mock<ISerializer>();
 			
+			// Act
 			new Server(url, null, mockSerializer.Object);
-		}
-
-		[Test]
-		public void Should_set_Proxy_when_given_an_instantiated_proxy()
-		{
-			string url = GetValidUrl();
-			var mockProxy = new Mock<IRestProxy>();
-			var mockSerializer = new Mock<ISerializer>();
-
-			IServer couchServer = new Server(url, mockProxy.Object, mockSerializer.Object);
-
-			Assert.IsNotNull(couchServer.RestProxy);
-			Assert.AreEqual(mockProxy.Object, couchServer.RestProxy);
 		}
 
 		[Test]
 		[ExpectedArgumentNullException]
 		public void Should_throw_argument_null_exception_when_serializer_is_null()
 		{
-			string url = GetValidUrl();
+			// Arrange
+			string url = "http://127.0.0.1:5984/";
 			var mockProxy = new Mock<IRestProxy>();
-			
+
+			// Act
 			new Server(url, mockProxy.Object, null);
 		}
 
 		[Test]
-		public void Should_set_Serializer_when_given_an_instantiated_serializer()
+		[Row("http://127.0.0.1:5984/", "http")]
+		[Row("https://domain.com:5984/", "https")]
+		public void Should_instantiate_when_given_valid_parameters(string baseUrl, string expectedScheme)
 		{
-			string url = GetValidUrl();
-			var mockProxy = new Mock<IRestProxy>();
-			var mockSerializer = new Mock<ISerializer>();
-
-			IServer couchServer = new Server(url, mockProxy.Object, mockSerializer.Object);
-
-			Assert.IsNotNull(couchServer.Serializer);
-			Assert.AreEqual(mockSerializer.Object, couchServer.Serializer);
-		}
-
-		[Test]
-		[ExpectedArgumentNullException]
-		public void Should_throw_an_argument_null_exception_when_CreateDatabase_is_called_with_a_null_string()
-		{
-			string url = GetValidUrl();
+			// Arrange
 			var mockRestProxy = new Mock<IRestProxy>();
 			var mockSerializer = new Mock<ISerializer>();
-			
-			IServer couchServer = new Server(url, mockRestProxy.Object, mockSerializer.Object);
-			couchServer.CreateDatabase(null);
-		}
 
+			// Act
+			IServer server = new Server(baseUrl, mockRestProxy.Object, mockSerializer.Object);
+
+			// Assert
+			Assert.IsNotNull(server.Url);
+			Assert.AreEqual(baseUrl, server.Url.ToString());
+			Assert.AreEqual(expectedScheme, server.Url.Scheme);
+			Assert.IsNotNull(server.RestProxy);
+			Assert.AreEqual(mockRestProxy.Object, server.RestProxy);
+			Assert.IsNotNull(server.Serializer);
+			Assert.AreEqual(mockSerializer.Object, server.Serializer);
+		}
+	}
+	
+	[TestFixture]
+	public class When_creating_a_database
+	{
 		[Test]
 		[Row(null)]
 		[Row("")]
 		[ExpectedArgumentNullException]
-		public void Should_throw_an_argument_null_exception_when_CreateDatabase_is_called_with_a_null_or_empty_string(string name)
+		public void Should_throw_an_argument_null_exception_when_called_with_a_null_or_empty_string(string databaseName)
 		{
-			string url = GetValidUrl();
+			// Arrange
+			string url = "http://127.0.0.1/";
 			var mockRestProxy = new Mock<IRestProxy>();
 			var mockSerializer = new Mock<ISerializer>();
-
-			IServer couchServer = new Server(url, mockRestProxy.Object, mockSerializer.Object);
-			couchServer.CreateDatabase(name);
+			
+			// Act
+			IServer server = new Server(url, mockRestProxy.Object, mockSerializer.Object);
+			server.CreateDatabase(databaseName);
 		}
-		
+
 		[Test]
-		public void Should_create_database_when_given_a_valid_name()
+		[Row("test")]
+		public void Should_call_put_on_rest_proxy_with_database_name_in_url(string databaseName)
 		{
-			string url = GetValidUrl();
-			string databaseName = "test";
-			UriBuilder requestUrl = new UriBuilder(new Uri(url));
-			requestUrl.Path = databaseName;
+			// Arrange
+			string url = "http://127.0.0.1/";
+			Uri requestUrl = new Uri(url + databaseName);
+			var mockRestProxy = new Mock<IRestProxy>();
+			var mockSerializer = new Mock<ISerializer>();
 			string body = "{\"ok\":true}";
 
-			var mockHttpResponse = new Mock<IHttpResponse>();
-			mockHttpResponse.Setup(x => x.StatusCode).Returns(HttpStatusCode.Created);
-			mockHttpResponse.Setup(x => x.Body).Returns(body);
+			mockRestProxy.Setup(x => x.Put(requestUrl)).Returns(new HttpResponse(HttpStatusCode.Created, body));
 			
-			var mockRestProxy = new Mock<IRestProxy>();
-			mockRestProxy.Setup(x => x.Put(requestUrl.Uri)).Returns(mockHttpResponse.Object);
-
-			var mockSerializer = new Mock<ISerializer>();
-
-			IServer couchServer = new Server(url, mockRestProxy.Object, mockSerializer.Object);
-			couchServer.CreateDatabase(databaseName);
-
-			mockRestProxy.Verify(x => x.Put(requestUrl.Uri), Times.AtLeastOnce());
+			// Act
+			IServer server = new Server(url, mockRestProxy.Object, mockSerializer.Object);
+			server.CreateDatabase(databaseName);
+			
+			// Assert
+			mockRestProxy.Verify(x => x.Put(requestUrl), Times.AtLeastOnce());
 		}
 		
 		[Test]
-		public void Should_throw_cannot_create_database_exception_when_an_error_is_given_in_the_response()
+		[Row("test")]
+		public void Should_deserialize_error_when_an_error_is_given_in_the_response(string databaseName)
 		{
-			string url = GetValidUrl();
-			string databaseName = "test";
-			UriBuilder requestUrl = new UriBuilder(new Uri(url));
-			requestUrl.Path = databaseName;
+			// Arrange
+			string url = "http://127.0.0.1/";
+			Uri requestUrl = new Uri(url + databaseName);
+			var mockRestProxy = new Mock<IRestProxy>();
+			var mockSerializer = new Mock<ISerializer>();
 			string body = "{\"error\":\"file_exists\",\"reason\":\"The database could not be created, the file already exists.\"}";
 
-			var mockHttpResponse = new Mock<IHttpResponse>();
-			mockHttpResponse.Setup(x => x.StatusCode).Returns(HttpStatusCode.PreconditionFailed);
-			mockHttpResponse.Setup(x => x.Body).Returns(body);
-
-			var mockRestProxy = new Mock<IRestProxy>();
-			mockRestProxy.Setup(x => x.Put(requestUrl.Uri)).Returns(mockHttpResponse.Object);
-
-			var mockSerializer = new Mock<ISerializer>();
+			mockRestProxy.Setup(x => x.Put(requestUrl)).Returns(new HttpResponse(HttpStatusCode.PreconditionFailed, body));
 			mockSerializer.Setup(x => x.Deserialize<CouchError>(body)).Returns(new CouchError("file_exists", "The database could not be created, the file already exists."));
 
-			CannotCreateDatabaseException cannotCreateDatabaseException = null;
+			// Act
 			try
 			{
-				IServer couchServer = new Server(url, mockRestProxy.Object, mockSerializer.Object);
-				couchServer.CreateDatabase(databaseName);
+				IServer server = new Server(url, mockRestProxy.Object, mockSerializer.Object);
+				server.CreateDatabase(databaseName);
 			}
-			catch (CannotCreateDatabaseException e)
+			catch (CannotCreateDatabaseException)
 			{
-				cannotCreateDatabaseException = e;
+				// Assert
+				mockSerializer.Verify(x => x.Deserialize<CouchError>(body), Times.AtLeastOnce());
 			}
-
-			Assert.AreEqual(String.Format("Failed to create database '{0}'", databaseName), cannotCreateDatabaseException.Message);
-			Assert.AreEqual("file_exists", cannotCreateDatabaseException.CouchError.Error);
-			Assert.AreEqual("The database could not be created, the file already exists.", cannotCreateDatabaseException.CouchError.Reason);
-			Assert.AreEqual(mockHttpResponse.Object, cannotCreateDatabaseException.RawResponse);
-
-			mockRestProxy.Verify(x => x.Put(requestUrl.Uri), Times.AtLeastOnce());
-			mockSerializer.Verify(x => x.Deserialize<CouchError>(body), Times.AtLeastOnce());
 		}
 
+		[Test]
+		[Row("test")]
+		[ExpectedException(typeof(CannotCreateDatabaseException), "Failed to create database 'test'")]
+		public void Should_throw_cannot_create_database_exception_when_an_error_is_given_in_the_response(string databaseName)
+		{
+			// Arrange
+			string url = "http://127.0.0.1/";
+			Uri requestUrl = new Uri(url + databaseName);
+			var mockRestProxy = new Mock<IRestProxy>();
+			var mockSerializer = new Mock<ISerializer>();
+			string body = "{\"error\":\"file_exists\",\"reason\":\"The database could not be created, the file already exists.\"}";
+
+			mockRestProxy.Setup(x => x.Put(requestUrl)).Returns(new HttpResponse(HttpStatusCode.PreconditionFailed, body));
+			mockSerializer.Setup(x => x.Deserialize<CouchError>(body)).Returns(new CouchError("file_exists", "The database could not be created, the file already exists."));
+
+			// Act
+			IServer server = new Server(url, mockRestProxy.Object, mockSerializer.Object);
+			server.CreateDatabase(databaseName);
+		}
+	}
+	
+	[TestFixture]
+	public class When_deleting_a_database
+	{
 		[Test]
 		[Row(null)]
 		[Row("")]
 		[ExpectedArgumentNullException]
-		public void Should_throw_an_argument_null_exception_when_DeleteDatabase_is_called_with_a_null_or_empty_string(string name)
+		public void Should_throw_an_argument_null_exception_when_called_with_a_null_or_empty_string(string databaseName)
 		{
-			string url = GetValidUrl();
+			// Arrange
+			string url = "http://127.0.0.1/";
 			var mockRestProxy = new Mock<IRestProxy>();
 			var mockSerializer = new Mock<ISerializer>();
 
-			IServer couchServer = new Server(url, mockRestProxy.Object, mockSerializer.Object);
-			couchServer.DeleteDatabase(name);
+			// Act
+			IServer server = new Server(url, mockRestProxy.Object, mockSerializer.Object);
+			server.DeleteDatabase(databaseName);
 		}
-		
+
 		[Test]
 		[Row("test")]
-		public void Should_be_able_to_delete_database_when_given_a_valid_name(string databaseName)
+		public void Should_call_delete_on_rest_proxy_with_database_name_in_the_url(string databaseName)
 		{
-			string url = GetValidUrl();
-			UriBuilder requestUrl = new UriBuilder(new Uri(url));
-			requestUrl.Path = databaseName;
+			// Arrange
+			string url = "http://127.0.0.1/";
+			Uri requestUrl = new Uri(url + databaseName);
+			var mockRestProxy = new Mock<IRestProxy>();
+			var mockSerializer = new Mock<ISerializer>();
 			string body = "{\"ok\":true}";
 
-			var mockHttpResponse = new Mock<IHttpResponse>();
-			mockHttpResponse.Setup(x => x.StatusCode).Returns(HttpStatusCode.OK);
-			mockHttpResponse.Setup(x => x.Body).Returns(body);
-			
-			var mockRestProxy = new Mock<IRestProxy>();
-			mockRestProxy.Setup(x => x.Delete(requestUrl.Uri)).Returns(mockHttpResponse.Object);
+			mockRestProxy.Setup(x => x.Delete(requestUrl)).Returns(new HttpResponse(HttpStatusCode.OK, body));
 
-			var mockSerializer = new Mock<ISerializer>();
+			// Act
+			IServer server = new Server(url, mockRestProxy.Object, mockSerializer.Object);
+			server.DeleteDatabase(databaseName);
 
-			IServer couchServer = new Server(url, mockRestProxy.Object, mockSerializer.Object);
-			couchServer.DeleteDatabase(databaseName);
-
-			mockRestProxy.Verify(x => x.Delete(requestUrl.Uri), Times.AtLeastOnce());
+			// Assert
+			mockRestProxy.Verify(x => x.Delete(requestUrl), Times.AtLeastOnce());
 		}
 
 		[Test]
-		public void Should_throw_cannot_delete_database_exception_when_an_error_is_given_in_the_response()
+		[Row("test")]
+		public void Should_deserialize_error_when_an_error_is_given_in_the_response(string databaseName)
 		{
-			string url = GetValidUrl();
-			string databaseName = "test";
-			UriBuilder requestUrl = new UriBuilder(new Uri(url));
-			requestUrl.Path = databaseName;
+			// Arrange
+			string url = "http://127.0.0.1/";
+			Uri requestUrl = new Uri(url + databaseName);
+			var mockRestProxy = new Mock<IRestProxy>();
+			var mockSerializer = new Mock<ISerializer>();
 			string body = "{\"error\":\"not_found\",\"reason\":\"missing\"}";
 
-			var mockHttpResponse = new Mock<IHttpResponse>();
-			mockHttpResponse.Setup(x => x.StatusCode).Returns(HttpStatusCode.NotFound);
-			mockHttpResponse.Setup(x => x.Body).Returns(body);
-
-			var mockRestProxy = new Mock<IRestProxy>();
-			mockRestProxy.Setup(x => x.Delete(requestUrl.Uri)).Returns(mockHttpResponse.Object);
-
-			var mockSerializer = new Mock<ISerializer>();
+			mockRestProxy.Setup(x => x.Delete(requestUrl)).Returns(new HttpResponse(HttpStatusCode.NotFound, body));
 			mockSerializer.Setup(x => x.Deserialize<CouchError>(body)).Returns(new CouchError("not_found", "missing"));
 
-			CannotDeleteDatabaseException cannotDeleteDatabaseException = null;
+			// Act
 			try
 			{
-				IServer couchServer = new Server(url, mockRestProxy.Object, mockSerializer.Object);
-				couchServer.DeleteDatabase(databaseName);
+				IServer server = new Server(url, mockRestProxy.Object, mockSerializer.Object);
+				server.DeleteDatabase(databaseName);
 			}
-			catch (CannotDeleteDatabaseException e)
+			catch (CannotDeleteDatabaseException)
 			{
-				cannotDeleteDatabaseException = e;
+				// Assert
+				mockSerializer.Verify(x => x.Deserialize<CouchError>(body), Times.AtLeastOnce());
 			}
-
-			Assert.AreEqual(String.Format("Failed to delete database '{0}'", databaseName), cannotDeleteDatabaseException.Message);
-			Assert.AreEqual("not_found", cannotDeleteDatabaseException.CouchError.Error);
-			Assert.AreEqual("missing", cannotDeleteDatabaseException.CouchError.Reason);
-			Assert.AreEqual(mockHttpResponse.Object, cannotDeleteDatabaseException.RawResponse);
-
-			mockRestProxy.Verify(x => x.Delete(requestUrl.Uri), Times.AtLeastOnce());
-			mockSerializer.Verify(x => x.Deserialize<CouchError>(body), Times.AtLeastOnce());
 		}
 
+		[Test]
+		[Row("test")]
+		[ExpectedException(typeof(CannotDeleteDatabaseException), "Failed to delete database 'test'")]
+		public void Should_throw_cannot_delete_database_exception_when_an_error_is_given_in_the_response(string databaseName)
+		{
+			string url = "http://127.0.0.1/";
+			Uri requestUrl = new Uri(url + databaseName);
+			var mockRestProxy = new Mock<IRestProxy>();
+			var mockSerializer = new Mock<ISerializer>();
+			string body = "{\"error\":\"not_found\",\"reason\":\"missing\"}";
+
+			mockRestProxy.Setup(x => x.Delete(requestUrl)).Returns(new HttpResponse(HttpStatusCode.NotFound, body));
+			mockSerializer.Setup(x => x.Deserialize<CouchError>(body)).Returns(new CouchError("not_found", "missing"));
+
+			IServer server = new Server(url, mockRestProxy.Object, mockSerializer.Object);
+			server.DeleteDatabase(databaseName);
+		}
+	}
+	
+	[TestFixture]
+	public class When_retrieving_a_database
+	{
 		[Test]
 		[Row(null)]
 		[Row("")]
 		[ExpectedArgumentNullException]
-		public void Should_throw_an_argument_null_exception_when_GetDatabase_is_called_with_a_null_or_empty_string(string name)
+		public void Should_throw_an_argument_null_exception_when_called_with_a_null_or_empty_string(string databaseName)
 		{
-			string url = GetValidUrl();
+			// Arrange
+			string url = "http://127.0.0.1:5984/";
 			var mockRestProxy = new Mock<IRestProxy>();
 			var mockSerializer = new Mock<ISerializer>();
 
-			IServer couchServer = new Server(url, mockRestProxy.Object, mockSerializer.Object);
-			IDatabase database = couchServer.GetDatabase(name);
+			// Act
+			IServer server = new Server(url, mockRestProxy.Object, mockSerializer.Object);
+			server.GetDatabase(databaseName);
+		}
+
+		[Test]
+		[Row("test")]
+		public void Should_call_get_on_rest_proxy_with_database_name_in_url(string databaseName)
+		{
+			// Arrange
+			string url = "http://127.0.0.1:5984/";
+			Uri requestUrl = new Uri(url + databaseName);
+			var mockRestProxy = new Mock<IRestProxy>();
+			var mockSerializer = new Mock<ISerializer>();
+			string body = "{\"db_name\":\"test\",\"doc_count\":0,\"doc_del_count\":0,\"update_seq\":0,\"purge_seq\":0,\"compact_running\":false,\"disk_size\":79,\"instance_start_time\":\"1250175373642458\",\"disk_format_version\":4}";
+
+			mockRestProxy.Setup(x => x.Get(requestUrl)).Returns(new HttpResponse(HttpStatusCode.OK, body));
+			mockSerializer.Setup(x => x.Deserialize<DatabaseInfo>(body)).Returns(new DatabaseInfo(databaseName, 0, 0, 0, 0, false, 79, "1250175373642458", 4));
+
+			// Act
+			IServer server = new Server(url, mockRestProxy.Object, mockSerializer.Object);
+			server.GetDatabase(databaseName);
+
+			// Assert
+			mockRestProxy.Verify(x => x.Get(requestUrl), Times.AtLeastOnce());
 		}
 		
 		[Test]
 		[Row("test")]
-		public void Should_be_able_to_retrieve_a_couch_database_when_given_a_valid_name(string name)
+		public void Should_call_deserialize_and_pass_the_body_of_the_response(string databaseName)
 		{
-			string url = GetValidUrl();
-			UriBuilder requestUrl = new UriBuilder(new Uri(url));
-			requestUrl.Path = name;
-			string body = "{\"db_name\":\"test\",\"doc_count\":0,\"doc_del_count\":0,\"update_seq\":0,\"purge_seq\":0,\"compact_running\":false,\"disk_size\":79,\"instance_start_time\":\"1250175373642458\",\"disk_format_version\":4}";
-			
-			var mockHttpResponse = new Mock<IHttpResponse>();
-			mockHttpResponse.Setup(x => x.StatusCode).Returns(HttpStatusCode.OK);
-			mockHttpResponse.Setup(x => x.Body).Returns(body);
-			
+			// Arrange
+			string url = "http://127.0.0.1:5984/";
+			Uri requestUrl = new Uri(url + databaseName);
 			var mockRestProxy = new Mock<IRestProxy>();
-			mockRestProxy.Setup(x => x.Get(requestUrl.Uri)).Returns(mockHttpResponse.Object);
-			
 			var mockSerializer = new Mock<ISerializer>();
-			mockSerializer.Setup(x => x.Deserialize<DatabaseInfo>(body)).Returns(new DatabaseInfo(name, 0, 0, 0, 0, false, 79, "1250175373642458", 4));
+			string body = "{\"db_name\":\"test\",\"doc_count\":0,\"doc_del_count\":0,\"update_seq\":0,\"purge_seq\":0,\"compact_running\":false,\"disk_size\":79,\"instance_start_time\":\"1250175373642458\",\"disk_format_version\":4}";
 
-			IServer couchServer = new Server(url, mockRestProxy.Object, mockSerializer.Object);
-			IDatabase database = couchServer.GetDatabase(name);
+			mockRestProxy.Setup(x => x.Get(requestUrl)).Returns(new HttpResponse(HttpStatusCode.OK, body));
+			mockSerializer.Setup(x => x.Deserialize<DatabaseInfo>(body)).Returns(new DatabaseInfo(databaseName, 0, 0, 0, 0, false, 79, "1250175373642458", 4));
 
-			mockRestProxy.Verify(x => x.Get(requestUrl.Uri), Times.AtLeastOnce());
+			// Act
+			IServer server = new Server(url, mockRestProxy.Object, mockSerializer.Object);
+			server.GetDatabase(databaseName);
+
+			// Assert
 			mockSerializer.Verify(x => x.Deserialize<DatabaseInfo>(body), Times.AtLeastOnce());
+		}
+		
+		[Test]
+		[Row("test")]
+		public void Should_return_a_new_database_based_on_deserialized_response(string databaseName)
+		{
+			// Arrange
+			string url = "http://127.0.0.1:5984/";
+			Uri requestUrl = new Uri(url + databaseName);
+			var mockRestProxy = new Mock<IRestProxy>();
+			var mockSerializer = new Mock<ISerializer>();
+			string body = "{\"db_name\":\"test\",\"doc_count\":0,\"doc_del_count\":0,\"update_seq\":0,\"purge_seq\":0,\"compact_running\":false,\"disk_size\":79,\"instance_start_time\":\"1250175373642458\",\"disk_format_version\":4}";
 
+			mockRestProxy.Setup(x => x.Get(requestUrl)).Returns(new HttpResponse(HttpStatusCode.OK, body));
+			mockSerializer.Setup(x => x.Deserialize<DatabaseInfo>(body)).Returns(new DatabaseInfo(databaseName, 0, 0, 0, 0, false, 79, "1250175373642458", 4));
+
+			// Act
+			IServer server = new Server(url, mockRestProxy.Object, mockSerializer.Object);
+			IDatabase database = server.GetDatabase(databaseName);
+
+			// Assert
 			Assert.IsNotNull(database);
-			Assert.AreEqual(couchServer, database.Server);
-			Assert.AreEqual(name, database.Info.Name);
+			Assert.AreEqual(server, database.Server);
+			Assert.AreEqual(databaseName, database.Info.Name);
 			Assert.AreEqual(0, database.Info.DocCount);
 			Assert.AreEqual(0, database.Info.DocDelCount);
 			Assert.AreEqual(0, database.Info.UpdateSequence);
@@ -357,104 +399,188 @@ namespace SineSignal.Ottoman.Tests.Unit
 			Assert.AreEqual("1250175373642458", database.Info.InstanceStartTime);
 			Assert.AreEqual(4, database.Info.DiskFormatVersion);
 		}
-		
+
 		[Test]
-		public void Should_throw_cannot_get_database_exception_when_an_error_is_given_in_the_response()
+		[Row("test")]
+		public void Should_deserialize_error_when_an_error_is_given_in_the_response(string databaseName)
 		{
-			string url = GetValidUrl();
-			string databaseName = "test";
-			UriBuilder requestUrl = new UriBuilder(new Uri(url));
-			requestUrl.Path = databaseName;
-			string body = "{\"error\":\"not_found\",\"reason\":\"no_db_file\"}";
-
-			var mockHttpResponse = new Mock<IHttpResponse>();
-			mockHttpResponse.Setup(x => x.StatusCode).Returns(HttpStatusCode.NotFound);
-			mockHttpResponse.Setup(x => x.Body).Returns(body);
-
+			// Arrange
+			string url = "http://127.0.0.1:5984/";
+			Uri requestUrl = new Uri(url + databaseName);
 			var mockRestProxy = new Mock<IRestProxy>();
-			mockRestProxy.Setup(x => x.Get(requestUrl.Uri)).Returns(mockHttpResponse.Object);
-
 			var mockSerializer = new Mock<ISerializer>();
+			string body = "{\"error\":\"not_found\",\"reason\":\"no_db_file\"}";
+			
+			mockRestProxy.Setup(x => x.Get(requestUrl)).Returns(new HttpResponse(HttpStatusCode.NotFound, body));
 			mockSerializer.Setup(x => x.Deserialize<CouchError>(body)).Returns(new CouchError("not_found", "no_db_file"));
 
-			CannotGetDatabaseException cannotGetDatabaseException = null;
+			// Act
 			try
 			{
-				IServer couchServer = new Server(url, mockRestProxy.Object, mockSerializer.Object);
-				couchServer.GetDatabase(databaseName);
+				IServer server = new Server(url, mockRestProxy.Object, mockSerializer.Object);
+				server.GetDatabase(databaseName);
 			}
-			catch (CannotGetDatabaseException e)
+			catch (Exception)
 			{
-				cannotGetDatabaseException = e;
+				mockSerializer.Verify(x => x.Deserialize<CouchError>(body), Times.AtLeastOnce());
 			}
+		}
 
-			Assert.AreEqual(String.Format("Failed to get database '{0}'", databaseName), cannotGetDatabaseException.Message);
-			Assert.AreEqual("not_found", cannotGetDatabaseException.CouchError.Error);
-			Assert.AreEqual("no_db_file", cannotGetDatabaseException.CouchError.Reason);
-			Assert.AreEqual(mockHttpResponse.Object, cannotGetDatabaseException.RawResponse);
+		[Test]
+		[Row("test")]
+		[ExpectedException(typeof(CannotGetDatabaseException), "Failed to get database 'test'")]
+		public void Should_throw_cannot_get_database_exception_when_an_error_is_given_in_the_response(string databaseName)
+		{
+			// Arrange
+			string url = "http://127.0.0.1:5984/";
+			Uri requestUrl = new Uri(url + databaseName);
+			var mockRestProxy = new Mock<IRestProxy>();
+			var mockSerializer = new Mock<ISerializer>();
+			string body = "{\"error\":\"not_found\",\"reason\":\"no_db_file\"}";
+			
+			mockRestProxy.Setup(x => x.Get(requestUrl)).Returns(new HttpResponse(HttpStatusCode.NotFound, body));
+			mockSerializer.Setup(x => x.Deserialize<CouchError>(body)).Returns(new CouchError("not_found", "no_db_file"));
 
-			mockRestProxy.Verify(x => x.Get(requestUrl.Uri), Times.AtLeastOnce());
-			mockSerializer.Verify(x => x.Deserialize<CouchError>(body), Times.AtLeastOnce());
+			// Act
+			IServer server = new Server(url, mockRestProxy.Object, mockSerializer.Object);
+			server.GetDatabase(databaseName);
+		}
+	}
+	
+	[TestFixture]
+	public class When_retrieving_a_list_of_databases
+	{
+		[Test]
+		public void Should_call_get_on_rest_proxy_and_pass_all_dbs_on_the_url()
+		{
+			// Arrange
+			string url = "http://127.0.0.1:5984/";
+			Uri requestUrl = new Uri(url + "_all_dbs");
+			var mockRestProxy = new Mock<IRestProxy>();
+			var mockSerializer = new Mock<ISerializer>();
+			string body = "[\"test1\",\"test2\"]";
+			
+			mockRestProxy.Setup(x => x.Get(requestUrl)).Returns(new HttpResponse(HttpStatusCode.OK, body));
+			mockSerializer.Setup(x => x.Deserialize<string[]>(body)).Returns(new string[] { "test1", "test2" });
+			
+			// Act
+			IServer server = new Server(url, mockRestProxy.Object, mockSerializer.Object);
+			server.GetDatabases();
+
+			// Assert
+			mockRestProxy.Verify(x => x.Get(requestUrl));
 		}
 		
 		[Test]
-		public void Should_be_able_to_retrieve_a_list_of_databases()
+		public void Should_call_deserialize_and_pass_the_body_of_the_response()
 		{
-			string url = GetValidUrl();
-			UriBuilder requestUrl = new UriBuilder(new Uri(url));
-			requestUrl.Path = "_all_dbs";
+			// Arrange
+			string url = "http://127.0.0.1:5984/";
+			Uri requestUrl = new Uri(url + "_all_dbs");
+			var mockRestProxy = new Mock<IRestProxy>();
+			var mockSerializer = new Mock<ISerializer>();
 			string body = "[\"test1\",\"test2\"]";
 
-			var mockHttpResponse = new Mock<IHttpResponse>();
-			mockHttpResponse.Setup(x => x.StatusCode).Returns(HttpStatusCode.OK);
-			mockHttpResponse.Setup(x => x.Body).Returns(body);
-			
-			var mockRestProxy = new Mock<IRestProxy>();
-			mockRestProxy.Setup(x => x.Get(requestUrl.Uri)).Returns(mockHttpResponse.Object);
-			
-			var mockSerializer = new Mock<ISerializer>();
-			mockSerializer.Setup(x => x.Deserialize<string[]>(body)).Returns(new string[] {"test1", "test2"});
+			mockRestProxy.Setup(x => x.Get(requestUrl)).Returns(new HttpResponse(HttpStatusCode.OK, body));
+			mockSerializer.Setup(x => x.Deserialize<string[]>(body)).Returns(new string[] { "test1", "test2" });
 
-			IServer couchServer = new Server(url, mockRestProxy.Object, mockSerializer.Object);
-			string[] databases = couchServer.GetDatabases();
-
-			mockRestProxy.Verify(x => x.Get(requestUrl.Uri));
+			// Act
+			IServer server = new Server(url, mockRestProxy.Object, mockSerializer.Object);
+			server.GetDatabases();
+			
+			// Assert
 			mockSerializer.Verify(x => x.Deserialize<string[]>(body));
+		}
+		
+		[Test]
+		public void Should_return_a_string_array_populated_with_the_deserialized_response()
+		{
+			// Arrange
+			string url = "http://127.0.0.1:5984/";
+			Uri requestUrl = new Uri(url + "_all_dbs");
+			var mockRestProxy = new Mock<IRestProxy>();
+			var mockSerializer = new Mock<ISerializer>();
+			string body = "[\"test1\",\"test2\"]";
 
+			mockRestProxy.Setup(x => x.Get(requestUrl)).Returns(new HttpResponse(HttpStatusCode.OK, body));
+			mockSerializer.Setup(x => x.Deserialize<string[]>(body)).Returns(new string[] { "test1", "test2" });
+			
+			// Act
+			IServer server = new Server(url, mockRestProxy.Object, mockSerializer.Object);
+			string[] databases = server.GetDatabases();
+			
+			// Assert
 			Assert.IsNotNull(databases);
 			Assert.AreEqual(2, databases.Length);
 		}
-		
+	}
+	
+	[TestFixture]
+	public class When_retrieving_info_about_the_server
+	{
 		[Test]
-		public void Should_be_able_to_retrieve_info_about_the_server()
+		public void Should_call_get_on_rest_proxy_with_the_base_url()
 		{
-			string url = GetValidUrl();
+			// Arrange
+			string url = "http://127.0.0.1:5984/";
 			Uri requestUrl = new Uri(url);
+			var mockRestProxy = new Mock<IRestProxy>();
+			var mockSerializer = new Mock<ISerializer>();
 			string body = "{\"couchdb\":\"Welcome\",\"version\":\"0.10.0a800465\"}";
 
-			var mockHttpResponse = new Mock<IHttpResponse>();
-			mockHttpResponse.Setup(x => x.StatusCode).Returns(HttpStatusCode.OK);
-			mockHttpResponse.Setup(x => x.Body).Returns(body);
-			
-			var mockRestProxy = new Mock<IRestProxy>();
-			mockRestProxy.Setup(x => x.Get(requestUrl)).Returns(mockHttpResponse.Object);
-			
-			var mockSerializer = new Mock<ISerializer>();
+			mockRestProxy.Setup(x => x.Get(requestUrl)).Returns(new HttpResponse(HttpStatusCode.OK, body));
 			mockSerializer.Setup(x => x.Deserialize<ServerInfo>(body)).Returns(new ServerInfo("Welcome", "0.10.0a800465"));
-			
-			IServer couchServer = new Server(url, mockRestProxy.Object, mockSerializer.Object);
-			IServerInfo serverInfo = couchServer.GetInfo();
 
+			// Act
+			IServer server = new Server(url, mockRestProxy.Object, mockSerializer.Object);
+			server.GetInfo();
+
+			// Assert
 			mockRestProxy.Verify(x => x.Get(requestUrl));
+		}
+		
+		[Test]
+		public void Should_call_deserialize_and_pass_the_body_of_the_response()
+		{
+			// Arrange
+			string url = "http://127.0.0.1:5984/";
+			Uri requestUrl = new Uri(url);
+			var mockRestProxy = new Mock<IRestProxy>();
+			var mockSerializer = new Mock<ISerializer>();
+			string body = "{\"couchdb\":\"Welcome\",\"version\":\"0.10.0a800465\"}";
+
+			mockRestProxy.Setup(x => x.Get(requestUrl)).Returns(new HttpResponse(HttpStatusCode.OK, body));
+			mockSerializer.Setup(x => x.Deserialize<ServerInfo>(body)).Returns(new ServerInfo("Welcome", "0.10.0a800465"));
+
+			// Act
+			IServer server = new Server(url, mockRestProxy.Object, mockSerializer.Object);
+			server.GetInfo();
+
+			// Assert
 			mockSerializer.Verify(x => x.Deserialize<ServerInfo>(body));
-			
+		}
+		
+		[Test]
+		public void Should_return_a_new_server_info_instance_populated_with_the_deserialized_response()
+		{
+			// Arrange
+			string url = "http://127.0.0.1:5984/";
+			Uri requestUrl = new Uri(url);
+			var mockRestProxy = new Mock<IRestProxy>();
+			var mockSerializer = new Mock<ISerializer>();
+			string body = "{\"couchdb\":\"Welcome\",\"version\":\"0.10.0a800465\"}";
+
+			mockRestProxy.Setup(x => x.Get(requestUrl)).Returns(new HttpResponse(HttpStatusCode.OK, body));
+			mockSerializer.Setup(x => x.Deserialize<ServerInfo>(body)).Returns(new ServerInfo("Welcome", "0.10.0a800465"));
+
+			// Act
+			IServer server = new Server(url, mockRestProxy.Object, mockSerializer.Object);
+			IServerInfo serverInfo = server.GetInfo();
+
+			// Assert
+			Assert.IsNotNull(serverInfo);
 			Assert.AreEqual("Welcome", serverInfo.Message);
 			Assert.AreEqual("0.10.0a800465", serverInfo.Version);
-		}
-
-		private string GetValidUrl()
-		{
-			return "http://127.0.0.1:5984/";
 		}
 	}
 }
