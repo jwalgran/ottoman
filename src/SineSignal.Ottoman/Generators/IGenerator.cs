@@ -7,6 +7,7 @@ namespace SineSignal.Ottoman.Generators
 {
     public interface IGenerator
     {
+        Dictionary<string, string> Options { get; set; }
         string Generate();
     }
 }

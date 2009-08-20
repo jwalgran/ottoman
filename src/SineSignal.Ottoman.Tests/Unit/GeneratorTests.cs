@@ -7,7 +7,7 @@ using MbUnit.Framework;
 using MbUnit.Framework.ContractVerifiers;
 using SineSignal.Ottoman.Generators;
 
-namespace SineSignal.Ottoman.Tests.Unit
+namespace SineSignal.Ottoman.Tests.Unit.Generators
 {
     [TestFixture]
     public class When_generating_an_ID_using_the_GUIDGenerator
@@ -30,5 +30,16 @@ namespace SineSignal.Ottoman.Tests.Unit
             else { return true; }   
         } 
 
+    }
+
+    [TestFixture]
+    public class When_creating_a_HiLoGenerator
+    {
+        [Test]
+        public void Should_have_a_default_ServerURL_option_set_to_localhost()
+        {
+            var generator = new HiLoGenerator();
+            Assert.AreEqual(generator.Options["ServerURL"], "http://127.0.0.1:5984");
+        }
     }
 }
