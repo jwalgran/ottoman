@@ -9,7 +9,7 @@ using SineSignal.Ottoman.Proxy;
 using MbUnit.Framework;
 using Moq;
 
-namespace SineSignal.Ottoman.Tests.Unit.Generators
+namespace SineSignal.Ottoman.Tests.Unit.Generators.HiLoGeneratorTests
 {
     [TestFixture]
     public class When_creating_a_HiLoGenerator

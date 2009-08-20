@@ -6,7 +6,7 @@ using SineSignal.Ottoman.Generators;
 using MbUnit.Framework;
 using Moq;
 
-namespace SineSignal.Ottoman.Tests.Unit.Generators
+namespace SineSignal.Ottoman.Tests.Unit.Generators.GuidGeneratorTests
 {
     [TestFixture]
     public class When_generating_an_ID_using_the_GuidGenerator
