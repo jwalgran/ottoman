@@ -28,8 +28,9 @@ namespace SineSignal.Ottoman.Generators
                 var uuidURIBuilder = new UriBuilder((string)Options["ServerURL"]);
                 uuidURIBuilder.Path = "_uuids";
                 var response = proxy.Get(uuidURIBuilder.Uri);
+                // Here is an example of what is expected to be in the response body: {"uuids":["5d531fd2d85de34f04eaaedce2090cdc"]}
                 JObject o = JObject.Parse(response.Body);
-                _uuid = o["uuids"][0].ToString().Replace("\"", "");
+                _uuid = o["uuids"][0].ToString().Replace("\"", ""); //The uuid is returned double quoted. The call to Replace strips off the quotes.
             }
             return _uuid + GetNextSequenceNumber();
         }
