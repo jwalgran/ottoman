@@ -65,7 +65,8 @@
     <Compile Include="SampleDomain\Manager.cs" />
     <Compile Include="SampleDomain\Worker.cs" />
     <Compile Include="Unit\DatabaseTests.cs" />
-    <Compile Include="Unit\GeneratorTests.cs" />
+    <Compile Include="Unit\Generators\GuidGeneratorTests.cs" />
+    <Compile Include="Unit\Generators\HiLoGeneratorTests.cs" />
     <Compile Include="Unit\ServerTests.cs" />
     <Compile Include="Unit\Proxy\RestProxyTests.cs" />
     <Compile Include="Unit\Serializers\JsonSerializerTests.cs" />

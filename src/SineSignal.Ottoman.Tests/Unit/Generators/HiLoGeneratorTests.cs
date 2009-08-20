@@ -1,31 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
+using System.Text;
 using System.Net;
-using Gallio.Framework;
-using MbUnit.Framework;
-using MbUnit.Framework.ContractVerifiers;
 using SineSignal.Ottoman;
-using SineSignal.Ottoman.Proxy;
 using SineSignal.Ottoman.Generators;
+using SineSignal.Ottoman.Proxy;
+using MbUnit.Framework;
 using Moq;
-
 
 namespace SineSignal.Ottoman.Tests.Unit.Generators
 {
-    [TestFixture]
-    public class When_generating_an_ID_using_the_GuidGenerator
-    {
-        [Test]
-        public void Should_return_a_Guid()
-        {
-            var generator = new GuidGenerator();
-            var id = generator.Generate();
-            Assert.IsInstanceOfType<Guid>(id);
-        }
-    }
-
     [TestFixture]
     public class When_creating_a_HiLoGenerator
     {
@@ -102,8 +87,8 @@ namespace SineSignal.Ottoman.Tests.Unit.Generators
             generator.Options["ServerURL"] = _url;
             generator.Options["RestProxy"] = _mockRestProxy.Object;
             var firstID = generator.Generate();
-            var secondID =  generator.Generate();
-            var thirdID =  generator.Generate();
+            var secondID = generator.Generate();
+            var thirdID = generator.Generate();
 
 
             Assert.AreEqual(uuid + "00000001", firstID);
