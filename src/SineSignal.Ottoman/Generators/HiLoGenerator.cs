@@ -9,7 +9,7 @@ namespace SineSignal.Ottoman.Generators
     /// <summary>
     /// Used to generate document IDs seeded with a random value from a CouchDB then incremented on the client.
     /// </summary>
-    class HiLoGenerator : IGenerator
+    class HiLoGenerator : IGenerator<string>
     {
         public Dictionary<string, object> Options { get; set; }
 

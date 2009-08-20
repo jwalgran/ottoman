@@ -15,26 +15,15 @@ using Moq;
 namespace SineSignal.Ottoman.Tests.Unit.Generators
 {
     [TestFixture]
-    public class When_generating_an_ID_using_the_GUIDGenerator
+    public class When_generating_an_ID_using_the_GuidGenerator
     {
         [Test]
-        public void Should_return_a_GUID()
+        public void Should_return_a_Guid()
         {
-            var generator = new GUIDGenerator();
+            var generator = new GuidGenerator();
             var id = generator.Generate();
-            Assert.IsTrue(IsGUID(id));
+            Assert.IsInstanceOfType<Guid>(id);
         }
-
-        //GUID regex pattern taken from http://geekswithblogs.net/colinbo/archive/2006/01/18/66307.aspx
-        private static bool IsGUID(string s)
-        {
-            string pattern = "^[A-Fa-f0-9]{32}$|" +
-                             "^({|\\()?[A-Fa-f0-9]{8}-([A-Fa-f0-9]{4}-){3}[A-Fa-f0-9]{12}(}|\\))?$|" +
-                             "^({)?[0xA-Fa-f0-9]{3,10}(, {0,1}[0xA-Fa-f0-9]{3,6}){2}, {0,1}({)([0xA-Fa-f0-9]{3,4}, {0,1}){7}[0xA-Fa-f0-9]{3,4}(}})$";
-            if (string.IsNullOrEmpty(s) || !(new Regex(pattern)).IsMatch(s)) { return false; }
-            else { return true; }   
-        } 
-
     }
 
     [TestFixture]

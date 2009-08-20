@@ -5,9 +5,9 @@ using System.Text;
 
 namespace SineSignal.Ottoman.Generators
 {
-    public interface IGenerator
+    public interface IGenerator<T>
     {
         Dictionary<string, object> Options { get; set; }
-        string Generate();
+        T Generate();
     }
 }
