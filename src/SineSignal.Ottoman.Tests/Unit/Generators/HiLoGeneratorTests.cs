@@ -52,6 +52,12 @@ namespace SineSignal.Ottoman.Tests.Unit.Generators.HiLoGeneratorTests
         {
             Assert.IsInstanceOfType<Ottoman.Proxy.RestProxy>(_generator.Options["RestProxy"]);
         }
+
+        [Test]
+        public void Should_have_a_default_LoThreshold_option_set_to_the_max_int_value()
+        {
+            Assert.AreEqual(int.MaxValue,(int)_generator.Options["LoThreshold"]);
+        }
     }
 
     [TestFixture]
@@ -81,7 +87,7 @@ namespace SineSignal.Ottoman.Tests.Unit.Generators.HiLoGeneratorTests
         }
 
         [Test]
-        public void Should_request_a_UUID_from_CouchDB_only_the_first_time_Generate_is_called()
+        public void Should_request_a_UUID_from_CouchDB_the_first_time_Generate_is_called()
         {
             // Act
             var generator = new HiLoGenerator();
@@ -96,11 +102,24 @@ namespace SineSignal.Ottoman.Tests.Unit.Generators.HiLoGeneratorTests
         }
 
         [Test]
-        public void Should_return_the_same_uuid_with_an_incrementing_appended_value_each_time_Generate_is_called()
+        public void Should_request_a_uuid_from_CouchDB_when_the_LoThreshold_is_met()
         {
-            // Arrange
-            string uuid = "0123456789abcdef0123456789abcdef";
+            // Act
+            var generator = new HiLoGenerator();
+            generator.Options["ServerURL"] = _url;
+            generator.Options["RestProxy"] = _mockRestProxy.Object;
+            generator.Options["LoThreshold"] = 2;
+            generator.Generate(); //This call should trigger the frist uuid request
+            generator.Generate();
+            generator.Generate(); //This third call should trigger the next uuid request since LoThreshold is 2
 
+            // Assert
+            _mockRestProxy.Verify(x => x.Get(_uuidURI), Times.Exactly(2));
+        }
+
+        [Test]
+        public void Should_return_a_unique_non_seqential_integer_value_each_time_Generate_is_called()
+        {
             // Act
             var generator = new HiLoGenerator();
             generator.Options["ServerURL"] = _url;
@@ -109,10 +128,10 @@ namespace SineSignal.Ottoman.Tests.Unit.Generators.HiLoGeneratorTests
             var secondID = generator.Generate();
             var thirdID = generator.Generate();
 
-
-            Assert.AreEqual(uuid + "00000001", firstID);
-            Assert.AreEqual(uuid + "00000002", secondID);
-            Assert.AreEqual(uuid + "00000003", thirdID);
+            // Assert
+            Assert.AreEqual(487960822, firstID); //these values are known because the uuid 'seed' is fixed by mocking the request
+            Assert.AreEqual(-298905889, secondID);
+            Assert.AreEqual(451382325, thirdID);
         }
     }
 }

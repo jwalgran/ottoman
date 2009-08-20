@@ -28,19 +28,26 @@ namespace SineSignal.Ottoman.Generators
     /// <summary>
     /// Used to generate document IDs seeded with a random value from a CouchDB then incremented on the client.
     /// </summary>
-    class HiLoGenerator : IGenerator<string>
+    class HiLoGenerator : IGenerator<int>
     {
         public Dictionary<string, object> Options { get; set; }
 
         private string _uuid = null;
         private int _sequence = 0;
+        private System.Security.Cryptography.MD5 _md5 = System.Security.Cryptography.MD5.Create();
 
         /// <summary>
         /// Generates a unique document ID.
         /// </summary>
-        /// <returns>A unique string each time the function is called.</returns>
-        public string Generate()
+        /// <returns>A unique integer each time the function is called.</returns>
+        public int Generate()
         {
+            if (_sequence == (int)Options["LoThreshold"])
+            {
+                _sequence = 0;
+                _uuid = null;
+            }
+
             if (_uuid == null)
             {
                 var proxy = (Ottoman.Proxy.IRestProxy)Options["RestProxy"];
@@ -51,19 +58,17 @@ namespace SineSignal.Ottoman.Generators
                 JObject o = JObject.Parse(response.Body);
                 _uuid = o["uuids"][0].ToString().Replace("\"", ""); //The uuid is returned double quoted. The call to Replace strips off the quotes.
             }
-            return _uuid + GetNextSequenceNumber();
+            var stringID =  GetNextSequenceNumber().ToString() + _uuid;
+            return System.BitConverter.ToInt32(_md5.ComputeHash(System.Text.ASCIIEncoding.ASCII.GetBytes(stringID)),0);
         }
 
-        private string GetNextSequenceNumber()
-        {
-            _sequence++;
-            return String.Format("{0:X}", _sequence).PadLeft(8,'0');
-        }
+        private int GetNextSequenceNumber() { return _sequence++; }
 
         public HiLoGenerator()
         {
             Options = new Dictionary<string, object> { {"ServerURL", "http://127.0.0.1:5984"},
-                                                       {"RestProxy", new Ottoman.Proxy.RestProxy(new Ottoman.Proxy.HttpClient())} };
+                                                       {"RestProxy", new Ottoman.Proxy.RestProxy(new Ottoman.Proxy.HttpClient())},
+                                                       {"LoThreshold", int.MaxValue} };
         }
     }       
 }
