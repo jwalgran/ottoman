@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
+    <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{C5B2DC88-9014-4D4E-9B32-B971D75AA953}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -55,6 +55,8 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -63,6 +65,7 @@
     <Compile Include="SampleDomain\Manager.cs" />
     <Compile Include="SampleDomain\Worker.cs" />
     <Compile Include="Unit\DatabaseTests.cs" />
+    <Compile Include="Unit\GeneratorTests.cs" />
     <Compile Include="Unit\ServerTests.cs" />
     <Compile Include="Unit\Proxy\RestProxyTests.cs" />
     <Compile Include="Unit\Serializers\JsonSerializerTests.cs" />
