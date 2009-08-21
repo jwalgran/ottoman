@@ -192,5 +192,21 @@ namespace SineSignal.Ottoman
 
 			return Serializer.Deserialize<ServerInfo>(response.Body);
 		}
+
+		/// <summary>
+		/// Creates a get request to the CouchDB server to generate a specified number of UUIDS.
+		/// </summary>
+		/// <param name="count">The number of UUIDS you want generated.</param>
+		/// <returns>An array of <see cref="Guid" /></returns>
+		public Guid[] GetUuids(int count)
+		{
+			UriBuilder requestUrl = new UriBuilder(Url);
+			requestUrl.Path = "_uuids";
+			requestUrl.Query = "count=" + count;
+			
+			IHttpResponse response = RestProxy.Get(requestUrl.Uri);
+			
+			return Serializer.Deserialize<Guid[]>(response.Body);
+		}
 	}
 }

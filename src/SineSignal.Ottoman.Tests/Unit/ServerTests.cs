@@ -141,7 +141,7 @@ namespace SineSignal.Ottoman.Tests.Unit
 		protected override Server EstablishContext()
 		{
 			// Arrange
-			Url = "http://127.0.0.1/";
+			Url = "http://127.0.0.1:5984/";
 			MockRestProxy = new Mock<IRestProxy>();
 			MockSerializer = new Mock<ISerializer>();
 
@@ -225,7 +225,7 @@ namespace SineSignal.Ottoman.Tests.Unit
 		protected override Server EstablishContext()
 		{
 			// Arrange
-			Url = "http://127.0.0.1/";
+			Url = "http://127.0.0.1:5984/";
 			MockRestProxy = new Mock<IRestProxy>();
 			MockSerializer = new Mock<ISerializer>();
 
@@ -309,7 +309,7 @@ namespace SineSignal.Ottoman.Tests.Unit
 		protected override Server EstablishContext()
 		{
 			// Arrange
-			Url = "http://127.0.0.1/";
+			Url = "http://127.0.0.1:5984/";
 			MockRestProxy = new Mock<IRestProxy>();
 			MockSerializer = new Mock<ISerializer>();
 
@@ -440,7 +440,7 @@ namespace SineSignal.Ottoman.Tests.Unit
 		protected override Server EstablishContext()
 		{
 			// Arrange
-			Url = "http://127.0.0.1/";
+			Url = "http://127.0.0.1:5984/";
 			RequestUrl = new Uri(Url + "_all_dbs");
 			MockRestProxy = new Mock<IRestProxy>();
 			MockSerializer = new Mock<ISerializer>();
@@ -481,7 +481,7 @@ namespace SineSignal.Ottoman.Tests.Unit
 		}
 		
 		[Test]
-		public void Should_return_a_string_array_populated_with_the_deserialized_response()
+		public void Should_return_a_string_array_of_database_names_populated_with_the_deserialized_response()
 		{
 			// Arrange
 			string body = "[\"test1\",\"test2\"]";
@@ -495,6 +495,8 @@ namespace SineSignal.Ottoman.Tests.Unit
 			// Assert
 			Assert.IsNotNull(databases);
 			Assert.AreEqual(2, databases.Length);
+			Assert.AreEqual("test1", databases[0]);
+			Assert.AreEqual("test2", databases[1]);
 		}
 	}
 	
@@ -509,7 +511,7 @@ namespace SineSignal.Ottoman.Tests.Unit
 		protected override Server EstablishContext()
 		{
 			// Arrange
-			Url = "http://127.0.0.1/";
+			Url = "http://127.0.0.1:5984/";
 			RequestUrl = new Uri(Url);
 			MockRestProxy = new Mock<IRestProxy>();
 			MockSerializer = new Mock<ISerializer>();
@@ -565,6 +567,81 @@ namespace SineSignal.Ottoman.Tests.Unit
 			Assert.IsNotNull(serverInfo);
 			Assert.AreEqual("Welcome", serverInfo.Message);
 			Assert.AreEqual("0.10.0a800465", serverInfo.Version);
+		}
+	}
+
+	[TestFixture]
+	public class When_retrieving_a_list_of_uuids : OttomanSpecBase<Server>
+	{
+		private string Url { get; set; }
+		private Mock<IRestProxy> MockRestProxy { get; set; }
+		private Mock<ISerializer> MockSerializer { get; set; }
+
+		protected override Server EstablishContext()
+		{
+			// Arrange
+			Url = "http://127.0.0.1:5984/";
+			MockRestProxy = new Mock<IRestProxy>();
+			MockSerializer = new Mock<ISerializer>();
+
+			return new Server(Url, MockRestProxy.Object, MockSerializer.Object);
+		}
+
+		[Test]
+		public void Should_call_get_on_rest_proxy_and_pass_uuids_and_count_parameter_on_the_url()
+		{
+			// Arrange
+			int count = 2;
+			Uri requestUrl = new Uri(Url + "_uuids?count=" + count);
+			string body = "[\"473b6a153627bdd551a712ac09abe847\",\"9df864f019a8a0e7435ff29a45205a71\"]";
+
+			MockRestProxy.Setup(x => x.Get(requestUrl)).Returns(new HttpResponse(HttpStatusCode.OK, body));
+			MockSerializer.Setup(x => x.Deserialize<Guid[]>(body)).Returns(new Guid[] { new Guid("473b6a153627bdd551a712ac09abe847"), new Guid("9df864f019a8a0e7435ff29a45205a71") });
+
+			// Act
+			Sut.GetUuids(count);
+
+			// Assert
+			MockRestProxy.Verify(x => x.Get(requestUrl));
+		}
+
+		[Test]
+		public void Should_call_deserialize_and_pass_the_body_of_the_response()
+		{
+			// Arrange
+			int count = 2;
+			Uri requestUrl = new Uri(Url + "_uuids?count=" + count);
+			string body = "[\"473b6a153627bdd551a712ac09abe847\",\"9df864f019a8a0e7435ff29a45205a71\"]";
+
+			MockRestProxy.Setup(x => x.Get(requestUrl)).Returns(new HttpResponse(HttpStatusCode.OK, body));
+			MockSerializer.Setup(x => x.Deserialize<Guid[]>(body)).Returns(new Guid[] { new Guid("473b6a153627bdd551a712ac09abe847"), new Guid("9df864f019a8a0e7435ff29a45205a71") });
+
+			// Act
+			Sut.GetUuids(count);
+
+			// Assert
+			MockSerializer.Verify(x => x.Deserialize<Guid[]>(body));
+		}
+
+		[Test]
+		public void Should_return_a_string_array_of_uuids_populated_with_the_deserialized_response()
+		{
+			// Arrange
+			int count = 2;
+			Uri requestUrl = new Uri(Url + "_uuids?count=" + count);
+			string body = "[\"473b6a153627bdd551a712ac09abe847\",\"9df864f019a8a0e7435ff29a45205a71\"]";
+
+			MockRestProxy.Setup(x => x.Get(requestUrl)).Returns(new HttpResponse(HttpStatusCode.OK, body));
+			MockSerializer.Setup(x => x.Deserialize<Guid[]>(body)).Returns(new Guid[] { new Guid("473b6a153627bdd551a712ac09abe847"), new Guid("9df864f019a8a0e7435ff29a45205a71") });
+
+			// Act
+			Guid[] uuids = Sut.GetUuids(count);
+
+			// Assert
+			Assert.IsNotNull(uuids);
+			Assert.AreEqual(count, uuids.Length);
+			Assert.AreEqual(new Guid("473b6a153627bdd551a712ac09abe847"), uuids[0]);
+			Assert.AreEqual(new Guid("9df864f019a8a0e7435ff29a45205a71"), uuids[1]);
 		}
 	}
 }

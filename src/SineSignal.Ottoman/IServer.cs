@@ -35,5 +35,6 @@ namespace SineSignal.Ottoman
 		IDatabase GetDatabase(string name);
 		string[] GetDatabases();
 		IServerInfo GetInfo();
+		Guid[] GetUuids(int count);
 	}
 }
