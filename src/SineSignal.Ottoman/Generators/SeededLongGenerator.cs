@@ -28,7 +28,7 @@ namespace SineSignal.Ottoman.Generators
     /// <summary>
     /// Used to generate document IDs seeded with a random value from a CouchDB then incremented on the client.
     /// </summary>
-    class HiLoGenerator : IGenerator<int>
+    class SeededLongGenerator : IGenerator<long>
     {
         public Dictionary<string, object> Options { get; set; }
 
@@ -40,9 +40,9 @@ namespace SineSignal.Ottoman.Generators
         /// Generates a unique document ID.
         /// </summary>
         /// <returns>A unique integer each time the function is called.</returns>
-        public int Generate()
+        public long Generate()
         {
-            if (_sequence == (int)Options["LoThreshold"])
+            if (_sequence == (int)Options["ReseedInterval"])
             {
                 _sequence = 0;
                 _uuid = null;
@@ -58,17 +58,18 @@ namespace SineSignal.Ottoman.Generators
                 JObject o = JObject.Parse(response.Body);
                 _uuid = o["uuids"][0].ToString().Replace("\"", ""); //The uuid is returned double quoted. The call to Replace strips off the quotes.
             }
-            var stringID =  GetNextSequenceNumber().ToString() + _uuid;
-            return System.BitConverter.ToInt32(_md5.ComputeHash(System.Text.ASCIIEncoding.ASCII.GetBytes(stringID)),0);
+            var stringID = _uuid + GetNextSequenceNumber().ToString("X");
+            var hash = _md5.ComputeHash(System.Text.ASCIIEncoding.ASCII.GetBytes(stringID));
+            return Convert.ToInt64(System.BitConverter.ToUInt32(hash,0));
         }
 
         private int GetNextSequenceNumber() { return _sequence++; }
 
-        public HiLoGenerator()
+        public SeededLongGenerator()
         {
             Options = new Dictionary<string, object> { {"ServerURL", "http://127.0.0.1:5984"},
                                                        {"RestProxy", new Ottoman.Proxy.RestProxy(new Ottoman.Proxy.HttpClient())},
-                                                       {"LoThreshold", int.MaxValue} };
+                                                       {"ReseedInterval", int.MaxValue} };
         }
     }       
 }
