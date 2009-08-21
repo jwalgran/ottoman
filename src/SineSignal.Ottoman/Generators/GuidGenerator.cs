@@ -1,6 +1,6 @@
 ﻿#region License
 
-// <copyright file="RestProxyTests.cs" company="SineSignal, LLC.">
+// <copyright file="GuidGenerator.cs" company="SineSignal, LLC.">
 //   Copyright 2007-2009 SineSignal, LLC.
 //       Licensed under the Apache License, Version 2.0 (the "License");
 //       you may not use this file except in compliance with the License.
@@ -17,24 +17,23 @@
 // </copyright>
 
 #endregion
+
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace SineSignal.Ottoman.Generators
 {
     /// <summary>
-    /// Used for generating random document IDs using the .NET Framework Guid class.
+    /// Used for generating random document identifiers using the .NET Framework Guid class.
     /// </summary>
     class GuidGenerator : IGenerator<Guid>
     {
         public Dictionary<string, object> Options { get; set; }
 
         /// <summary>
-        /// Creates a unique, random document ID.
+        /// Creates a unique, random document identifier.
         /// </summary>
-        /// <returns>The default string representation of a new Guid.</returns>
+        /// <returns>The new Guid.</returns>
         public Guid Generate()
         {
             return Guid.NewGuid();

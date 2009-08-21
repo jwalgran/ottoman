@@ -1,6 +1,6 @@
 ﻿#region License
 
-// <copyright file="RestProxyTests.cs" company="SineSignal, LLC.">
+// <copyright file="GuidGeneratorTests.cs" company="SineSignal, LLC.">
 //   Copyright 2007-2009 SineSignal, LLC.
 //       Licensed under the Apache License, Version 2.0 (the "License");
 //       you may not use this file except in compliance with the License.
@@ -17,15 +17,14 @@
 // </copyright>
 
 #endregion
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using SineSignal.Ottoman.Generators;
-using MbUnit.Framework;
-using Moq;
 
-namespace SineSignal.Ottoman.Tests.Unit.Generators.GuidGeneratorTests
+using System;
+
+using MbUnit.Framework;
+
+using SineSignal.Ottoman.Generators;
+
+namespace SineSignal.Ottoman.Tests.Unit.Generators
 {
     [TestFixture]
     public class When_generating_an_ID_using_the_GuidGenerator
@@ -34,8 +33,10 @@ namespace SineSignal.Ottoman.Tests.Unit.Generators.GuidGeneratorTests
         public void Should_return_a_Guid()
         {
             var generator = new GuidGenerator();
-            var id = generator.Generate();
+            Guid id = generator.Generate();
+            
             Assert.IsInstanceOfType<Guid>(id);
+            Assert.AreNotEqual(default(Guid), id);
         }
     }
 }

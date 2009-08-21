@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Net;
-using SineSignal.Ottoman;
-#region License
+﻿#region License
 
-// <copyright file="RestProxyTests.cs" company="SineSignal, LLC.">
+// <copyright file="SeededLongGeneratorTests.cs" company="SineSignal, LLC.">
 //   Copyright 2007-2009 SineSignal, LLC.
 //       Licensed under the Apache License, Version 2.0 (the "License");
 //       you may not use this file except in compliance with the License.
@@ -23,12 +17,17 @@ using SineSignal.Ottoman;
 // </copyright>
 
 #endregion
-using SineSignal.Ottoman.Generators;
-using SineSignal.Ottoman.Proxy;
+
+using System;
+using System.Net;
+
 using MbUnit.Framework;
 using Moq;
 
-namespace SineSignal.Ottoman.Tests.Unit.Generators.SeededLongGeneratorTests
+using SineSignal.Ottoman.Generators;
+using SineSignal.Ottoman.Proxy;
+
+namespace SineSignal.Ottoman.Tests.Unit.Generators
 {
     [TestFixture]
     public class When_creating_a_SeededLongGenerator
@@ -50,7 +49,7 @@ namespace SineSignal.Ottoman.Tests.Unit.Generators.SeededLongGeneratorTests
         [Test]
         public void Should_have_a_default_RestProxy_option_set_to_a_new_instance_of_RestProxy()
         {
-            Assert.IsInstanceOfType<Ottoman.Proxy.RestProxy>(_generator.Options["RestProxy"]);
+            Assert.IsInstanceOfType<RestProxy>(_generator.Options["RestProxy"]);
         }
 
         [Test]
@@ -65,7 +64,7 @@ namespace SineSignal.Ottoman.Tests.Unit.Generators.SeededLongGeneratorTests
     {
         private Mock<IRestProxy> _mockRestProxy;
         private string _url;
-        private Uri _uuidURI;
+        private Uri _uuidUri;
 
         [SetUp]
         public void SetUp()
@@ -76,14 +75,14 @@ namespace SineSignal.Ottoman.Tests.Unit.Generators.SeededLongGeneratorTests
             string uuid = "0123456789abcdef0123456789abcdef";
             string body = "{\"uuids\":[\"" + uuid + "\"]}";
             requestUriBuilder.Path = "_uuids";
-            _uuidURI = requestUriBuilder.Uri;
+            _uuidUri = requestUriBuilder.Uri;
 
             var mockHttpResponse = new Mock<IHttpResponse>();
             mockHttpResponse.Setup(x => x.StatusCode).Returns(HttpStatusCode.OK);
             mockHttpResponse.Setup(x => x.Body).Returns(body);
 
             _mockRestProxy = new Mock<IRestProxy>();
-            _mockRestProxy.Setup(x => x.Get(_uuidURI)).Returns(mockHttpResponse.Object);
+            _mockRestProxy.Setup(x => x.Get(_uuidUri)).Returns(mockHttpResponse.Object);
         }
 
         [Test]
@@ -98,7 +97,7 @@ namespace SineSignal.Ottoman.Tests.Unit.Generators.SeededLongGeneratorTests
             generator.Generate();
 
             // Assert
-            _mockRestProxy.Verify(x => x.Get(_uuidURI), Times.Once());
+            _mockRestProxy.Verify(x => x.Get(_uuidUri), Times.Once());
         }
 
         [Test]
@@ -114,7 +113,7 @@ namespace SineSignal.Ottoman.Tests.Unit.Generators.SeededLongGeneratorTests
             generator.Generate(); //This third call should trigger the next uuid request since ReseedInterval is 2
 
             // Assert
-            _mockRestProxy.Verify(x => x.Get(_uuidURI), Times.Exactly(2));
+            _mockRestProxy.Verify(x => x.Get(_uuidUri), Times.Exactly(2));
         }
 
         [Test]

@@ -1,6 +1,6 @@
 ﻿#region License
 
-// <copyright file="RestProxyTests.cs" company="SineSignal, LLC.">
+// <copyright file="SeededLongGenerator.cs" company="SineSignal, LLC.">
 //   Copyright 2007-2009 SineSignal, LLC.
 //       Licensed under the Apache License, Version 2.0 (the "License");
 //       you may not use this file except in compliance with the License.
@@ -17,27 +17,31 @@
 // </copyright>
 
 #endregion
+
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
+
 using Newtonsoft.Json.Linq;
+
+using SineSignal.Ottoman.Proxy;
 
 namespace SineSignal.Ottoman.Generators
 {
     /// <summary>
-    /// Used to generate document IDs seeded with a random value from a CouchDB then incremented on the client.
+    /// Used to generate document identifier's seeded with a random value from a CouchDB server then incremented on the client.
     /// </summary>
     class SeededLongGenerator : IGenerator<long>
     {
         public Dictionary<string, object> Options { get; set; }
 
-        private string _uuid = null;
-        private int _sequence = 0;
-        private System.Security.Cryptography.MD5 _md5 = System.Security.Cryptography.MD5.Create();
+        private string _uuid;
+        private int _sequence;
+        private MD5 _md5 = MD5.Create();
 
         /// <summary>
-        /// Generates a unique document ID.
+        /// Generates a unique document identifier.
         /// </summary>
         /// <returns>A unique integer each time the function is called.</returns>
         public long Generate()
@@ -50,7 +54,7 @@ namespace SineSignal.Ottoman.Generators
 
             if (_uuid == null)
             {
-                var proxy = (Ottoman.Proxy.IRestProxy)Options["RestProxy"];
+                var proxy = (IRestProxy)Options["RestProxy"];
                 var uuidURIBuilder = new UriBuilder((string)Options["ServerURL"]);
                 uuidURIBuilder.Path = "_uuids";
                 var response = proxy.Get(uuidURIBuilder.Uri);
@@ -59,8 +63,8 @@ namespace SineSignal.Ottoman.Generators
                 _uuid = o["uuids"][0].ToString().Replace("\"", ""); //The uuid is returned double quoted. The call to Replace strips off the quotes.
             }
             var stringID = _uuid + GetNextSequenceNumber().ToString("X");
-            var hash = _md5.ComputeHash(System.Text.ASCIIEncoding.ASCII.GetBytes(stringID));
-            return Convert.ToInt64(System.BitConverter.ToUInt32(hash,0));
+            var hash = _md5.ComputeHash(Encoding.ASCII.GetBytes(stringID));
+            return Convert.ToInt64(BitConverter.ToUInt32(hash,0));
         }
 
         private int GetNextSequenceNumber() { return _sequence++; }
@@ -68,7 +72,7 @@ namespace SineSignal.Ottoman.Generators
         public SeededLongGenerator()
         {
             Options = new Dictionary<string, object> { {"ServerURL", "http://127.0.0.1:5984"},
-                                                       {"RestProxy", new Ottoman.Proxy.RestProxy(new Ottoman.Proxy.HttpClient())},
+                                                       {"RestProxy", new RestProxy(new HttpClient())},
                                                        {"ReseedInterval", int.MaxValue} };
         }
     }       

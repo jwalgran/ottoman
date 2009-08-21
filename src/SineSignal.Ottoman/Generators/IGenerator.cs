@@ -1,6 +1,6 @@
 ﻿#region License
 
-// <copyright file="RestProxyTests.cs" company="SineSignal, LLC.">
+// <copyright file="IGenerator.cs" company="SineSignal, LLC.">
 //   Copyright 2007-2009 SineSignal, LLC.
 //       Licensed under the Apache License, Version 2.0 (the "License");
 //       you may not use this file except in compliance with the License.
@@ -17,10 +17,8 @@
 // </copyright>
 
 #endregion
-using System;
+
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace SineSignal.Ottoman.Generators
 {
