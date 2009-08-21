@@ -112,8 +112,8 @@ namespace SineSignal.Ottoman.Tests.Unit
 
 		 	mockServer.Setup(x => x.Serializer).Returns(mockSerializer.Object);
 		 	mockSerializer.Setup(x => x.Serialize(manager)).Returns(json);
-		 	mockSerializer.Setup(x => x.Remove(json, "Id")).Returns(jsonMinusId);
-		 	mockSerializer.Setup(x => x.Add(jsonMinusId, "doc_type", docType)).Returns(jsonDocTypeAdded);
+		 	mockSerializer.Setup(x => x.RemoveKeyFrom(json, "Id")).Returns(jsonMinusId);
+		 	mockSerializer.Setup(x => x.AddKeyTo(jsonMinusId, "doc_type", docType)).Returns(jsonDocTypeAdded);
 		 	mockServer.Setup(x => x.RestProxy).Returns(mockRestProxy.Object);
 		 	mockSerializer.Setup(x => x.ContentType).Returns("application/json");
 			mockRestProxy.Setup(x => x.Put(It.IsAny<Uri>(), "application/json", jsonDocTypeAdded)).Returns(mockHttpResponse.Object);
@@ -128,8 +128,8 @@ namespace SineSignal.Ottoman.Tests.Unit
 		 	
 		 	mockServer.VerifyGet(x => x.Serializer);
 		 	mockSerializer.Verify(x => x.Serialize(manager));
-		 	mockSerializer.Verify(x => x.Remove(json, "Id"));
-		 	mockSerializer.Verify(x => x.Add(jsonMinusId, "doc_type", docType));
+		 	mockSerializer.Verify(x => x.RemoveKeyFrom(json, "Id"));
+		 	mockSerializer.Verify(x => x.AddKeyTo(jsonMinusId, "doc_type", docType));
 		 	mockServer.VerifyGet(x => x.RestProxy);
 		 	mockSerializer.VerifyGet(x => x.ContentType);
 		 	mockRestProxy.Verify(x => x.Put(It.IsAny<Uri>(), "application/json", jsonDocTypeAdded));

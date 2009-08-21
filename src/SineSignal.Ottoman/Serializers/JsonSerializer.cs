@@ -80,7 +80,7 @@ namespace SineSignal.Ottoman.Serializers
 		/// <param name="json">The json to remove key from.</param>
 		/// <param name="key">The key to remove.</param>
 		/// <returns>JSON string without the key.</returns>
-		public string Remove(string json, string key)
+		public string RemoveKeyFrom(string json, string key)
 		{
 			JObject jObject = JObject.Parse(json);
 			jObject.Remove(key);
@@ -94,7 +94,7 @@ namespace SineSignal.Ottoman.Serializers
 		/// <param name="key">The key to add.</param>
 		/// <param name="value">The value of the key.</param>
 		/// <returns>JSON string with the added key.</returns>
-		public string Add(string json, string key, string value)
+		public string AddKeyTo(string json, string key, string value)
 		{
 			JObject jObject = JObject.Parse(json);
 			jObject.Add("doc_type", JToken.FromObject(value));

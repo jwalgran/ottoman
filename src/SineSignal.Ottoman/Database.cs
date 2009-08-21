@@ -82,15 +82,15 @@ namespace SineSignal.Ottoman
 		{
 			Type type = typeof(T);
 			
-			// TODO:  Add id generators, to generate the Id
+			// TODO:  AddKeyTo id generators, to generate the Id
 			Guid id = Guid.NewGuid();
 			type.GetProperty("Id").SetValue(objectToPersist, id, null);
 
 			ISerializer serializer = Server.Serializer;
 			string json = serializer.Serialize(objectToPersist);
 			string docType = type.Name;
-			json = serializer.Remove(json, "Id");
-			json = serializer.Add(json, "doc_type", docType);
+			json = serializer.RemoveKeyFrom(json, "Id");
+			json = serializer.AddKeyTo(json, "doc_type", docType);
 
 			IRestProxy restProxy = Server.RestProxy;
 			string contentType = serializer.ContentType;
