@@ -19,9 +19,10 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
+
 using MbUnit.Framework;
 
+using SineSignal.Ottoman.Exceptions;
 using SineSignal.Ottoman.Serializers;
 using SineSignal.Ottoman.Tests.SampleDomain;
 

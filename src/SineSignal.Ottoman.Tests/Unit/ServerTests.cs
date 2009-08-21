@@ -24,6 +24,7 @@ using System.Net;
 using MbUnit.Framework;
 using Moq;
 
+using SineSignal.Ottoman.Exceptions;
 using SineSignal.Ottoman.Proxy;
 using SineSignal.Ottoman.Serializers;
 
