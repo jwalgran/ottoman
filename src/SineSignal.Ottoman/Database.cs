@@ -47,7 +47,7 @@ namespace SineSignal.Ottoman
 		/// Gets or sets the proxy to use for talking to the CouchDB server.
 		/// </summary>
 		/// <value>The rest proxy.</value>
-		public IRestProxy RestProxy { get; private set; }
+		public IRestClient RestClient { get; private set; }
 
 		/// <summary>
 		/// Gets or sets the serializer to use for deserializing responses from the proxy.
@@ -70,13 +70,13 @@ namespace SineSignal.Ottoman
 		/// </summary>
 		/// <param name="server">The server the database resides on.</param>
 		/// <param name="info">The info about the database.</param>
-		/// <param name="restProxy">The proxy to use for talking to the CouchDB server.</param>
+		/// <param name="restClient">The proxy to use for talking to the CouchDB server.</param>
 		/// <param name="serializer">The serializer to use for serializing and deserializing objects.</param>
-		public Database(IServer server, IDatabaseInfo info, IRestProxy restProxy, ISerializer serializer)
+		public Database(IServer server, IDatabaseInfo info, IRestClient restClient, ISerializer serializer)
 		{
 			Server = server;
 			Info = info;
-			RestProxy = restProxy;
+			RestClient = restClient;
 			Serializer = serializer;
 		}
 
@@ -85,7 +85,7 @@ namespace SineSignal.Ottoman
 		/// </summary>
 		public void UpdateInfo()
 		{
-			IHttpResponse response = RestProxy.Get(Root);
+			IHttpResponse response = RestClient.Get(Root);
 			Info = Serializer.Deserialize<DatabaseInfo>(response.Body);
 		}
 
@@ -108,7 +108,7 @@ namespace SineSignal.Ottoman
 			string contentType = Serializer.ContentType;
 			UriBuilder uriBuilder = new UriBuilder(Root);
 			uriBuilder.Path = uriBuilder.Path + "/" + id;
-			IHttpResponse response = RestProxy.Put(uriBuilder.Uri, contentType, json);
+			IHttpResponse response = RestClient.Put(uriBuilder.Uri, contentType, json);
 			
 			if (response.StatusCode != HttpStatusCode.Created)
 			{

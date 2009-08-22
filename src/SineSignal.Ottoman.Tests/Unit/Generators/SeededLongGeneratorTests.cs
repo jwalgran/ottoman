@@ -49,7 +49,7 @@ namespace SineSignal.Ottoman.Tests.Unit.Generators
         [Test]
         public void Should_have_a_default_RestProxy_option_set_to_a_new_instance_of_RestProxy()
         {
-            Assert.IsInstanceOfType<RestProxy>(_generator.Options["RestProxy"]);
+            Assert.IsInstanceOfType<RestClient>(_generator.Options["RestClient"]);
         }
 
         [Test]
@@ -62,7 +62,7 @@ namespace SineSignal.Ottoman.Tests.Unit.Generators
     [TestFixture]
     public class When_generating_an_ID_using_the_SeededLongGenerator
     {
-        private Mock<IRestProxy> _mockRestProxy;
+        private Mock<IRestClient> _mockRestProxy;
         private string _url;
         private Uri _uuidUri;
 
@@ -81,7 +81,7 @@ namespace SineSignal.Ottoman.Tests.Unit.Generators
             mockHttpResponse.Setup(x => x.StatusCode).Returns(HttpStatusCode.OK);
             mockHttpResponse.Setup(x => x.Body).Returns(body);
 
-            _mockRestProxy = new Mock<IRestProxy>();
+            _mockRestProxy = new Mock<IRestClient>();
             _mockRestProxy.Setup(x => x.Get(_uuidUri)).Returns(mockHttpResponse.Object);
         }
 
@@ -91,7 +91,7 @@ namespace SineSignal.Ottoman.Tests.Unit.Generators
             // Act
             var generator = new SeededLongGenerator();
             generator.Options["ServerURL"] = _url;
-            generator.Options["RestProxy"] = _mockRestProxy.Object;
+            generator.Options["RestClient"] = _mockRestProxy.Object;
             generator.Generate();
             generator.Generate();
             generator.Generate();
@@ -106,7 +106,7 @@ namespace SineSignal.Ottoman.Tests.Unit.Generators
             // Act
             var generator = new SeededLongGenerator();
             generator.Options["ServerURL"] = _url;
-            generator.Options["RestProxy"] = _mockRestProxy.Object;
+            generator.Options["RestClient"] = _mockRestProxy.Object;
             generator.Options["ReseedInterval"] = 2;
             generator.Generate(); //This call should trigger the frist uuid request
             generator.Generate();
@@ -122,7 +122,7 @@ namespace SineSignal.Ottoman.Tests.Unit.Generators
             // Act
             var generator = new SeededLongGenerator();
             generator.Options["ServerURL"] = _url;
-            generator.Options["RestProxy"] = _mockRestProxy.Object;
+            generator.Options["RestClient"] = _mockRestProxy.Object;
             var firstID = generator.Generate();
             var secondID = generator.Generate();
             var thirdID = generator.Generate();

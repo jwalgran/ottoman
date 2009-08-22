@@ -67,10 +67,10 @@
     <Compile Include="Proxy\HttpClient.cs" />
     <Compile Include="Proxy\HttpResponse.cs" />
     <Compile Include="Proxy\IHttpClient.cs" />
-    <Compile Include="Proxy\IRestProxy.cs" />
+    <Compile Include="Proxy\IRestClient.cs" />
     <Compile Include="Proxy\IHttpRequest.cs" />
     <Compile Include="Proxy\IHttpResponse.cs" />
-    <Compile Include="Proxy\RestProxy.cs" />
+    <Compile Include="Proxy\RestClient.cs" />
     <Compile Include="Proxy\HttpRequest.cs" />
     <Compile Include="Serializers\ISerializer.cs" />
     <Compile Include="Serializers\JsonSerializer.cs" />

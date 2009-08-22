@@ -45,7 +45,7 @@ namespace SineSignal.Ottoman
 		/// Gets or sets the proxy to use for talking to the CouchDB server.
 		/// </summary>
 		/// <value>The rest proxy.</value>
-		public IRestProxy RestProxy { get; private set; }
+		public IRestClient RestClient { get; private set; }
 		
 		/// <summary>
 		/// Gets or sets the serializer to use for deserializing responses from the proxy.
@@ -57,14 +57,14 @@ namespace SineSignal.Ottoman
 		/// Initializes a new instance of the <see cref="Server"/> class.
 		/// </summary>
 		/// <param name="url">The URL of the CouchDB server to be used by the API.</param>
-		/// <param name="restProxy">The proxy to use for talking to the CouchDB server.</param>
+		/// <param name="restClient">The proxy to use for talking to the CouchDB server.</param>
 		/// <param name="serializer">The serializer to use for deserializing responses from the proxy.</param>
 		/// <exception cref="ArgumentNullException">Throws an exception if the url parameter is null or empty string.</exception>
 		/// <exception cref="UriFormatException">Throws an exception if the url parameter is not a valid URI.</exception>
 		/// <exception cref="ArgumentException">Throws an exception if the url parameter doesn't use the HTTP or HTTPS protocol.</exception>
-		/// <exception cref="ArgumentNullException">Throws an exception if the restProxy parameter is null.</exception>
+		/// <exception cref="ArgumentNullException">Throws an exception if the restClient parameter is null.</exception>
 		/// <exception cref="ArgumentNullException">Throws an exception if the serializer parameter is null.</exception>
-		public Server(string url, IRestProxy restProxy, ISerializer serializer)
+		public Server(string url, IRestClient restClient, ISerializer serializer)
 		{
 			// Validate input
 			if (String.IsNullOrEmpty(url))
@@ -77,13 +77,13 @@ namespace SineSignal.Ottoman
 			if (!_url.Scheme.Equals("http") && !_url.Scheme.Equals("https"))
 				throw new ArgumentException("The value is not using the http or https protocol.  This is not allowed since CouchDB uses REST and Http for communication.", "url");
 				
-			if (restProxy == null)
-			    throw new ArgumentNullException("restProxy", "The value cannot be null.");
+			if (restClient == null)
+			    throw new ArgumentNullException("restClient", "The value cannot be null.");
 			    
 			if (serializer == null)
 				throw new ArgumentNullException("serializer", "The value cannot be null.");
 
-			RestProxy = restProxy;
+			RestClient = restClient;
 			Serializer = serializer;
 		}
 
@@ -104,7 +104,7 @@ namespace SineSignal.Ottoman
 			UriBuilder requestUrl = new UriBuilder(Url);
 			requestUrl.Path = name;
 
-			IHttpResponse response = RestProxy.Put(requestUrl.Uri);
+			IHttpResponse response = RestClient.Put(requestUrl.Uri);
 			
 			if (response.StatusCode != HttpStatusCode.Created)
 			{
@@ -130,7 +130,7 @@ namespace SineSignal.Ottoman
 			UriBuilder requestUrl = new UriBuilder(Url);
 			requestUrl.Path = name;
 
-			IHttpResponse response = RestProxy.Delete(requestUrl.Uri);
+			IHttpResponse response = RestClient.Delete(requestUrl.Uri);
 
 			if (response.StatusCode != HttpStatusCode.OK)
 			{
@@ -156,7 +156,7 @@ namespace SineSignal.Ottoman
 			UriBuilder requestUrl = new UriBuilder(Url);
 			requestUrl.Path = name;
 
-			IHttpResponse response = RestProxy.Get(requestUrl.Uri);
+			IHttpResponse response = RestClient.Get(requestUrl.Uri);
 
 			if (response.StatusCode != HttpStatusCode.OK)
 			{
@@ -166,7 +166,7 @@ namespace SineSignal.Ottoman
 
 			IDatabaseInfo databaseInfo = Serializer.Deserialize<DatabaseInfo>(response.Body);
 			
-			return new Database(this, databaseInfo, RestProxy, Serializer);
+			return new Database(this, databaseInfo, RestClient, Serializer);
 		}
 
 		/// <summary>
@@ -178,7 +178,7 @@ namespace SineSignal.Ottoman
 			UriBuilder requestUrl = new UriBuilder(Url);
 			requestUrl.Path = "_all_dbs";
 
-			IHttpResponse response = RestProxy.Get(requestUrl.Uri);
+			IHttpResponse response = RestClient.Get(requestUrl.Uri);
 
 			return Serializer.Deserialize<string[]>(response.Body);
 		}
@@ -189,7 +189,7 @@ namespace SineSignal.Ottoman
 		/// <returns><see cref="ServerInfo" /></returns>
 		public IServerInfo GetInfo()
 		{
-			IHttpResponse response = RestProxy.Get(Url);
+			IHttpResponse response = RestClient.Get(Url);
 
 			return Serializer.Deserialize<ServerInfo>(response.Body);
 		}
@@ -205,7 +205,7 @@ namespace SineSignal.Ottoman
 			requestUrl.Path = "_uuids";
 			requestUrl.Query = "count=" + count;
 			
-			IHttpResponse response = RestProxy.Get(requestUrl.Uri);
+			IHttpResponse response = RestClient.Get(requestUrl.Uri);
 			
 			return Serializer.Deserialize<Guid[]>(response.Body);
 		}

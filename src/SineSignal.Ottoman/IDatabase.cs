@@ -29,7 +29,7 @@ namespace SineSignal.Ottoman
 	{
 		IServer Server { get; }
 		IDatabaseInfo Info { get; }
-		IRestProxy RestProxy { get; }
+		IRestClient RestClient { get; }
 		ISerializer Serializer { get; }
 		Uri Root { get; }
 		void UpdateInfo();

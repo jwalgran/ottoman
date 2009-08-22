@@ -54,7 +54,7 @@ namespace SineSignal.Ottoman.Generators
 
             if (_uuid == null)
             {
-                var proxy = (IRestProxy)Options["RestProxy"];
+                var proxy = (IRestClient)Options["RestClient"];
                 var uuidURIBuilder = new UriBuilder((string)Options["ServerURL"]);
                 uuidURIBuilder.Path = "_uuids";
                 var response = proxy.Get(uuidURIBuilder.Uri);
@@ -72,7 +72,7 @@ namespace SineSignal.Ottoman.Generators
         public SeededLongGenerator()
         {
             Options = new Dictionary<string, object> { {"ServerURL", "http://127.0.0.1:5984"},
-                                                       {"RestProxy", new RestProxy(new HttpClient())},
+                                                       {"RestClient", new RestClient(new HttpClient())},
                                                        {"ReseedInterval", int.MaxValue} };
         }
     }       

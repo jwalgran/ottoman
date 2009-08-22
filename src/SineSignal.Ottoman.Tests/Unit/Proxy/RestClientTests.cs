@@ -29,19 +29,19 @@ using SineSignal.Ottoman.Proxy;
 namespace SineSignal.Ottoman.Tests.Unit.Proxy
 {
 	[TestFixture]
-	public class When_making_a_put_request : OttomanSpecBase<RestProxy>
+	public class When_making_a_put_request : OttomanSpecBase<RestClient>
 	{
 		private Uri Url { get; set; }
 		private string Body { get; set; }
 		private Mock<IHttpClient> MockHttpClient { get; set; }
 		
-		protected override RestProxy EstablishContext()
+		protected override RestClient EstablishContext()
 		{
 			Url = new Uri("http://127.0.0.1/test");
 			Body = "{\"ok\":true}";
 			MockHttpClient = new Mock<IHttpClient>();
 			
-			return new RestProxy(MockHttpClient.Object);
+			return new RestClient(MockHttpClient.Object);
 		}
 
 		[Test]	
@@ -74,7 +74,7 @@ namespace SineSignal.Ottoman.Tests.Unit.Proxy
 	}
 	
 	[TestFixture]
-	public class When_making_a_put_request_with_content_type_and_a_body : OttomanSpecBase<RestProxy>
+	public class When_making_a_put_request_with_content_type_and_a_body : OttomanSpecBase<RestClient>
 	{
 		private Uri Url { get; set; }
 		private string ContentType { get; set; }
@@ -82,7 +82,7 @@ namespace SineSignal.Ottoman.Tests.Unit.Proxy
 		private string ResponseBody { get; set; }
 		private Mock<IHttpClient> MockHttpClient { get; set; }
 
-		protected override RestProxy EstablishContext()
+		protected override RestClient EstablishContext()
 		{
 			Url = new Uri("http://127.0.0.1:5984/test/4B4C3FFB-0F92-4842-8E48-A21D1350A838");
 			ContentType = "application/json";
@@ -90,7 +90,7 @@ namespace SineSignal.Ottoman.Tests.Unit.Proxy
 			ResponseBody = "{\"ok\":true,\"id\":\"4B4C3FFB-0F92-4842-8E48-A21D1350A838\",\"rev\":\"1083377286\"}";
 			MockHttpClient = new Mock<IHttpClient>();
 
-			return new RestProxy(MockHttpClient.Object);
+			return new RestClient(MockHttpClient.Object);
 		}
 		
 		[Test]
@@ -123,19 +123,19 @@ namespace SineSignal.Ottoman.Tests.Unit.Proxy
 	}
 
 	[TestFixture]
-	public class When_making_a_delete_request : OttomanSpecBase<RestProxy>
+	public class When_making_a_delete_request : OttomanSpecBase<RestClient>
 	{
 		private Uri Url { get; set; }
 		private string Body { get; set; }
 		private Mock<IHttpClient> MockHttpClient { get; set; }
 
-		protected override RestProxy EstablishContext()
+		protected override RestClient EstablishContext()
 		{
 			Url = new Uri("http://127.0.0.1/test");
 			Body = "{\"ok\":true}";
 			MockHttpClient = new Mock<IHttpClient>();
 
-			return new RestProxy(MockHttpClient.Object);
+			return new RestClient(MockHttpClient.Object);
 		}
 		
 		[Test]
@@ -168,19 +168,19 @@ namespace SineSignal.Ottoman.Tests.Unit.Proxy
 	}
 	
 	[TestFixture]
-	public class When_making_a_get_request : OttomanSpecBase<RestProxy>
+	public class When_making_a_get_request : OttomanSpecBase<RestClient>
 	{
 		private Uri Url { get; set; }
 		private string Body { get; set; }
 		private Mock<IHttpClient> MockHttpClient { get; set; }
 
-		protected override RestProxy EstablishContext()
+		protected override RestClient EstablishContext()
 		{
 			Url = new Uri("http://127.0.0.1/test");
 			Body = "{\"ok\":true}";
 			MockHttpClient = new Mock<IHttpClient>();
 
-			return new RestProxy(MockHttpClient.Object);
+			return new RestClient(MockHttpClient.Object);
 		}
 		
 		[Test]
@@ -215,7 +215,7 @@ namespace SineSignal.Ottoman.Tests.Unit.Proxy
 	}
 	
 	[TestFixture]
-	public class When_making_a_post_request : OttomanSpecBase<RestProxy>
+	public class When_making_a_post_request : OttomanSpecBase<RestClient>
 	{
 		private Uri Url { get; set; }
 		private string ContentType { get; set; }
@@ -223,7 +223,7 @@ namespace SineSignal.Ottoman.Tests.Unit.Proxy
 		private string ResponseBody { get; set; }
 		private Mock<IHttpClient> MockHttpClient { get; set; }
 
-		protected override RestProxy EstablishContext()
+		protected override RestClient EstablishContext()
 		{
 			Url = new Uri("http://127.0.0.1:5984/test");
 			ContentType = "application/json";
@@ -231,7 +231,7 @@ namespace SineSignal.Ottoman.Tests.Unit.Proxy
 			ResponseBody = "{\"ok\":true,\"id\":\"4B4C3FFB-0F92-4842-8E48-A21D1350A838\",\"rev\":\"1083377286\"}";
 			MockHttpClient = new Mock<IHttpClient>();
 
-			return new RestProxy(MockHttpClient.Object);
+			return new RestClient(MockHttpClient.Object);
 		}
 		
 		[Test]

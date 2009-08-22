@@ -38,17 +38,16 @@ namespace SineSignal.Ottoman
 		}
 
 		/// <summary>
-		/// Creates a Server instance.
+		/// Creates a Server instance with the specified URL.
 		/// </summary>
 		/// <param name="couchUrl">The url to your CouchDB server.</param>
 		/// <returns cref="IServer">A instatiated Server.</returns>
 		public static IServer Create(string couchUrl)
 		{
-			IHttpClient httpClient = new HttpClient();
-			IRestProxy restProxy = new RestProxy(httpClient);
+			IRestClient restClient = new RestClient();
 			ISerializer serializer = new JsonSerializer();
 			
-			return new Server(couchUrl, restProxy, serializer);
+			return new Server(couchUrl, restClient, serializer);
 		}
 	}
 }
