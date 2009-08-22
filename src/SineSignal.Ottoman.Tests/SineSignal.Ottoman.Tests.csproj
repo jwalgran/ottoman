@@ -66,6 +66,8 @@
     <Compile Include="SampleDomain\Worker.cs" />
     <Compile Include="Unit\DatabaseTests.cs" />
     <Compile Include="Unit\Generators\GuidGeneratorTests.cs" />
+    <Compile Include="Unit\Generators\RandomIntegerGeneratorTests.cs" />
+    <Compile Include="Unit\Generators\RandomLongIntegerGeneratorTests.cs" />
     <Compile Include="Unit\Generators\SeededLongGeneratorTests.cs" />
     <Compile Include="Unit\ServerTests.cs" />
     <Compile Include="Unit\Proxy\RestProxyTests.cs" />
