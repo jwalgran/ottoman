@@ -1,6 +1,6 @@
 #region License
 
-// <copyright file="IServer.cs" company="SineSignal, LLC.">
+// <copyright file="OttomanSpecBase.cs" company="SineSignal, LLC.">
 //   Copyright 2007-2009 SineSignal, LLC.
 //       Licensed under the Apache License, Version 2.0 (the "License");
 //       you may not use this file except in compliance with the License.
@@ -18,23 +18,33 @@
 
 #endregion
 
-using System;
+using MbUnit.Framework;
 
-using SineSignal.Ottoman.Proxy;
-using SineSignal.Ottoman.Serializers;
-
-namespace SineSignal.Ottoman
+namespace SineSignal.Ottoman.Tests
 {
-	public interface IServer
+	public class OttomanSpecBase<T> where T : class
 	{
-		Uri Url { get; }
-		IRestProxy RestProxy { get; }
-		ISerializer Serializer { get; }
-		void CreateDatabase(string name);
-		void DeleteDatabase(string name);
-		IDatabase GetDatabase(string name);
-		string[] GetDatabases();
-		IServerInfo GetInfo();
-		Guid[] GetUuids(int count);
+		protected T Sut { get; private set; }
+
+		[SetUp]
+		public void SetUp()
+		{
+			Sut = EstablishContext();
+			Because();
+		}
+
+		[TearDown]
+		public void TearDown()
+		{
+			AfterEachSpecification();
+		}
+
+		protected virtual T EstablishContext()
+		{
+			return default(T);
+		}
+
+		protected virtual void Because() { }
+		protected virtual void AfterEachSpecification() { }
 	}
 }

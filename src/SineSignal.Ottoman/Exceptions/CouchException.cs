@@ -1,6 +1,6 @@
 #region License
 
-// <copyright file="CannotDeleteDatabaseException.cs" company="SineSignal, LLC.">
+// <copyright file="CouchException.cs" company="SineSignal, LLC.">
 //   Copyright 2007-2009 SineSignal, LLC.
 //       Licensed under the Apache License, Version 2.0 (the "License");
 //       you may not use this file except in compliance with the License.
@@ -22,24 +22,36 @@ using System;
 
 using SineSignal.Ottoman.Proxy;
 
-namespace SineSignal.Ottoman
+namespace SineSignal.Ottoman.Exceptions
 {
 	/// <summary>
-	/// A custom exception type to use for handling when a database cannot be deleted in CouchDB.
+	/// A custom exception type to use for handling when things go boom in the night while communicating with CouchDB.
 	/// </summary>
-	public class CannotDeleteDatabaseException : CouchException
+	public class CouchException : Exception
 	{
-		private const string ExceptionMessageFormat = "Failed to delete database '{0}'";
+		/// <summary>
+		/// The error that CouchDB gave.
+		/// </summary>
+		/// <value>The error.</value>
+		public ICouchError CouchError { get; private set; }
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="CannotDeleteDatabaseException"/> class.
+		/// Gets or sets the raw response from the CouchDB server.
 		/// </summary>
-		/// <param name="databaseName">Name of the database.</param>
+		/// <value>The raw response.</value>
+		public IHttpResponse RawResponse { get; private set; }
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="CouchException"/> class.
+		/// </summary>
+		/// <param name="message">Message to use for the exception.</param>
 		/// <param name="couchError">The error that CouchDB gave.</param>
 		/// <param name="rawResponse">The raw response from the CouchDB server.</param>
-		public CannotDeleteDatabaseException(string databaseName, ICouchError couchError, IHttpResponse rawResponse) 
-			: base(String.Format(ExceptionMessageFormat, databaseName), couchError, rawResponse)
+		public CouchException(string message, ICouchError couchError, IHttpResponse rawResponse) 
+			: base(message)
 		{
+			CouchError = couchError;
+			RawResponse = rawResponse;
 		}
 	}
 }

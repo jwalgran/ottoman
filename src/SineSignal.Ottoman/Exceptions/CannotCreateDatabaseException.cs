@@ -22,7 +22,7 @@ using System;
 
 using SineSignal.Ottoman.Proxy;
 
-namespace SineSignal.Ottoman
+namespace SineSignal.Ottoman.Exceptions
 {
 	/// <summary>
 	/// A custom exception type to use for handling when a database cannot be created in CouchDB.

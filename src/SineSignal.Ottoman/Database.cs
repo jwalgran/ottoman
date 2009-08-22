@@ -42,8 +42,20 @@ namespace SineSignal.Ottoman
 		/// </summary>
 		/// <value>The info.</value>
 		public IDatabaseInfo Info { get; private set; }
+
+		/// <summary>
+		/// Gets or sets the proxy to use for talking to the CouchDB server.
+		/// </summary>
+		/// <value>The rest proxy.</value>
+		public IRestProxy RestProxy { get; private set; }
+
+		/// <summary>
+		/// Gets or sets the serializer to use for deserializing responses from the proxy.
+		/// </summary>
+		/// <value>The serializer.</value>
+		public ISerializer Serializer { get; private set; }
 		
-		private Uri Root
+		public Uri Root
 		{
 			get
 			{
@@ -58,10 +70,14 @@ namespace SineSignal.Ottoman
 		/// </summary>
 		/// <param name="server">The server the database resides on.</param>
 		/// <param name="info">The info about the database.</param>
-		public Database(IServer server, IDatabaseInfo info)
+		/// <param name="restProxy">The proxy to use for talking to the CouchDB server.</param>
+		/// <param name="serializer">The serializer to use for serializing and deserializing objects.</param>
+		public Database(IServer server, IDatabaseInfo info, IRestProxy restProxy, ISerializer serializer)
 		{
 			Server = server;
 			Info = info;
+			RestProxy = restProxy;
+			Serializer = serializer;
 		}
 
 		/// <summary>
@@ -69,8 +85,8 @@ namespace SineSignal.Ottoman
 		/// </summary>
 		public void UpdateInfo()
 		{
-			IHttpResponse response = Server.RestProxy.Get(Root);
-			Info = Server.Serializer.Deserialize<DatabaseInfo>(response.Body);
+			IHttpResponse response = RestProxy.Get(Root);
+			Info = Serializer.Deserialize<DatabaseInfo>(response.Body);
 		}
 
 		/// <summary>
@@ -82,28 +98,31 @@ namespace SineSignal.Ottoman
 		{
 			Type type = typeof(T);
 			
-			// TODO:  Add id generators, to generate the Id
+			// TODO:  AddKeyTo id generators, to generate the Id
 			Guid id = Guid.NewGuid();
 			type.GetProperty("Id").SetValue(objectToPersist, id, null);
 
-			ISerializer serializer = Server.Serializer;
-			string json = serializer.Serialize(objectToPersist);
 			string docType = type.Name;
-			json = serializer.Remove(json, "Id");
-			json = serializer.Add(json, "doc_type", docType);
+			string json = MassageJsonForSending(Serializer.Serialize(objectToPersist), docType);
 
-			IRestProxy restProxy = Server.RestProxy;
-			string contentType = serializer.ContentType;
+			string contentType = Serializer.ContentType;
 			UriBuilder uriBuilder = new UriBuilder(Root);
 			uriBuilder.Path = uriBuilder.Path + "/" + id;
-			IHttpResponse response = restProxy.Put(uriBuilder.Uri, contentType, json);
+			IHttpResponse response = RestProxy.Put(uriBuilder.Uri, contentType, json);
 			
 			if (response.StatusCode != HttpStatusCode.Created)
 			{
 				// TODO:  Throw exception based on body of response
 			}
 
-			IDocument document = serializer.Deserialize<Document>(response.Body);
+			IDocument document = Serializer.Deserialize<Document>(response.Body);
+		}
+		
+		public string MassageJsonForSending(string json, string docType)
+		{
+			string result = Serializer.RemoveKeyFrom(json, "Id");
+			result = Serializer.AddKeyTo(result, "doc_type", docType);
+			return result;
 		}
 	}
 }
