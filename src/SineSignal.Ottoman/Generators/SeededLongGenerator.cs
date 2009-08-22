@@ -34,11 +34,13 @@ namespace SineSignal.Ottoman.Generators
     /// </summary>
     class SeededLongGenerator : IGenerator<long>
     {
-        public Dictionary<string, object> Options { get; set; }
-
         private string _uuid;
         private int _sequence;
         private MD5 _md5 = MD5.Create();
+
+        public string ServerURL { get; set; }
+        public IRestProxy RestProxy { get; set; }
+        public int ReseedInterval { get; set;}
 
         /// <summary>
         /// Generates a unique document identifier.
@@ -46,7 +48,7 @@ namespace SineSignal.Ottoman.Generators
         /// <returns>A unique integer each time the function is called.</returns>
         public long Generate()
         {
-            if (_sequence == (int)Options["ReseedInterval"])
+            if (_sequence == ReseedInterval)
             {
                 _sequence = 0;
                 _uuid = null;
@@ -54,10 +56,9 @@ namespace SineSignal.Ottoman.Generators
 
             if (_uuid == null)
             {
-                var proxy = (IRestProxy)Options["RestProxy"];
-                var uuidURIBuilder = new UriBuilder((string)Options["ServerURL"]);
+                var uuidURIBuilder = new UriBuilder(ServerURL);
                 uuidURIBuilder.Path = "_uuids";
-                var response = proxy.Get(uuidURIBuilder.Uri);
+                var response = RestProxy.Get(uuidURIBuilder.Uri);
                 // Here is an example of what is expected to be in the response body: {"uuids":["5d531fd2d85de34f04eaaedce2090cdc"]}
                 JObject o = JObject.Parse(response.Body);
                 _uuid = o["uuids"][0].ToString().Replace("\"", ""); //The uuid is returned double quoted. The call to Replace strips off the quotes.
@@ -69,11 +70,13 @@ namespace SineSignal.Ottoman.Generators
 
         private int GetNextSequenceNumber() { return _sequence++; }
 
-        public SeededLongGenerator()
+        public SeededLongGenerator(): this("http://127.0.0.1:5984",new RestProxy(new HttpClient()),int.MaxValue){}
+
+        public SeededLongGenerator(string serverURL, IRestProxy restProxy, int reseedInterval)
         {
-            Options = new Dictionary<string, object> { {"ServerURL", "http://127.0.0.1:5984"},
-                                                       {"RestProxy", new RestProxy(new HttpClient())},
-                                                       {"ReseedInterval", int.MaxValue} };
+            ServerURL = serverURL;
+            RestProxy = restProxy;
+            ReseedInterval = reseedInterval;
         }
     }       
 }

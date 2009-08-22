@@ -15,7 +15,6 @@
 //       See the License for the specific language governing permissions and
 //       limitations under the License.
 // </copyright>
-
 #endregion
 
 using System;
@@ -43,19 +42,19 @@ namespace SineSignal.Ottoman.Tests.Unit.Generators
         [Test]
         public void Should_have_a_default_ServerURL_option_set_to_localhost()
         {
-            Assert.AreEqual(_generator.Options["ServerURL"], "http://127.0.0.1:5984");
+            Assert.AreEqual(_generator.ServerURL, "http://127.0.0.1:5984");
         }
 
         [Test]
         public void Should_have_a_default_RestProxy_option_set_to_a_new_instance_of_RestProxy()
         {
-            Assert.IsInstanceOfType<RestProxy>(_generator.Options["RestProxy"]);
+            Assert.IsInstanceOfType<RestProxy>(_generator.RestProxy);
         }
 
         [Test]
         public void Should_have_a_default_reseed_interval_option_set_to_the_max_int_value()
         {
-            Assert.AreEqual(int.MaxValue,(int)_generator.Options["ReseedInterval"]);
+            Assert.AreEqual(int.MaxValue,(int)_generator.ReseedInterval);
         }
     }
 
@@ -90,8 +89,8 @@ namespace SineSignal.Ottoman.Tests.Unit.Generators
         {
             // Act
             var generator = new SeededLongGenerator();
-            generator.Options["ServerURL"] = _url;
-            generator.Options["RestProxy"] = _mockRestProxy.Object;
+            generator.ServerURL = _url;
+            generator.RestProxy = _mockRestProxy.Object;
             generator.Generate();
             generator.Generate();
             generator.Generate();
@@ -105,9 +104,9 @@ namespace SineSignal.Ottoman.Tests.Unit.Generators
         {
             // Act
             var generator = new SeededLongGenerator();
-            generator.Options["ServerURL"] = _url;
-            generator.Options["RestProxy"] = _mockRestProxy.Object;
-            generator.Options["ReseedInterval"] = 2;
+            generator.ServerURL = _url;
+            generator.RestProxy = _mockRestProxy.Object;
+            generator.ReseedInterval = 2;
             generator.Generate(); //This call should trigger the frist uuid request
             generator.Generate();
             generator.Generate(); //This third call should trigger the next uuid request since ReseedInterval is 2
@@ -121,8 +120,8 @@ namespace SineSignal.Ottoman.Tests.Unit.Generators
         {
             // Act
             var generator = new SeededLongGenerator();
-            generator.Options["ServerURL"] = _url;
-            generator.Options["RestProxy"] = _mockRestProxy.Object;
+            generator.ServerURL = _url;
+            generator.RestProxy = _mockRestProxy.Object;
             var firstID = generator.Generate();
             var secondID = generator.Generate();
             var thirdID = generator.Generate();

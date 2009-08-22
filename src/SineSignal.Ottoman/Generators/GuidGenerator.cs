@@ -28,8 +28,6 @@ namespace SineSignal.Ottoman.Generators
     /// </summary>
     class GuidGenerator : IGenerator<Guid>
     {
-        public Dictionary<string, object> Options { get; set; }
-
         /// <summary>
         /// Creates a unique, random document identifier.
         /// </summary>
