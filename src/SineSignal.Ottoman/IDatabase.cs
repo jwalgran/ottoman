@@ -18,12 +18,20 @@
 
 #endregion
 
+using System;
+
+using SineSignal.Ottoman.Proxy;
+using SineSignal.Ottoman.Serializers;
+
 namespace SineSignal.Ottoman
 {
 	public interface IDatabase
 	{
 		IServer Server { get; }
 		IDatabaseInfo Info { get; }
+		IRestProxy RestProxy { get; }
+		ISerializer Serializer { get; }
+		Uri Root { get; }
 		void UpdateInfo();
 		void SaveDocument<T>(T objectToPersist);
 	}

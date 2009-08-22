@@ -166,7 +166,7 @@ namespace SineSignal.Ottoman
 
 			IDatabaseInfo databaseInfo = Serializer.Deserialize<DatabaseInfo>(response.Body);
 			
-			return new Database(this, databaseInfo);
+			return new Database(this, databaseInfo, RestProxy, Serializer);
 		}
 
 		/// <summary>
