@@ -19,17 +19,14 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 
 namespace SineSignal.Ottoman.Generators
 {
     /// <summary>
     /// Used for generating random document identifiers using the .NET Framework Guid class.
     /// </summary>
-    class GuidGenerator : IGenerator<Guid>
+    public class GuidGenerator : IGenerator<Guid>
     {
-        public Dictionary<string, object> Options { get; set; }
-
         /// <summary>
         /// Creates a unique, random document identifier.
         /// </summary>

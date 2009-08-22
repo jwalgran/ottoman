@@ -27,13 +27,17 @@ using SineSignal.Ottoman.Generators;
 namespace SineSignal.Ottoman.Tests.Unit.Generators
 {
     [TestFixture]
-    public class When_generating_an_ID_using_the_GuidGenerator
+    public class When_generating_an_ID_using_the_GuidGenerator : OttomanSpecBase<GuidGenerator>
     {
-        [Test]
+    	protected override GuidGenerator EstablishContext()
+    	{
+    		return new GuidGenerator();
+    	}
+
+    	[Test]
         public void Should_return_a_Guid()
         {
-            var generator = new GuidGenerator();
-            Guid id = generator.Generate();
+            Guid id = Sut.Generate();
             
             Assert.IsInstanceOfType<Guid>(id);
             Assert.AreNotEqual(default(Guid), id);

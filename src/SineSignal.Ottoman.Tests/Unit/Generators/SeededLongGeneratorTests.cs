@@ -19,118 +19,134 @@
 #endregion
 
 using System;
-using System.Net;
 
 using MbUnit.Framework;
 using Moq;
 
 using SineSignal.Ottoman.Generators;
-using SineSignal.Ottoman.Proxy;
 
 namespace SineSignal.Ottoman.Tests.Unit.Generators
 {
     [TestFixture]
-    public class When_creating_a_SeededLongGenerator
+    public class When_creating_a_SeededLongGenerator_with_default_reseed_interval : OttomanSpecBase<SeededLongGenerator>
     {
-        private SeededLongGenerator _generator;
+		private Mock<IServer> MockServer { get; set; }
+		
+    	protected override SeededLongGenerator EstablishContext()
+    	{
+    		// Arrange
+			MockServer = new Mock<IServer>();
 
-        [SetUp]
-        public void SetUp()
-        {
-            _generator = new SeededLongGenerator();
-        }
-
-        [Test]
-        public void Should_have_a_default_ServerURL_option_set_to_localhost()
-        {
-            Assert.AreEqual(_generator.Options["ServerURL"], "http://127.0.0.1:5984");
-        }
+			return new SeededLongGenerator(MockServer.Object);
+    	}
 
         [Test]
-        public void Should_have_a_default_RestProxy_option_set_to_a_new_instance_of_RestProxy()
+        public void Should_have_a_Server_set_to_passed_in_Server()
         {
-            Assert.IsInstanceOfType<RestClient>(_generator.Options["RestClient"]);
+			Assert.AreEqual(MockServer.Object, Sut.Server);
         }
 
         [Test]
         public void Should_have_a_default_reseed_interval_option_set_to_the_max_int_value()
         {
-            Assert.AreEqual(int.MaxValue,(int)_generator.Options["ReseedInterval"]);
+            Assert.AreEqual(Int32.MaxValue, Sut.ReseedInterval);
         }
     }
 
     [TestFixture]
-    public class When_generating_an_ID_using_the_SeededLongGenerator
+	public class When_generating_an_ID_using_the_SeededLongGenerator_with_default_reseed_interval : OttomanSpecBase<SeededLongGenerator>
     {
-        private Mock<IRestClient> _mockRestProxy;
-        private string _url;
-        private Uri _uuidUri;
-
-        [SetUp]
-        public void SetUp()
-        {
-            // Arrange
-            _url = "http://127.0.0.1:5984/";
-            UriBuilder requestUriBuilder = new UriBuilder(_url);
-            string uuid = "0123456789abcdef0123456789abcdef";
-            string body = "{\"uuids\":[\"" + uuid + "\"]}";
-            requestUriBuilder.Path = "_uuids";
-            _uuidUri = requestUriBuilder.Uri;
-
-            var mockHttpResponse = new Mock<IHttpResponse>();
-            mockHttpResponse.Setup(x => x.StatusCode).Returns(HttpStatusCode.OK);
-            mockHttpResponse.Setup(x => x.Body).Returns(body);
-
-            _mockRestProxy = new Mock<IRestClient>();
-            _mockRestProxy.Setup(x => x.Get(_uuidUri)).Returns(mockHttpResponse.Object);
-        }
+		private Mock<IServer> MockServer { get; set; }
+		
+    	protected override SeededLongGenerator EstablishContext()
+    	{
+    		// Arrange
+			string uuid = "0123456789abcdef0123456789abcdef";
+			MockServer = new Mock<IServer>();
+    		MockServer.Setup(x => x.GetUuids(1)).Returns(new Guid[] { new Guid(uuid) });
+    		
+    		return new SeededLongGenerator(MockServer.Object);
+    	}
 
         [Test]
         public void Should_request_a_UUID_from_CouchDB_the_first_time_Generate_is_called()
         {
             // Act
-            var generator = new SeededLongGenerator();
-            generator.Options["ServerURL"] = _url;
-            generator.Options["RestClient"] = _mockRestProxy.Object;
-            generator.Generate();
-            generator.Generate();
-            generator.Generate();
+            Sut.Generate();
+            Sut.Generate();
+            Sut.Generate();
 
             // Assert
-            _mockRestProxy.Verify(x => x.Get(_uuidUri), Times.Once());
-        }
-
-        [Test]
-        public void Should_request_a_uuid_from_CouchDB_when_the_ReseedInterval_is_met()
-        {
-            // Act
-            var generator = new SeededLongGenerator();
-            generator.Options["ServerURL"] = _url;
-            generator.Options["RestClient"] = _mockRestProxy.Object;
-            generator.Options["ReseedInterval"] = 2;
-            generator.Generate(); //This call should trigger the frist uuid request
-            generator.Generate();
-            generator.Generate(); //This third call should trigger the next uuid request since ReseedInterval is 2
-
-            // Assert
-            _mockRestProxy.Verify(x => x.Get(_uuidUri), Times.Exactly(2));
+            MockServer.Verify(x => x.GetUuids(1), Times.Once());
         }
 
         [Test]
         public void Should_return_a_unique_non_seqential_long_integer_value_each_time_Generate_is_called()
         {
             // Act
-            var generator = new SeededLongGenerator();
-            generator.Options["ServerURL"] = _url;
-            generator.Options["RestClient"] = _mockRestProxy.Object;
-            var firstID = generator.Generate();
-            var secondID = generator.Generate();
-            var thirdID = generator.Generate();
+            var firstID = Sut.Generate();
+            var secondID = Sut.Generate();
+            var thirdID = Sut.Generate();
 
             // Assert
-            Assert.AreEqual(2879578924, firstID); //these values are known because the uuid 'seed' is fixed by mocking the request
-            Assert.AreEqual(1758380494, secondID);
-            Assert.AreEqual(1759173619, thirdID);
+			Assert.AreEqual(1408408213, firstID); //these values are known because the uuid 'seed' is fixed by mocking the request
+			Assert.AreEqual(2739867258, secondID);
+			Assert.AreEqual(3497938919, thirdID);
         }
     }
+    
+    public class When_creating_a_SeededLongGenerator_with_specified_reseed_interval : OttomanSpecBase<SeededLongGenerator>
+    {
+		private Mock<IServer> MockServer { get; set; }
+		
+    	protected override SeededLongGenerator EstablishContext()
+    	{
+			// Arrange
+			string uuid = "0123456789abcdef0123456789abcdef";
+			MockServer = new Mock<IServer>();
+			MockServer.Setup(x => x.GetUuids(1)).Returns(new Guid[] { new Guid(uuid) });
+
+			return new SeededLongGenerator(MockServer.Object, 2);
+    	}
+
+		[Test]
+		public void Should_have_a_Server_set_to_passed_in_Server()
+		{
+			Assert.AreEqual(MockServer.Object, Sut.Server);
+		}
+
+		[Test]
+		public void Should_have_a_reseed_interval_option_set_to_the_passed_in_value()
+		{
+			Assert.AreEqual(2, Sut.ReseedInterval);
+		}
+    }
+
+	[TestFixture]
+	public class When_generating_an_ID_using_the_SeededLongGenerator_with_specified_reseed_interval : OttomanSpecBase<SeededLongGenerator>
+	{
+		private Mock<IServer> MockServer { get; set; }
+
+		protected override SeededLongGenerator EstablishContext()
+		{
+			// Arrange
+			string uuid = "0123456789abcdef0123456789abcdef";
+			MockServer = new Mock<IServer>();
+			MockServer.Setup(x => x.GetUuids(1)).Returns(new Guid[] { new Guid(uuid) });
+
+			return new SeededLongGenerator(MockServer.Object, 2);
+		}
+
+		[Test]
+		public void Should_request_a_uuid_from_CouchDB_when_the_ReseedInterval_is_met()
+		{
+			// Act
+			Sut.Generate(); //This call should trigger the frist uuid request
+			Sut.Generate();
+			Sut.Generate(); //This third call should trigger the next uuid request since ReseedInterval is 2
+
+			// Assert
+			MockServer.Verify(x => x.GetUuids(1), Times.Exactly(2));
+		}
+	}
 }

@@ -19,26 +19,41 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
-
-using Newtonsoft.Json.Linq;
-
-using SineSignal.Ottoman.Proxy;
 
 namespace SineSignal.Ottoman.Generators
 {
     /// <summary>
     /// Used to generate document identifier's seeded with a random value from a CouchDB server then incremented on the client.
     /// </summary>
-    class SeededLongGenerator : IGenerator<long>
+    public class SeededLongGenerator : IGenerator<long>
     {
-        public Dictionary<string, object> Options { get; set; }
+		private Guid _uuid;
+		private int _sequence;
+		private MD5 _md5 = MD5.Create();
+		
+		public IServer Server { get; private set; }
+		public int ReseedInterval { get; private set; }
 
-        private string _uuid;
-        private int _sequence;
-        private MD5 _md5 = MD5.Create();
+		/// <summary>
+		/// Initializes a new instance of the <see cref="SeededLongGenerator"/> class.
+		/// </summary>
+		/// <param name="server">The server to use for requesting UUID's from CouchDB.</param>
+		public SeededLongGenerator(IServer server) : this(server, Int32.MaxValue)
+		{
+		}
+
+    	/// <summary>
+		/// Initializes a new instance of the <see cref="SeededLongGenerator"/> class.
+		/// </summary>
+		/// <param name="server">The server to use for requesting UUID's from CouchDB.</param>
+		/// <param name="reseedInterval">The interval to use when reseeding the sequence.</param>
+		public SeededLongGenerator(IServer server, int reseedInterval)
+		{
+			Server = server;
+			ReseedInterval = reseedInterval;
+		}
 
         /// <summary>
         /// Generates a unique document identifier.
@@ -46,34 +61,23 @@ namespace SineSignal.Ottoman.Generators
         /// <returns>A unique integer each time the function is called.</returns>
         public long Generate()
         {
-            if (_sequence == (int)Options["ReseedInterval"])
+            if (_sequence == ReseedInterval)
             {
                 _sequence = 0;
-                _uuid = null;
+                _uuid = Guid.Empty;
             }
 
-            if (_uuid == null)
+            if (_uuid == Guid.Empty)
             {
-                var proxy = (IRestClient)Options["RestClient"];
-                var uuidURIBuilder = new UriBuilder((string)Options["ServerURL"]);
-                uuidURIBuilder.Path = "_uuids";
-                var response = proxy.Get(uuidURIBuilder.Uri);
-                // Here is an example of what is expected to be in the response body: {"uuids":["5d531fd2d85de34f04eaaedce2090cdc"]}
-                JObject o = JObject.Parse(response.Body);
-                _uuid = o["uuids"][0].ToString().Replace("\"", ""); //The uuid is returned double quoted. The call to Replace strips off the quotes.
+            	_uuid = Server.GetUuids(1)[0];
             }
+            
             var stringID = _uuid + GetNextSequenceNumber().ToString("X");
             var hash = _md5.ComputeHash(Encoding.ASCII.GetBytes(stringID));
+            
             return Convert.ToInt64(BitConverter.ToUInt32(hash,0));
         }
 
         private int GetNextSequenceNumber() { return _sequence++; }
-
-        public SeededLongGenerator()
-        {
-            Options = new Dictionary<string, object> { {"ServerURL", "http://127.0.0.1:5984"},
-                                                       {"RestClient", new RestClient(new HttpClient())},
-                                                       {"ReseedInterval", int.MaxValue} };
-        }
     }       
 }

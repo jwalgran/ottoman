@@ -18,13 +18,10 @@
 
 #endregion
 
-using System.Collections.Generic;
-
 namespace SineSignal.Ottoman.Generators
 {
     public interface IGenerator<T>
     {
-        Dictionary<string, object> Options { get; set; }
         T Generate();
     }
 }
