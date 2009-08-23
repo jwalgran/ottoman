@@ -21,25 +21,28 @@ using System.Security.Cryptography;
 
 namespace SineSignal.Ottoman.Generators
 {
-    class RandomLongIntegerGenerator : IGenerator<long>
+    public class RandomLongIntegerGenerator : IGenerator<long>
     {
-        private RandomNumberGenerator _randomNumberGenerator = RandomNumberGenerator.Create();
+        private static RandomNumberGenerator _randomNumberGenerator = RandomNumberGenerator.Create();
 
-        public Dictionary<string, object> Options { get; set; }
+        public bool AllowNegative { get; set; }
+
+        public RandomLongIntegerGenerator() : this(false) { }
+
+        public RandomLongIntegerGenerator(bool allowNegative)
+        {
+            AllowNegative = allowNegative;
+        }
+
         public long Generate()
         {
             byte[] randomBytes = new byte[8];
             _randomNumberGenerator.GetBytes(randomBytes);
-            if ((bool)Options["AllowNegative"])
+            if (AllowNegative)
                 return BitConverter.ToInt64(randomBytes,0);
             else
                 return (long)BitConverter.ToUInt32(randomBytes,0);
 
-        }
-
-        public RandomLongIntegerGenerator()
-        {
-            Options = new Dictionary<string, object> { { "AllowNegative", false } };
         }
     }
 }

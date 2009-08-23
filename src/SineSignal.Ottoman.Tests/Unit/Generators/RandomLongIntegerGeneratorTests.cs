@@ -25,21 +25,17 @@ using System.Collections.Generic;
 namespace SineSignal.Ottoman.Tests.Unit.Generators
 {
     [TestFixture]
-    public class When_generating_an_identifier_using_the_RandomLongIntegerGenerator
+    public class When_generating_an_identifier_using_the_RandomLongIntegerGenerator : OttomanSpecBase<RandomLongIntegerGenerator>
     {
-        private RandomLongIntegerGenerator _generator;
-
-        [SetUp]
-        public void SetUp() 
+        protected override RandomLongIntegerGenerator EstablishContext()
         {
-            _generator = new RandomLongIntegerGenerator();
+            return new RandomLongIntegerGenerator();
         }
 
         [Test]
         public void Should_return_a_long_integer()
         {
-            var id = _generator.Generate();
-            Assert.IsInstanceOfType<long>(id);
+            Assert.IsInstanceOfType<long>(Sut.Generate());
         }
 
         [Test]
@@ -48,7 +44,7 @@ namespace SineSignal.Ottoman.Tests.Unit.Generators
             var idHash = new Dictionary<long, long> { };
             for (int i = 0; i < 10000; i++)
             {
-                var id = _generator.Generate();
+                var id = Sut.Generate();
                 if (idHash.ContainsKey(id))
                     Assert.Fail("An identifier was repeated");
                 else
@@ -57,12 +53,12 @@ namespace SineSignal.Ottoman.Tests.Unit.Generators
         }
 
         [Test]
-        void Should_not_return_negative_numbers_unless_AllowNegative_option_is_true()
+        void Should_not_return_negative_numbers_when_AllowNegative_is_false()
         {
-            _generator.Options["AllowNegative"] = false;
+            Sut.AllowNegative = false;
             for (int i = 0; i < 10000; i++)
             {
-                Assert.LessThanOrEqualTo<long>(0, _generator.Generate());
+                Assert.LessThanOrEqualTo<long>(0, Sut.Generate());
             }
         }
     }
