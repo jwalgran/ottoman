@@ -1,6 +1,6 @@
 #region License
 
-// <copyright file="RestProxy.cs" company="SineSignal, LLC.">
+// <copyright file="RestClient.cs" company="SineSignal, LLC.">
 //   Copyright 2007-2009 SineSignal, LLC.
 //       Licensed under the Apache License, Version 2.0 (the "License");
 //       you may not use this file except in compliance with the License.
@@ -19,18 +19,28 @@
 #endregion
 
 using System;
-using System.Net;
 
 namespace SineSignal.Ottoman.Proxy
 {
 	/// <summary>
 	/// Used for creating RESTFUL web requests.
 	/// </summary>
-	public class RestProxy : IRestProxy
+	public class RestClient : IRestClient
 	{
 		private readonly IHttpClient _httpClient;
 
-		public RestProxy(IHttpClient httpClient)
+		/// <summary>
+		/// Initializes a new instance of the <see cref="RestClient"/> class.
+		/// </summary>
+		public RestClient() : this(new HttpClient())
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="RestClient"/> class.
+		/// </summary>
+		/// <param name="httpClient">The HTTP client to use for sending requests.</param>
+		public RestClient(IHttpClient httpClient)
 		{
 			_httpClient = httpClient;
 		}

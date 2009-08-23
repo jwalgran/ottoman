@@ -39,7 +39,7 @@ namespace SineSignal.Ottoman.Tests.Unit
 		private Mock<IServer> MockServer { get; set; }
 		private Mock<IDatabaseInfo> MockDatabaseInfo { get; set; }
 		private string Body { get; set; }
-		private Mock<IRestProxy> MockRestProxy { get; set; }
+		private Mock<IRestClient> MockRestProxy { get; set; }
 		private Mock<ISerializer> MockSerializer { get; set; }
 		
 		protected override Database EstablishContext()
@@ -56,7 +56,7 @@ namespace SineSignal.Ottoman.Tests.Unit
 			MockDatabaseInfo.SetupGet(x => x.Name).Returns(DatabaseName);
 			
 			Body = "{\"db_name\":\"" + DatabaseName + "\",\"doc_count\":0,\"doc_del_count\":0,\"update_seq\":0,\"purge_seq\":0,\"compact_running\":false,\"disk_size\":79,\"instance_start_time\":\"1250175373642458\",\"disk_format_version\":4}";
-			MockRestProxy = new Mock<IRestProxy>();
+			MockRestProxy = new Mock<IRestClient>();
 			MockRestProxy.Setup(x => x.Get(RequestUrl)).Returns(new HttpResponse(HttpStatusCode.OK, Body));
 
 			MockSerializer = new Mock<ISerializer>();
@@ -130,14 +130,14 @@ namespace SineSignal.Ottoman.Tests.Unit
 	{
 		private Mock<IServer> MockServer { get; set; }
 		private Mock<IDatabaseInfo> MockDatabaseInfo { get; set; }
-		private Mock<IRestProxy> MockRestProxy { get; set; }
+		private Mock<IRestClient> MockRestProxy { get; set; }
 		private Mock<ISerializer> MockSerializer { get; set; }
 		
 		protected override Database EstablishContext()
 		{
 			MockServer = new Mock<IServer>();
 			MockDatabaseInfo = new Mock<IDatabaseInfo>();
-			MockRestProxy = new Mock<IRestProxy>();
+			MockRestProxy = new Mock<IRestClient>();
 			MockSerializer = new Mock<ISerializer>();
 			
 			return new Database(MockServer.Object, MockDatabaseInfo.Object, MockRestProxy.Object, MockSerializer.Object);
@@ -194,7 +194,7 @@ namespace SineSignal.Ottoman.Tests.Unit
 		 	var mockServer = new Mock<IServer>();
 		 	var mockDatabaseInfo = new Mock<IDatabaseInfo>();
 		 	var mockSerializer = new Mock<ISerializer>();
-		 	var mockRestProxy = new Mock<IRestProxy>();
+		 	var mockRestProxy = new Mock<IRestClient>();
 		 	var mockHttpResponse = new Mock<IHttpResponse>();
 		 	var mockDocument = new Mock<IDocument>();
 
