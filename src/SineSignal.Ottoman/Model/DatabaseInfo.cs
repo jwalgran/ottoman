@@ -20,7 +20,7 @@
 
 using Newtonsoft.Json;
 
-namespace SineSignal.Ottoman
+namespace SineSignal.Ottoman.Model
 {
 	/// <summary>
 	/// Models the response from CouchDB when retrieving the info about a database.

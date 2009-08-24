@@ -1,6 +1,6 @@
 #region License
 
-// <copyright file="ICouchError.cs" company="SineSignal, LLC.">
+// <copyright file="IErrorInfo.cs" company="SineSignal, LLC.">
 //   Copyright 2007-2009 SineSignal, LLC.
 //       Licensed under the Apache License, Version 2.0 (the "License");
 //       you may not use this file except in compliance with the License.
@@ -18,9 +18,9 @@
 
 #endregion
 
-namespace SineSignal.Ottoman
+namespace SineSignal.Ottoman.Model
 {
-	public interface ICouchError
+	public interface IErrorInfo
 	{
 		string Error { get; set; }
 		string Reason { get; set; }

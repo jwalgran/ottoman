@@ -22,7 +22,7 @@ using System;
 
 using MbUnit.Framework;
 
-using SineSignal.Ottoman.Exceptions;
+using SineSignal.Ottoman.Model;
 using SineSignal.Ottoman.Serializers;
 using SineSignal.Ottoman.Tests.SampleDomain;
 
@@ -38,7 +38,7 @@ namespace SineSignal.Ottoman.Tests.Unit.Serializers
 			
 			// Act
 			ISerializer jsonSerializer = new JsonSerializer();
-			ICouchError couchError = jsonSerializer.Deserialize<CouchError>(json);
+			IErrorInfo couchError = jsonSerializer.Deserialize<ErrorInfo>(json);
 			
 			// Assert
 			Assert.IsNotNull(couchError);

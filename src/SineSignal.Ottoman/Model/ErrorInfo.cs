@@ -1,6 +1,6 @@
 #region License
 
-// <copyright file="CouchError.cs" company="SineSignal, LLC.">
+// <copyright file="ErrorInfo.cs" company="SineSignal, LLC.">
 //   Copyright 2007-2009 SineSignal, LLC.
 //       Licensed under the Apache License, Version 2.0 (the "License");
 //       you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
 
 #endregion
 
-namespace SineSignal.Ottoman
+namespace SineSignal.Ottoman.Model
 {
 	/// <summary>
 	/// Models the response given by CouchDB when an error occurs.
@@ -27,7 +27,7 @@ namespace SineSignal.Ottoman
 	/// This is a sample response from CouchDB when an error occurs.
 	/// {"error":"not_found","reason":"missing"}
 	/// </remarks>
-	public class CouchError : ICouchError
+	public class ErrorInfo : IErrorInfo
 	{
 		/// <summary>
 		/// Gets or sets the error given by CouchDB.
@@ -42,18 +42,18 @@ namespace SineSignal.Ottoman
 		public string Reason { get; set; }
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="CouchError"/> class.
+		/// Initializes a new instance of the <see cref="ErrorInfo"/> class.
 		/// </summary>
-		public CouchError()
+		public ErrorInfo()
 		{
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="CouchError"/> class.
+		/// Initializes a new instance of the <see cref="ErrorInfo"/> class.
 		/// </summary>
 		/// <param name="error">The error given by CouchDB.</param>
 		/// <param name="reason">The reason given by CouchDB.</param>
-		public CouchError(string error, string reason)
+		public ErrorInfo(string error, string reason)
 		{
 			Error = error;
 			Reason = reason;

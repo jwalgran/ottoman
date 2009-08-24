@@ -21,6 +21,7 @@
 using System;
 using System.Net;
 
+using SineSignal.Ottoman.Model;
 using SineSignal.Ottoman.Proxy;
 using SineSignal.Ottoman.Serializers;
 

@@ -19,6 +19,8 @@
 #endregion
 
 using System;
+
+using SineSignal.Ottoman.Model;
 using SineSignal.Ottoman.Proxy;
 
 namespace SineSignal.Ottoman.Exceptions
@@ -36,7 +38,7 @@ namespace SineSignal.Ottoman.Exceptions
 		/// <param name="databaseName">Name of the database.</param>
 		/// <param name="couchError">The error that CouchDB gave.</param>
 		/// <param name="rawResponse">The raw response from the CouchDB server.</param>
-		public CannotGetDatabaseException(string databaseName, ICouchError couchError, IHttpResponse rawResponse)
+		public CannotGetDatabaseException(string databaseName, IErrorInfo couchError, IHttpResponse rawResponse)
 			: base(String.Format(ExceptionMessageFormat, databaseName), couchError, rawResponse)
 		{
 		}

@@ -24,6 +24,7 @@ using System.Net;
 using MbUnit.Framework;
 using Moq;
 
+using SineSignal.Ottoman.Model;
 using SineSignal.Ottoman.Proxy;
 using SineSignal.Ottoman.Serializers;
 using SineSignal.Ottoman.Tests.SampleDomain;

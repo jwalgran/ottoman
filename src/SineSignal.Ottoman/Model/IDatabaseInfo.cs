@@ -18,7 +18,7 @@
 
 #endregion
 
-namespace SineSignal.Ottoman
+namespace SineSignal.Ottoman.Model
 {
 	public interface IDatabaseInfo
 	{

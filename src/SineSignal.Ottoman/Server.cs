@@ -22,6 +22,7 @@ using System;
 using System.Net;
 
 using SineSignal.Ottoman.Exceptions;
+using SineSignal.Ottoman.Model;
 using SineSignal.Ottoman.Proxy;
 using SineSignal.Ottoman.Serializers;
 
@@ -108,7 +109,7 @@ namespace SineSignal.Ottoman
 			
 			if (response.StatusCode != HttpStatusCode.Created)
 			{
-				ICouchError error = Serializer.Deserialize<CouchError>(response.Body);
+				IErrorInfo error = Serializer.Deserialize<ErrorInfo>(response.Body);
 				throw new CannotCreateDatabaseException(name, error, response);
 			}
 		}
@@ -134,7 +135,7 @@ namespace SineSignal.Ottoman
 
 			if (response.StatusCode != HttpStatusCode.OK)
 			{
-				ICouchError error = Serializer.Deserialize<CouchError>(response.Body);
+				IErrorInfo error = Serializer.Deserialize<ErrorInfo>(response.Body);
 				throw new CannotDeleteDatabaseException(name, error, response);
 			}
 		}
@@ -160,7 +161,7 @@ namespace SineSignal.Ottoman
 
 			if (response.StatusCode != HttpStatusCode.OK)
 			{
-				ICouchError error = Serializer.Deserialize<CouchError>(response.Body);
+				IErrorInfo error = Serializer.Deserialize<ErrorInfo>(response.Body);
 				throw new CannotGetDatabaseException(name, error, response);
 			}
 

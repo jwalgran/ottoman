@@ -25,6 +25,7 @@ using MbUnit.Framework;
 using Moq;
 
 using SineSignal.Ottoman.Exceptions;
+using SineSignal.Ottoman.Model;
 using SineSignal.Ottoman.Proxy;
 using SineSignal.Ottoman.Serializers;
 
@@ -185,7 +186,7 @@ namespace SineSignal.Ottoman.Tests.Unit
 			string body = "{\"error\":\"file_exists\",\"reason\":\"The database could not be created, the file already exists.\"}";
 
 			MockRestProxy.Setup(x => x.Put(requestUrl)).Returns(new HttpResponse(HttpStatusCode.PreconditionFailed, body));
-			MockSerializer.Setup(x => x.Deserialize<CouchError>(body)).Returns(new CouchError("file_exists", "The database could not be created, the file already exists."));
+			MockSerializer.Setup(x => x.Deserialize<ErrorInfo>(body)).Returns(new ErrorInfo("file_exists", "The database could not be created, the file already exists."));
 
 			// Act
 			try
@@ -195,7 +196,7 @@ namespace SineSignal.Ottoman.Tests.Unit
 			catch (CannotCreateDatabaseException)
 			{
 				// Assert
-				MockSerializer.Verify(x => x.Deserialize<CouchError>(body), Times.AtLeastOnce());
+				MockSerializer.Verify(x => x.Deserialize<ErrorInfo>(body), Times.AtLeastOnce());
 			}
 		}
 
@@ -209,7 +210,7 @@ namespace SineSignal.Ottoman.Tests.Unit
 			string body = "{\"error\":\"file_exists\",\"reason\":\"The database could not be created, the file already exists.\"}";
 
 			MockRestProxy.Setup(x => x.Put(requestUrl)).Returns(new HttpResponse(HttpStatusCode.PreconditionFailed, body));
-			MockSerializer.Setup(x => x.Deserialize<CouchError>(body)).Returns(new CouchError("file_exists", "The database could not be created, the file already exists."));
+			MockSerializer.Setup(x => x.Deserialize<ErrorInfo>(body)).Returns(new ErrorInfo("file_exists", "The database could not be created, the file already exists."));
 
 			// Act
 			Sut.CreateDatabase(databaseName);
@@ -269,7 +270,7 @@ namespace SineSignal.Ottoman.Tests.Unit
 			string body = "{\"error\":\"not_found\",\"reason\":\"missing\"}";
 
 			MockRestProxy.Setup(x => x.Delete(requestUrl)).Returns(new HttpResponse(HttpStatusCode.NotFound, body));
-			MockSerializer.Setup(x => x.Deserialize<CouchError>(body)).Returns(new CouchError("not_found", "missing"));
+			MockSerializer.Setup(x => x.Deserialize<ErrorInfo>(body)).Returns(new ErrorInfo("not_found", "missing"));
 
 			// Act
 			try
@@ -279,7 +280,7 @@ namespace SineSignal.Ottoman.Tests.Unit
 			catch (CannotDeleteDatabaseException)
 			{
 				// Assert
-				MockSerializer.Verify(x => x.Deserialize<CouchError>(body), Times.AtLeastOnce());
+				MockSerializer.Verify(x => x.Deserialize<ErrorInfo>(body), Times.AtLeastOnce());
 			}
 		}
 
@@ -293,7 +294,7 @@ namespace SineSignal.Ottoman.Tests.Unit
 			string body = "{\"error\":\"not_found\",\"reason\":\"missing\"}";
 
 			MockRestProxy.Setup(x => x.Delete(requestUrl)).Returns(new HttpResponse(HttpStatusCode.NotFound, body));
-			MockSerializer.Setup(x => x.Deserialize<CouchError>(body)).Returns(new CouchError("not_found", "missing"));
+			MockSerializer.Setup(x => x.Deserialize<ErrorInfo>(body)).Returns(new ErrorInfo("not_found", "missing"));
 
 			// Act
 			Sut.DeleteDatabase(databaseName);
@@ -400,7 +401,7 @@ namespace SineSignal.Ottoman.Tests.Unit
 			string body = "{\"error\":\"not_found\",\"reason\":\"no_db_file\"}";
 			
 			MockRestProxy.Setup(x => x.Get(requestUrl)).Returns(new HttpResponse(HttpStatusCode.NotFound, body));
-			MockSerializer.Setup(x => x.Deserialize<CouchError>(body)).Returns(new CouchError("not_found", "no_db_file"));
+			MockSerializer.Setup(x => x.Deserialize<ErrorInfo>(body)).Returns(new ErrorInfo("not_found", "no_db_file"));
 
 			// Act
 			try
@@ -409,7 +410,7 @@ namespace SineSignal.Ottoman.Tests.Unit
 			}
 			catch (Exception)
 			{
-				MockSerializer.Verify(x => x.Deserialize<CouchError>(body), Times.AtLeastOnce());
+				MockSerializer.Verify(x => x.Deserialize<ErrorInfo>(body), Times.AtLeastOnce());
 			}
 		}
 
@@ -423,7 +424,7 @@ namespace SineSignal.Ottoman.Tests.Unit
 			string body = "{\"error\":\"not_found\",\"reason\":\"no_db_file\"}";
 			
 			MockRestProxy.Setup(x => x.Get(requestUrl)).Returns(new HttpResponse(HttpStatusCode.NotFound, body));
-			MockSerializer.Setup(x => x.Deserialize<CouchError>(body)).Returns(new CouchError("not_found", "no_db_file"));
+			MockSerializer.Setup(x => x.Deserialize<ErrorInfo>(body)).Returns(new ErrorInfo("not_found", "no_db_file"));
 
 			// Act
 			Sut.GetDatabase(databaseName);

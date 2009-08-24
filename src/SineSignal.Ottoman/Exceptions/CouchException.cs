@@ -20,6 +20,7 @@
 
 using System;
 
+using SineSignal.Ottoman.Model;
 using SineSignal.Ottoman.Proxy;
 
 namespace SineSignal.Ottoman.Exceptions
@@ -33,7 +34,7 @@ namespace SineSignal.Ottoman.Exceptions
 		/// The error that CouchDB gave.
 		/// </summary>
 		/// <value>The error.</value>
-		public ICouchError CouchError { get; private set; }
+		public IErrorInfo CouchError { get; private set; }
 
 		/// <summary>
 		/// Gets or sets the raw response from the CouchDB server.
@@ -47,7 +48,7 @@ namespace SineSignal.Ottoman.Exceptions
 		/// <param name="message">Message to use for the exception.</param>
 		/// <param name="couchError">The error that CouchDB gave.</param>
 		/// <param name="rawResponse">The raw response from the CouchDB server.</param>
-		public CouchException(string message, ICouchError couchError, IHttpResponse rawResponse) 
+		public CouchException(string message, IErrorInfo couchError, IHttpResponse rawResponse) 
 			: base(message)
 		{
 			CouchError = couchError;

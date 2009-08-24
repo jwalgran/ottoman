@@ -20,6 +20,7 @@
 
 using System;
 
+using SineSignal.Ottoman.Model;
 using SineSignal.Ottoman.Proxy;
 using SineSignal.Ottoman.Serializers;
 
