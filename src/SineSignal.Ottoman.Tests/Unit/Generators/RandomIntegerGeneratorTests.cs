@@ -17,10 +17,13 @@
 // </copyright>
 
 #endregion
-using System;
-using MbUnit.Framework;
-using SineSignal.Ottoman.Generators;
+
 using System.Collections.Generic;
+using System.Linq;
+
+using MbUnit.Framework;
+
+using SineSignal.Ottoman.Generators;
 
 namespace SineSignal.Ottoman.Tests.Unit.Generators
 {
@@ -39,27 +42,77 @@ namespace SineSignal.Ottoman.Tests.Unit.Generators
         }
 
         [Test]
-        void Should_return_a_unique_integer_each_time_Generate_is_called()
+        public void Should_return_a_unique_integer_each_time_Generate_is_called()
         {
-            var idHash = new Dictionary<int, int> { };
-            for (int i = 0; i < 10; i++)
-            {
-                var id = Sut.Generate();
-                if (idHash.ContainsKey(id))
-                    Assert.Fail("An identifier was repeated");
-                else
-                    idHash.Add(id, id);
-            }
+			HashSet<int> idHash = new HashSet<int>();
+			for (int i = 0; i < 10; i++)
+			{
+				var id = Sut.Generate();
+				bool wasAdded = idHash.Add(id);
+
+				if (!wasAdded)
+				{
+					Assert.Fail("An identifier was repeated");
+				}
+			}
         }
 
         [Test]
-        void Should_not_return_negative_numbers_when_AllowNegative_is_false()
+        public void Should_not_return_negative_numbers_when_AllowNegative_is_false()
         {
-            Sut.AllowNegative = false;
             for (int i = 0; i < 10000; i++)
             {
                 Assert.LessThanOrEqualTo<int>(0, Sut.Generate());
             }
         }
+    }
+    
+    [TestFixture]
+    public class When_generating_an_identifier_using_the_RandomIntegerGenerator_when__allow_negative_is_true : OttomanSpecBase<RandomIntegerGenerator>
+    {
+		protected override RandomIntegerGenerator EstablishContext()
+		{
+			return new RandomIntegerGenerator(true);
+		}
+
+		[Test]
+		public void Should_return_an_integer()
+		{
+			Assert.IsInstanceOfType<int>(Sut.Generate());
+		}
+
+		[Test]
+		public void Should_return_a_unique_integer_each_time_Generate_is_called()
+		{
+			HashSet<int> idHash = new HashSet<int>();
+			for (int i = 0; i < 10; i++)
+			{
+				var id = Sut.Generate();
+				bool wasAdded = idHash.Add(id);
+				
+				if (!wasAdded)
+				{
+					Assert.Fail("An identifier was repeated");
+				}
+			}
+		}
+
+		[Test]
+		public void Should_return_negative_numbers_when_AllowNegative_is_true()
+		{
+			HashSet<int> idHash = new HashSet<int>();
+			for (int i = 0; i < 10000; i++)
+			{
+				int id = Sut.Generate();
+				idHash.Add(id);
+			}
+
+			IList<int> negatives = idHash.Where(x => x < 0).ToList();
+
+			if (negatives.Count < 0)
+			{
+				Assert.Fail("Never returned a single negative value.");
+			}
+		}
     }
 }

@@ -79,6 +79,5 @@ namespace SineSignal.Ottoman.Generators
         }
 
         private int GetNextSequenceNumber() { return _sequence++; }
-
     }       
 }
