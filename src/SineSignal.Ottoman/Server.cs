@@ -98,14 +98,10 @@ namespace SineSignal.Ottoman
 		{
 			if (String.IsNullOrEmpty(name))
 				throw new ArgumentNullException("name", "The value cannot be null or an empty string.");
-			
-			// TODO:  We need to UrlEncode the name, to take care of special characters like _, $, (, ), +, -, and /.
-			// We just introduced a limitation with this API.  System.Uri, does not handle the encoding correctly.  Hold off on this for now.
-			// Until we can figure out a way to do this, we need a regex to check for these characters and throw an ArgumentException
-			UriBuilder requestUrl = new UriBuilder(Url);
-			requestUrl.Path = name;
 
-			IHttpResponse response = RestClient.Put(requestUrl.Uri);
+			Uri requestUrl = BuildUrlFor(name);
+
+			IHttpResponse response = RestClient.Put(requestUrl);
 			
 			if (response.StatusCode != HttpStatusCode.Created)
 			{
@@ -125,13 +121,9 @@ namespace SineSignal.Ottoman
 			if (String.IsNullOrEmpty(name))
 				throw new ArgumentNullException("name");
 
-			// TODO:  We need to UrlEncode the name, to take care of special characters like _, $, (, ), +, -, and /.
-			// We just introduced a limitation with this API.  System.Uri, does not handle the encoding correctly.  Hold off on this for now.
-			// Until we can figure out a way to do this, we need a regex to check for these characters and throw an ArgumentException
-			UriBuilder requestUrl = new UriBuilder(Url);
-			requestUrl.Path = name;
+			Uri requestUrl = BuildUrlFor(name);
 
-			IHttpResponse response = RestClient.Delete(requestUrl.Uri);
+			IHttpResponse response = RestClient.Delete(requestUrl);
 
 			if (response.StatusCode != HttpStatusCode.OK)
 			{
@@ -151,13 +143,9 @@ namespace SineSignal.Ottoman
 			if (String.IsNullOrEmpty(name))
 				throw new ArgumentNullException("name");
 
-			// TODO:  We need to UrlEncode the name, to take care of special characters like _, $, (, ), +, -, and /.
-			// We just introduced a limitation with this API.  System.Uri, does not handle the encoding correctly.  Hold off on this for now.
-			// Until we can figure out a way to do this, we need a regex to check for these characters and throw an ArgumentException
-			UriBuilder requestUrl = new UriBuilder(Url);
-			requestUrl.Path = name;
+			Uri requestUrl = BuildUrlFor(name);
 
-			IHttpResponse response = RestClient.Get(requestUrl.Uri);
+			IHttpResponse response = RestClient.Get(requestUrl);
 
 			if (response.StatusCode != HttpStatusCode.OK)
 			{
@@ -176,10 +164,9 @@ namespace SineSignal.Ottoman
 		/// <returns>string[] of database names.</returns>
 		public string[] GetDatabases()
 		{
-			UriBuilder requestUrl = new UriBuilder(Url);
-			requestUrl.Path = "_all_dbs";
+			Uri requestUrl = BuildUrlFor("_all_dbs");
 
-			IHttpResponse response = RestClient.Get(requestUrl.Uri);
+			IHttpResponse response = RestClient.Get(requestUrl);
 
 			return Serializer.Deserialize<string[]>(response.Body);
 		}
@@ -202,13 +189,33 @@ namespace SineSignal.Ottoman
 		/// <returns>An array of <see cref="Guid" /></returns>
 		public Guid[] GetUuids(int count)
 		{
-			UriBuilder requestUrl = new UriBuilder(Url);
-			requestUrl.Path = "_uuids";
-			requestUrl.Query = "count=" + count;
+			Uri requestUrl = BuildUrlFor("_uuids", "count=" + count);
 			
-			IHttpResponse response = RestClient.Get(requestUrl.Uri);
+			IHttpResponse response = RestClient.Get(requestUrl);
 			
 			return Serializer.Deserialize<Guid[]>(response.Body);
+		}
+		
+		// TODO:  Move these to a more reusable spot.  Not sure where that will be at the moment.
+		private Uri BuildUrlFor(string path)
+		{
+			return BuildUrlFor(path, null);
+		}
+
+		private Uri BuildUrlFor(string path, string query)
+		{
+			// TODO:  We need to UrlEncode the path, to take care of special character /.
+			// We just introduced a limitation with this API.  System.Uri, does not handle the encoding correctly of /.  Hold off on this for now.
+			// Until we can figure out a way to do this, we need a regex to check for this characters and throw an Exception
+			UriBuilder requestUrl = new UriBuilder(Url);
+			requestUrl.Path = path;
+			
+			if (!String.IsNullOrEmpty(query))
+			{
+				requestUrl.Query = query;
+			}
+
+			return requestUrl.Uri;
 		}
 	}
 }
