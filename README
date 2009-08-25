@@ -53,19 +53,6 @@ To create a database:
 	
 	If Ottoman was not able to create a database, a CannotCreateDatabaseException will 
 	be thrown with the details of what happened.
-	
-To retrieve a database:
-
-	IDatabase couchDatabase = couchServer.GetDatabase("test");
-	
-	You can view info about your database with the IDatabase instance.  The next major 
-	feature will allow you to manage documents within a database, by using your IDatabase 
-	instance.  For example:
-	
-		User user = couchDatabase.GetDocument<User>("id");
-	
-	If Ottoman was not able to retrieve a database, a CannotGetDatabaseException will 
-	be thrown with the details of what happened.
 
 To delete a database:
 
@@ -77,6 +64,15 @@ To delete a database:
 To retrieve a list of databases:
 	
 	string[] databases = couchServer.GetDatabases();
+	
+To retrieve a database:
+
+	IDatabase couchDatabase = couchServer.GetDatabase("test");
+	
+	You can view info about your database with the IDatabase instance.
+	
+	If Ottoman was not able to retrieve a database, a CannotGetDatabaseException will 
+	be thrown with the details of what happened.
 	
 To save a document:
 
@@ -102,9 +98,18 @@ To save a document:
 	}
 	
 	Foo foo = new Foo();
+	
 	couchDatabase.SaveDocument<Foo>(foo);
 	
 	That is it!
+	
+To retrieve a document by id:
+
+	This method isn't totally done, but the current version will allow you retrieve documents 
+	by id.  This should give you an idea on how easy it will be to retrieve your objects from 
+	CouchDB.
+
+	User user = couchDatabase.GetDocument<User>("id");
 
 == License
 
