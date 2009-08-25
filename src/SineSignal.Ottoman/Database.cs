@@ -32,6 +32,8 @@ namespace SineSignal.Ottoman
 	/// </summary>
 	public class Database : IDatabase
 	{
+		private UriBuilder _root;
+		
 		/// <summary>
 		/// Gets or sets the server the database resides on.
 		/// </summary>
@@ -60,9 +62,7 @@ namespace SineSignal.Ottoman
 		{
 			get
 			{
-				UriBuilder uriBuilder = new UriBuilder(Server.Url);
-				uriBuilder.Path = Info.Name;
-				return uriBuilder.Uri;
+				return _root.Uri;
 			}
 		}
 
@@ -79,6 +79,9 @@ namespace SineSignal.Ottoman
 			Info = info;
 			RestClient = restClient;
 			Serializer = serializer;
+
+			_root = new UriBuilder(Server.Url);
+			_root.Path = Info.Name;
 		}
 
 		/// <summary>
@@ -118,12 +121,32 @@ namespace SineSignal.Ottoman
 
 			IDocument document = Serializer.Deserialize<Document>(response.Body);
 		}
-		
+
+		public T GetDocument<T>(string id)
+		{
+			UriBuilder requestUrl = new UriBuilder(Root);
+			requestUrl.Path = requestUrl.Path + "/" + id;
+			
+			IHttpResponse response = RestClient.Get(requestUrl.Uri);
+
+			string json = MassageJsonForDeserialization(response.Body, id);
+
+			return Serializer.Deserialize<T>(json);
+		}
+
 		public string MassageJsonForSending(string json, string docType)
 		{
 			string result = Serializer.RemoveKeyFrom(json, "Id");
 			result = Serializer.AddKeyTo(result, "doc_type", docType);
 			return result;
+		}
+		
+		public string MassageJsonForDeserialization(string json, string id)
+		{
+			string minusDocType = Serializer.RemoveKeyFrom(json, "doc_type");
+			string minusRev = Serializer.RemoveKeyFrom(minusDocType, "_rev");
+			string minusId = Serializer.RemoveKeyFrom(minusRev, "_id");
+			return Serializer.AddKeyTo(minusId, "Id", id);
 		}
 	}
 }

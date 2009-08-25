@@ -35,5 +35,6 @@ namespace SineSignal.Ottoman
 		Uri Root { get; }
 		void UpdateInfo();
 		void SaveDocument<T>(T objectToPersist);
+		T GetDocument<T>(string id);
 	}
 }
