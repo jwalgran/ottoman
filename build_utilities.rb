@@ -14,6 +14,7 @@ end
 class Tester
 	def initialize(items)
 		@source_dir = items.fetch(:source_dir, 'src')
+		@filter_category = items.fetch(:filter_category, nil)
 		@gallio_dir = items.fetch(:gallio_dir, 'thirdparty/tools/gallio')
 		#TODO:  Rethink default name
 		@test_results_dir = items.fetch(:test_results_dir, 'artifacts')
@@ -30,6 +31,6 @@ class Tester
 	
 	def build_command_for(assembly)
 		file = File.expand_path("#{@source_dir}/#{assembly}/bin/#{@compile_target}/#{assembly}.dll")
-		"#{@gallio_dir}/Gallio.Echo.exe #{file} /rt:#{@report_type} /rd:#{@test_results_dir} #{'/sr' if @show_report}"
+		"#{@gallio_dir}/Gallio.Echo.exe #{file} #{'/f:CategoryName:' + @filter_category if @filter_category} /rt:#{@report_type} /rd:#{@test_results_dir} #{'/sr' if @show_report}"
 	end
 end

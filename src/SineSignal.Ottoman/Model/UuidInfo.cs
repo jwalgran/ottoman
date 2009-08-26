@@ -1,6 +1,6 @@
-﻿#region License
+#region License
 
-// <copyright file="GuidGeneratorTests.cs" company="SineSignal, LLC.">
+// <copyright file="UuidInfo.cs" company="SineSignal, LLC.">
 //   Copyright 2007-2009 SineSignal, LLC.
 //       Licensed under the Apache License, Version 2.0 (the "License");
 //       you may not use this file except in compliance with the License.
@@ -20,28 +20,26 @@
 
 using System;
 
-using MbUnit.Framework;
-
-using SineSignal.Ottoman.Generators;
-
-namespace SineSignal.Ottoman.Tests.Unit.Generators
+namespace SineSignal.Ottoman.Model
 {
-    [TestFixture]
-	[Category("Unit")]
-    public class When_generating_an_ID_using_the_GuidGenerator : OttomanSpecBase<GuidGenerator>
-    {
-    	protected override GuidGenerator EstablishContext()
-    	{
-    		return new GuidGenerator();
-    	}
+	/// <summary>
+	/// Models the response given by CouchDB when requesting Uuids.
+	/// </summary>
+	public class UuidInfo : IUuidInfo
+	{
+		/// <summary>
+		/// Gets or sets the uuids.
+		/// </summary>
+		/// <value>The uuids.</value>
+		public Guid[] Uuids { get; private set; }
 
-    	[Test]
-        public void Should_return_a_Guid()
-        {
-            Guid id = Sut.Generate();
-            
-            Assert.IsInstanceOfType<Guid>(id);
-            Assert.AreNotEqual(default(Guid), id);
-        }
-    }
+		/// <summary>
+		/// Initializes a new instance of the <see cref="UuidInfo"/> class.
+		/// </summary>
+		/// <param name="uuids">The uuids.</param>
+		public UuidInfo(Guid[] uuids)
+		{
+			Uuids = uuids;
+		}
+	}
 }

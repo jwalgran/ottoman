@@ -29,6 +29,7 @@ using SineSignal.Ottoman.Tests.SampleDomain;
 namespace SineSignal.Ottoman.Tests.Unit.Serializers
 {
 	[TestFixture]
+	[Category("Unit")]
 	public class When_deserializing_from_json
 	{
 		public void Should_be_able_to_deserialize_a_CouchError_instance()
@@ -119,6 +120,7 @@ namespace SineSignal.Ottoman.Tests.Unit.Serializers
 	}
 	
 	[TestFixture]
+	[Category("Unit")]
 	public class When_serializing_to_json
 	{	
 		[Test]

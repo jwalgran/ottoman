@@ -193,7 +193,9 @@ namespace SineSignal.Ottoman
 			
 			IHttpResponse response = RestClient.Get(requestUrl);
 			
-			return Serializer.Deserialize<Guid[]>(response.Body);
+			IUuidInfo wrapper = Serializer.Deserialize<UuidInfo>(response.Body);
+
+			return wrapper.Uuids;
 		}
 		
 		// TODO:  Move these to a more reusable spot.  Not sure where that will be at the moment.

@@ -29,7 +29,12 @@ repository (Hint:  The location of build.cmd).  Then you can run the build comma
 by typing without the quotes:
 
 	To compile:  Type "build compile" or just "build" and hit enter.
-	To test:  Type "build test" and hit enter
+	To run all tests:  Type "build test_all" and hit enter
+	To run just unit tests:  Type "build test_unit" and hit enter
+	To run just integration tests:  Type "build test_integration" and hit enter
+	
+	Note:  To run the integration tests.  The tests expect you to have a CouchDB server 
+	       running at http://127.0.0.1:5984/.
 	
 == Using/Examples
 

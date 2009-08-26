@@ -27,6 +27,7 @@ using SineSignal.Ottoman.Generators;
 namespace SineSignal.Ottoman.Tests.Unit.Generators
 {
     [TestFixture]
+	[Category("Unit")]
     public class When_creating_a_SeededLongGenerator_with_default_reseed_interval : OttomanSpecBase<SeededLongGenerator>
     {
 		private Mock<IServer> MockServer { get; set; }
@@ -52,6 +53,7 @@ namespace SineSignal.Ottoman.Tests.Unit.Generators
     }
 
     [TestFixture]
+	[Category("Unit")]
 	public class When_generating_an_ID_using_the_SeededLongGenerator_with_default_reseed_interval : OttomanSpecBase<SeededLongGenerator>
     {
 		private Mock<IServer> MockServer { get; set; }
@@ -93,6 +95,8 @@ namespace SineSignal.Ottoman.Tests.Unit.Generators
         }
     }
     
+    [TestFixture]
+	[Category("Unit")]
     public class When_creating_a_SeededLongGenerator_with_specified_reseed_interval : OttomanSpecBase<SeededLongGenerator>
     {
 		private Mock<IServer> MockServer { get; set; }
@@ -121,6 +125,7 @@ namespace SineSignal.Ottoman.Tests.Unit.Generators
     }
 
 	[TestFixture]
+	[Category("Unit")]
 	public class When_generating_an_ID_using_the_SeededLongGenerator_with_specified_reseed_interval : OttomanSpecBase<SeededLongGenerator>
 	{
 		private Mock<IServer> MockServer { get; set; }

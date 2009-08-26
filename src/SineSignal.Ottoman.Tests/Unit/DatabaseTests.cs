@@ -32,6 +32,7 @@ using SineSignal.Ottoman.Tests.SampleDomain;
 namespace SineSignal.Ottoman.Tests.Unit
 {
 	[TestFixture]
+	[Category("Unit")]
 	public class When_updating_the_database_info : OttomanSpecBase<Database>
 	{
 		private string Url { get; set; }
@@ -127,6 +128,7 @@ namespace SineSignal.Ottoman.Tests.Unit
 	}
 	
 	[TestFixture]
+	[Category("Unit")]
 	public class When_massaging_json_for_sending : OttomanSpecBase<Database>
 	{
 		private Mock<IServer> MockServer { get; set; }
@@ -165,6 +167,7 @@ namespace SineSignal.Ottoman.Tests.Unit
 	}
 
 	[TestFixture]
+	[Category("Unit")]
 	public class DatabaseTests
 	{
 		/* 
@@ -225,6 +228,7 @@ namespace SineSignal.Ottoman.Tests.Unit
 	}
 	
 	[TestFixture]
+	[Category("Unit")]
 	public class When_retrieving_a_document_by_id : OttomanSpecBase<Database>
 	{
 		private string Url { get; set; }
@@ -292,6 +296,7 @@ namespace SineSignal.Ottoman.Tests.Unit
 	}
 
 	[TestFixture]
+	[Category("Unit")]
 	public class When_massaging_json_for_deserialization : OttomanSpecBase<Database>
 	{
 		private Guid Id { get; set; }

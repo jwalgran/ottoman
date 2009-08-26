@@ -1,6 +1,6 @@
-﻿#region License
+#region License
 
-// <copyright file="GuidGeneratorTests.cs" company="SineSignal, LLC.">
+// <copyright file="IUuidInfo.cs" company="SineSignal, LLC.">
 //   Copyright 2007-2009 SineSignal, LLC.
 //       Licensed under the Apache License, Version 2.0 (the "License");
 //       you may not use this file except in compliance with the License.
@@ -20,28 +20,10 @@
 
 using System;
 
-using MbUnit.Framework;
-
-using SineSignal.Ottoman.Generators;
-
-namespace SineSignal.Ottoman.Tests.Unit.Generators
+namespace SineSignal.Ottoman.Model
 {
-    [TestFixture]
-	[Category("Unit")]
-    public class When_generating_an_ID_using_the_GuidGenerator : OttomanSpecBase<GuidGenerator>
-    {
-    	protected override GuidGenerator EstablishContext()
-    	{
-    		return new GuidGenerator();
-    	}
-
-    	[Test]
-        public void Should_return_a_Guid()
-        {
-            Guid id = Sut.Generate();
-            
-            Assert.IsInstanceOfType<Guid>(id);
-            Assert.AreNotEqual(default(Guid), id);
-        }
-    }
+	public interface IUuidInfo
+	{
+		Guid[] Uuids { get; }
+	}
 }

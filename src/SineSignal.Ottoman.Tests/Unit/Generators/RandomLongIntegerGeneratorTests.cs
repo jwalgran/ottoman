@@ -28,6 +28,7 @@ using SineSignal.Ottoman.Generators;
 namespace SineSignal.Ottoman.Tests.Unit.Generators
 {
 	[TestFixture]
+	[Category("Unit")]
 	public class When_generating_an_identifier_using_the_RandomLongIntegerGenerator : OttomanSpecBase<RandomLongIntegerGenerator>
 	{
 		protected override RandomLongIntegerGenerator EstablishContext()
@@ -68,6 +69,7 @@ namespace SineSignal.Ottoman.Tests.Unit.Generators
 	}
 
 	[TestFixture]
+	[Category("Unit")]
 	public class When_generating_an_identifier_using_the_RandomLongIntegerGenerator_when__allow_negative_is_true : OttomanSpecBase<RandomLongIntegerGenerator>
 	{
 		protected override RandomLongIntegerGenerator EstablishContext()
