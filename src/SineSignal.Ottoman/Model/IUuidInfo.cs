@@ -1,6 +1,6 @@
 #region License
 
-// <copyright file="IDatabase.cs" company="SineSignal, LLC.">
+// <copyright file="IUuidInfo.cs" company="SineSignal, LLC.">
 //   Copyright 2007-2009 SineSignal, LLC.
 //       Licensed under the Apache License, Version 2.0 (the "License");
 //       you may not use this file except in compliance with the License.
@@ -20,21 +20,10 @@
 
 using System;
 
-using SineSignal.Ottoman.Model;
-using SineSignal.Ottoman.Proxy;
-using SineSignal.Ottoman.Serializers;
-
-namespace SineSignal.Ottoman
+namespace SineSignal.Ottoman.Model
 {
-	public interface IDatabase
+	public interface IUuidInfo
 	{
-		IServer Server { get; }
-		IDatabaseInfo Info { get; }
-		IRestClient RestClient { get; }
-		ISerializer Serializer { get; }
-		Uri Root { get; }
-		void UpdateInfo();
-		void SaveDocument<T>(T objectToPersist);
-		T GetDocument<T>(string id);
+		Guid[] Uuids { get; }
 	}
 }

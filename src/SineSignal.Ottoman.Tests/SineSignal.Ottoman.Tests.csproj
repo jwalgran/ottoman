@@ -59,6 +59,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Integration\Constants.cs" />
+    <Compile Include="Integration\ServerTests.cs" />
     <Compile Include="OttomanSpecBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SampleDomain\Address.cs" />

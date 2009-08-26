@@ -28,6 +28,7 @@ using SineSignal.Ottoman.Generators;
 namespace SineSignal.Ottoman.Tests.Unit.Generators
 {
     [TestFixture]
+	[Category("Unit")]
     public class When_generating_an_identifier_using_the_RandomIntegerGenerator : OttomanSpecBase<RandomIntegerGenerator>
     {
         protected override RandomIntegerGenerator EstablishContext()
@@ -68,6 +69,7 @@ namespace SineSignal.Ottoman.Tests.Unit.Generators
     }
     
     [TestFixture]
+	[Category("Unit")]
     public class When_generating_an_identifier_using_the_RandomIntegerGenerator_when__allow_negative_is_true : OttomanSpecBase<RandomIntegerGenerator>
     {
 		protected override RandomIntegerGenerator EstablishContext()

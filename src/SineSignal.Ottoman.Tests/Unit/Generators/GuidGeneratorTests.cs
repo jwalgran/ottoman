@@ -27,6 +27,7 @@ using SineSignal.Ottoman.Generators;
 namespace SineSignal.Ottoman.Tests.Unit.Generators
 {
     [TestFixture]
+	[Category("Unit")]
     public class When_generating_an_ID_using_the_GuidGenerator : OttomanSpecBase<GuidGenerator>
     {
     	protected override GuidGenerator EstablishContext()

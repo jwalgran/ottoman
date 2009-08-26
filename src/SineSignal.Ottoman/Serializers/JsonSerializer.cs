@@ -97,7 +97,7 @@ namespace SineSignal.Ottoman.Serializers
 		public string AddKeyTo(string json, string key, string value)
 		{
 			JObject jObject = JObject.Parse(json);
-			jObject.Add("doc_type", JToken.FromObject(value));
+			jObject.Add(key, JToken.FromObject(value));
 			return jObject.ToString();
 		}
 	}

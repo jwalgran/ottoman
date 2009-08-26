@@ -1,6 +1,6 @@
 #region License
 
-// <copyright file="IDatabase.cs" company="SineSignal, LLC.">
+// <copyright file="Constants.cs" company="SineSignal, LLC.">
 //   Copyright 2007-2009 SineSignal, LLC.
 //       Licensed under the Apache License, Version 2.0 (the "License");
 //       you may not use this file except in compliance with the License.
@@ -18,23 +18,13 @@
 
 #endregion
 
-using System;
-
-using SineSignal.Ottoman.Model;
-using SineSignal.Ottoman.Proxy;
-using SineSignal.Ottoman.Serializers;
-
-namespace SineSignal.Ottoman
+namespace SineSignal.Ottoman.Tests.Integration
 {
-	public interface IDatabase
+	public class Constants
 	{
-		IServer Server { get; }
-		IDatabaseInfo Info { get; }
-		IRestClient RestClient { get; }
-		ISerializer Serializer { get; }
-		Uri Root { get; }
-		void UpdateInfo();
-		void SaveDocument<T>(T objectToPersist);
-		T GetDocument<T>(string id);
+		public const string Prefix = "test_";
+		public const string DatabaseName = Prefix + "database";
+		public const string CouchDBMessage = "Welcome";
+		public const string CouchDBVersion = "0.10.0a800465";
 	}
 }

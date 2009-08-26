@@ -31,7 +31,8 @@ using SineSignal.Ottoman.Serializers;
 
 namespace SineSignal.Ottoman.Tests.Unit
 {
-	[TestFixture] 
+	[TestFixture]
+	[Category("Unit")]
 	public class When_instantiating_a_new_server_instance
 	{
 		[Test]
@@ -134,6 +135,7 @@ namespace SineSignal.Ottoman.Tests.Unit
 	}
 	
 	[TestFixture]
+	[Category("Unit")]
 	public class When_creating_a_database : OttomanSpecBase<Server>
 	{
 		private string Url { get; set; }
@@ -218,6 +220,7 @@ namespace SineSignal.Ottoman.Tests.Unit
 	}
 	
 	[TestFixture]
+	[Category("Unit")]
 	public class When_deleting_a_database : OttomanSpecBase<Server>
 	{
 		private string Url { get; set; }
@@ -302,6 +305,7 @@ namespace SineSignal.Ottoman.Tests.Unit
 	}
 	
 	[TestFixture]
+	[Category("Unit")]
 	public class When_retrieving_a_database : OttomanSpecBase<Server>
 	{
 		private string Url { get; set; }
@@ -432,6 +436,7 @@ namespace SineSignal.Ottoman.Tests.Unit
 	}
 	
 	[TestFixture]
+	[Category("Unit")]
 	public class When_retrieving_a_list_of_databases : OttomanSpecBase<Server>
 	{
 		private string Url { get; set; }
@@ -503,6 +508,7 @@ namespace SineSignal.Ottoman.Tests.Unit
 	}
 	
 	[TestFixture]
+	[Category("Unit")]
 	public class When_retrieving_info_about_the_server : OttomanSpecBase<Server>
 	{
 		private string Url { get; set; }
@@ -573,6 +579,7 @@ namespace SineSignal.Ottoman.Tests.Unit
 	}
 
 	[TestFixture]
+	[Category("Unit")]
 	public class When_retrieving_a_list_of_uuids : OttomanSpecBase<Server>
 	{
 		private string Url { get; set; }
@@ -598,7 +605,7 @@ namespace SineSignal.Ottoman.Tests.Unit
 			string body = "[\"473b6a153627bdd551a712ac09abe847\",\"9df864f019a8a0e7435ff29a45205a71\"]";
 
 			MockRestProxy.Setup(x => x.Get(requestUrl)).Returns(new HttpResponse(HttpStatusCode.OK, body));
-			MockSerializer.Setup(x => x.Deserialize<Guid[]>(body)).Returns(new Guid[] { new Guid("473b6a153627bdd551a712ac09abe847"), new Guid("9df864f019a8a0e7435ff29a45205a71") });
+			MockSerializer.Setup(x => x.Deserialize<UuidInfo>(body)).Returns(new UuidInfo(new Guid[] { new Guid("473b6a153627bdd551a712ac09abe847"), new Guid("9df864f019a8a0e7435ff29a45205a71") }));
 
 			// Act
 			Sut.GetUuids(count);
@@ -616,13 +623,13 @@ namespace SineSignal.Ottoman.Tests.Unit
 			string body = "[\"473b6a153627bdd551a712ac09abe847\",\"9df864f019a8a0e7435ff29a45205a71\"]";
 
 			MockRestProxy.Setup(x => x.Get(requestUrl)).Returns(new HttpResponse(HttpStatusCode.OK, body));
-			MockSerializer.Setup(x => x.Deserialize<Guid[]>(body)).Returns(new Guid[] { new Guid("473b6a153627bdd551a712ac09abe847"), new Guid("9df864f019a8a0e7435ff29a45205a71") });
+			MockSerializer.Setup(x => x.Deserialize<UuidInfo>(body)).Returns(new UuidInfo(new Guid[] { new Guid("473b6a153627bdd551a712ac09abe847"), new Guid("9df864f019a8a0e7435ff29a45205a71") }));
 
 			// Act
 			Sut.GetUuids(count);
 
 			// Assert
-			MockSerializer.Verify(x => x.Deserialize<Guid[]>(body));
+			MockSerializer.Verify(x => x.Deserialize<UuidInfo>(body));
 		}
 
 		[Test]
@@ -634,7 +641,7 @@ namespace SineSignal.Ottoman.Tests.Unit
 			string body = "[\"473b6a153627bdd551a712ac09abe847\",\"9df864f019a8a0e7435ff29a45205a71\"]";
 
 			MockRestProxy.Setup(x => x.Get(requestUrl)).Returns(new HttpResponse(HttpStatusCode.OK, body));
-			MockSerializer.Setup(x => x.Deserialize<Guid[]>(body)).Returns(new Guid[] { new Guid("473b6a153627bdd551a712ac09abe847"), new Guid("9df864f019a8a0e7435ff29a45205a71") });
+			MockSerializer.Setup(x => x.Deserialize<UuidInfo>(body)).Returns(new UuidInfo(new Guid[] { new Guid("473b6a153627bdd551a712ac09abe847"), new Guid("9df864f019a8a0e7435ff29a45205a71") }));
 
 			// Act
 			Guid[] uuids = Sut.GetUuids(count);

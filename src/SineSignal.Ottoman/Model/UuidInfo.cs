@@ -1,6 +1,6 @@
 #region License
 
-// <copyright file="IDatabase.cs" company="SineSignal, LLC.">
+// <copyright file="UuidInfo.cs" company="SineSignal, LLC.">
 //   Copyright 2007-2009 SineSignal, LLC.
 //       Licensed under the Apache License, Version 2.0 (the "License");
 //       you may not use this file except in compliance with the License.
@@ -20,21 +20,26 @@
 
 using System;
 
-using SineSignal.Ottoman.Model;
-using SineSignal.Ottoman.Proxy;
-using SineSignal.Ottoman.Serializers;
-
-namespace SineSignal.Ottoman
+namespace SineSignal.Ottoman.Model
 {
-	public interface IDatabase
+	/// <summary>
+	/// Models the response given by CouchDB when requesting Uuids.
+	/// </summary>
+	public class UuidInfo : IUuidInfo
 	{
-		IServer Server { get; }
-		IDatabaseInfo Info { get; }
-		IRestClient RestClient { get; }
-		ISerializer Serializer { get; }
-		Uri Root { get; }
-		void UpdateInfo();
-		void SaveDocument<T>(T objectToPersist);
-		T GetDocument<T>(string id);
+		/// <summary>
+		/// Gets or sets the uuids.
+		/// </summary>
+		/// <value>The uuids.</value>
+		public Guid[] Uuids { get; private set; }
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="UuidInfo"/> class.
+		/// </summary>
+		/// <param name="uuids">The uuids.</param>
+		public UuidInfo(Guid[] uuids)
+		{
+			Uuids = uuids;
+		}
 	}
 }

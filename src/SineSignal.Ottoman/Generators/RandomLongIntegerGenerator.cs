@@ -23,6 +23,9 @@ using System.Security.Cryptography;
 
 namespace SineSignal.Ottoman.Generators
 {
+	/// <summary>
+	/// Used for generating non-sequential identifiers of type Int64.
+	/// </summary>
     public class RandomLongIntegerGenerator : IGenerator<long>
     {
         private static RandomNumberGenerator _randomNumberGenerator = RandomNumberGenerator.Create();

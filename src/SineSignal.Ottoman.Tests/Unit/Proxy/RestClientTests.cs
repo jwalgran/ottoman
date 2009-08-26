@@ -29,6 +29,7 @@ using SineSignal.Ottoman.Proxy;
 namespace SineSignal.Ottoman.Tests.Unit.Proxy
 {
 	[TestFixture]
+	[Category("Unit")]
 	public class When_making_a_put_request : OttomanSpecBase<RestClient>
 	{
 		private Uri Url { get; set; }
@@ -74,6 +75,7 @@ namespace SineSignal.Ottoman.Tests.Unit.Proxy
 	}
 	
 	[TestFixture]
+	[Category("Unit")]
 	public class When_making_a_put_request_with_content_type_and_a_body : OttomanSpecBase<RestClient>
 	{
 		private Uri Url { get; set; }
@@ -123,6 +125,7 @@ namespace SineSignal.Ottoman.Tests.Unit.Proxy
 	}
 
 	[TestFixture]
+	[Category("Unit")]
 	public class When_making_a_delete_request : OttomanSpecBase<RestClient>
 	{
 		private Uri Url { get; set; }
@@ -168,6 +171,7 @@ namespace SineSignal.Ottoman.Tests.Unit.Proxy
 	}
 	
 	[TestFixture]
+	[Category("Unit")]
 	public class When_making_a_get_request : OttomanSpecBase<RestClient>
 	{
 		private Uri Url { get; set; }
@@ -215,6 +219,7 @@ namespace SineSignal.Ottoman.Tests.Unit.Proxy
 	}
 	
 	[TestFixture]
+	[Category("Unit")]
 	public class When_making_a_post_request : OttomanSpecBase<RestClient>
 	{
 		private Uri Url { get; set; }

@@ -32,6 +32,7 @@ using SineSignal.Ottoman.Tests.SampleDomain;
 namespace SineSignal.Ottoman.Tests.Unit
 {
 	[TestFixture]
+	[Category("Unit")]
 	public class When_updating_the_database_info : OttomanSpecBase<Database>
 	{
 		private string Url { get; set; }
@@ -127,6 +128,7 @@ namespace SineSignal.Ottoman.Tests.Unit
 	}
 	
 	[TestFixture]
+	[Category("Unit")]
 	public class When_massaging_json_for_sending : OttomanSpecBase<Database>
 	{
 		private Mock<IServer> MockServer { get; set; }
@@ -165,6 +167,7 @@ namespace SineSignal.Ottoman.Tests.Unit
 	}
 
 	[TestFixture]
+	[Category("Unit")]
 	public class DatabaseTests
 	{
 		/* 
@@ -222,5 +225,118 @@ namespace SineSignal.Ottoman.Tests.Unit
 		 	Assert.AreNotEqual(manager.Id, default(Guid));
 		 	Assert.AreEqual(mockHttpResponse.Object.StatusCode, HttpStatusCode.Created);
 		 }
+	}
+	
+	[TestFixture]
+	[Category("Unit")]
+	public class When_retrieving_a_document_by_id : OttomanSpecBase<Database>
+	{
+		private string Url { get; set; }
+		private string DatabaseName { get; set; }
+		private Guid Id { get; set; }
+		private Uri RequestUrl { get; set; }
+		private string Body { get; set; }
+		private string Json { get; set; }
+		private Mock<IServer> MockServer { get; set; }
+		private Mock<IDatabaseInfo> MockDatabaseInfo { get; set; }
+		private Mock<IRestClient> MockRestClient { get; set; }
+		private Mock<ISerializer> MockSerializer { get; set; }
+		
+		protected override Database EstablishContext()
+		{
+			// Arrange
+			Url = "http://127.0.0.1:5984/";
+			DatabaseName = "test";
+			Id = new Guid("fe875b98-0ef2-42c2-9c7f-94ab94432250");
+			RequestUrl = new Uri(Url + DatabaseName + "/" + Id);
+			Body = "{\"Subordinates\":[{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":40.0,\"Id\":\"4c5b075c-b87e-46b9-9108-6dd3a647953b\",\"Name\":\"Bob\",\"Login\":\"bbob\"},{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":40.0,\"Id\":\"b14818db-c975-4109-a94a-452632ee161b\",\"Name\":\"Alice\",\"Login\":\"aalice\"},{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":20.0,\"Id\":\"8f0a0036-319f-49e6-83e7-f84971f9aa5c\",\"Name\":\"Eve\",\"Login\":\"eeve\"}],\"Name\":\"Chris\",\"Login\":\"cchandler\",\"doc_type\":\"DocType\",\"_rev\":\"1-6854b67b702ecc50919aedea24a66499\"}";
+			string jsonMinusDocType = "{\"Subordinates\":[{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":40.0,\"Id\":\"4c5b075c-b87e-46b9-9108-6dd3a647953b\",\"Name\":\"Bob\",\"Login\":\"bbob\"},{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":40.0,\"Id\":\"b14818db-c975-4109-a94a-452632ee161b\",\"Name\":\"Alice\",\"Login\":\"aalice\"},{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":20.0,\"Id\":\"8f0a0036-319f-49e6-83e7-f84971f9aa5c\",\"Name\":\"Eve\",\"Login\":\"eeve\"}],\"Name\":\"Chris\",\"Login\":\"cchandler\"}";
+			string jsonMinusRev = "{\"Subordinates\":[{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":40.0,\"Id\":\"4c5b075c-b87e-46b9-9108-6dd3a647953b\",\"Name\":\"Bob\",\"Login\":\"bbob\"},{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":40.0,\"Id\":\"b14818db-c975-4109-a94a-452632ee161b\",\"Name\":\"Alice\",\"Login\":\"aalice\"},{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":20.0,\"Id\":\"8f0a0036-319f-49e6-83e7-f84971f9aa5c\",\"Name\":\"Eve\",\"Login\":\"eeve\"}],\"Name\":\"Chris\",\"Login\":\"cchandler\",\"_id\":\"fe875b98-0ef2-42c2-9c7f-94ab94432250\"}";
+			string jsonMinusId = "{\"Subordinates\":[{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":40.0,\"Id\":\"4c5b075c-b87e-46b9-9108-6dd3a647953b\",\"Name\":\"Bob\",\"Login\":\"bbob\"},{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":40.0,\"Id\":\"b14818db-c975-4109-a94a-452632ee161b\",\"Name\":\"Alice\",\"Login\":\"aalice\"},{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":20.0,\"Id\":\"8f0a0036-319f-49e6-83e7-f84971f9aa5c\",\"Name\":\"Eve\",\"Login\":\"eeve\"}],\"Name\":\"Chris\",\"Login\":\"cchandler\"}";
+			Json = "{\"Subordinates\":[{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":40.0,\"Id\":\"4c5b075c-b87e-46b9-9108-6dd3a647953b\",\"Name\":\"Bob\",\"Login\":\"bbob\"},{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":40.0,\"Id\":\"b14818db-c975-4109-a94a-452632ee161b\",\"Name\":\"Alice\",\"Login\":\"aalice\"},{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":20.0,\"Id\":\"8f0a0036-319f-49e6-83e7-f84971f9aa5c\",\"Name\":\"Eve\",\"Login\":\"eeve\"}],\"Name\":\"Chris\",\"Login\":\"cchandler\",\"Id\":\"fe875b98-0ef2-42c2-9c7f-94ab94432250\"}";
+			
+			MockServer = new Mock<IServer>();
+			MockServer.SetupGet(x => x.Url).Returns(new Uri(Url));
+			
+			MockDatabaseInfo = new Mock<IDatabaseInfo>();
+			MockDatabaseInfo.SetupGet(x => x.Name).Returns(DatabaseName);
+			
+			MockRestClient = new Mock<IRestClient>();
+			MockRestClient.Setup(x => x.Get(RequestUrl)).Returns(new HttpResponse(HttpStatusCode.OK, Body));
+			
+			MockSerializer = new Mock<ISerializer>();
+			MockSerializer.Setup(x => x.RemoveKeyFrom(Body, "doc_type")).Returns(jsonMinusDocType);
+			MockSerializer.Setup(x => x.RemoveKeyFrom(jsonMinusDocType, "_rev")).Returns(jsonMinusRev);
+			MockSerializer.Setup(x => x.RemoveKeyFrom(jsonMinusRev, "_id")).Returns(jsonMinusId);
+			MockSerializer.Setup(x => x.AddKeyTo(jsonMinusId, "Id", Id.ToString())).Returns(Json);
+			MockSerializer.Setup(x => x.Deserialize<Manager>(Json));
+			
+			return new Database(MockServer.Object, MockDatabaseInfo.Object, MockRestClient.Object, MockSerializer.Object);
+		}
+		
+		[Test]
+		public void Should_call_get_and_pass_database_name_and_id_of_document_on_the_url()
+		{
+			// Act
+			Sut.GetDocument<Manager>(Id.ToString());
+			
+			// Assert
+			MockRestClient.Verify(x => x.Get(RequestUrl));
+		}
+		
+		[Test]
+		public void Should_call_deserialize_with_massaged_json()
+		{
+			// Act
+			Sut.GetDocument<Manager>(Id.ToString());
+			
+			// Assert
+			MockSerializer.Verify(x => x.Deserialize<Manager>(Json));
+		}
+	}
+
+	[TestFixture]
+	[Category("Unit")]
+	public class When_massaging_json_for_deserialization : OttomanSpecBase<Database>
+	{
+		private Guid Id { get; set; }
+		private Mock<IServer> MockServer { get; set; }
+		private Mock<IDatabaseInfo> MockDatabaseInfo { get; set; }
+		private Mock<IRestClient> MockRestProxy { get; set; }
+		private Mock<ISerializer> MockSerializer { get; set; }
+
+		protected override Database EstablishContext()
+		{
+			Id = Guid.NewGuid();
+			MockServer = new Mock<IServer>();
+			MockDatabaseInfo = new Mock<IDatabaseInfo>();
+			MockRestProxy = new Mock<IRestClient>();
+			MockSerializer = new Mock<ISerializer>();
+
+			return new Database(MockServer.Object, MockDatabaseInfo.Object, MockRestProxy.Object, MockSerializer.Object);
+		}
+
+		public void Should_prep_json_by_removing_doc_type_and_adding_id()
+		{
+			// Arrange
+			string json = "{\"Subordinates\":[{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":40.0,\"Id\":\"4c5b075c-b87e-46b9-9108-6dd3a647953b\",\"Name\":\"Bob\",\"Login\":\"bbob\"},{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":40.0,\"Id\":\"b14818db-c975-4109-a94a-452632ee161b\",\"Name\":\"Alice\",\"Login\":\"aalice\"},{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":20.0,\"Id\":\"8f0a0036-319f-49e6-83e7-f84971f9aa5c\",\"Name\":\"Eve\",\"Login\":\"eeve\"}],\"Name\":\"Chris\",\"Login\":\"cchandler\",\"doc_type\":\"DocType\",\"_rev\":\"1-6854b67b702ecc50919aedea24a66499\",\"_id\":\"fe875b98-0ef2-42c2-9c7f-94ab94432250\"}";
+			string jsonMinusDocType = "{\"Subordinates\":[{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":40.0,\"Id\":\"4c5b075c-b87e-46b9-9108-6dd3a647953b\",\"Name\":\"Bob\",\"Login\":\"bbob\"},{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":40.0,\"Id\":\"b14818db-c975-4109-a94a-452632ee161b\",\"Name\":\"Alice\",\"Login\":\"aalice\"},{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":20.0,\"Id\":\"8f0a0036-319f-49e6-83e7-f84971f9aa5c\",\"Name\":\"Eve\",\"Login\":\"eeve\"}],\"Name\":\"Chris\",\"Login\":\"cchandler\",\"_rev\":\"1-6854b67b702ecc50919aedea24a66499\",\"_id\":\"fe875b98-0ef2-42c2-9c7f-94ab94432250\"}";
+			string jsonMinusRev = "{\"Subordinates\":[{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":40.0,\"Id\":\"4c5b075c-b87e-46b9-9108-6dd3a647953b\",\"Name\":\"Bob\",\"Login\":\"bbob\"},{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":40.0,\"Id\":\"b14818db-c975-4109-a94a-452632ee161b\",\"Name\":\"Alice\",\"Login\":\"aalice\"},{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":20.0,\"Id\":\"8f0a0036-319f-49e6-83e7-f84971f9aa5c\",\"Name\":\"Eve\",\"Login\":\"eeve\"}],\"Name\":\"Chris\",\"Login\":\"cchandler\",\"_id\":\"fe875b98-0ef2-42c2-9c7f-94ab94432250\"}";
+			string jsonMinusId = "{\"Subordinates\":[{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":40.0,\"Id\":\"4c5b075c-b87e-46b9-9108-6dd3a647953b\",\"Name\":\"Bob\",\"Login\":\"bbob\"},{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":40.0,\"Id\":\"b14818db-c975-4109-a94a-452632ee161b\",\"Name\":\"Alice\",\"Login\":\"aalice\"},{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":20.0,\"Id\":\"8f0a0036-319f-49e6-83e7-f84971f9aa5c\",\"Name\":\"Eve\",\"Login\":\"eeve\"}],\"Name\":\"Chris\",\"Login\":\"cchandler\"}";
+			string jsonMassaged = "{\"Subordinates\":[{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":40.0,\"Id\":\"4c5b075c-b87e-46b9-9108-6dd3a647953b\",\"Name\":\"Bob\",\"Login\":\"bbob\"},{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":40.0,\"Id\":\"b14818db-c975-4109-a94a-452632ee161b\",\"Name\":\"Alice\",\"Login\":\"aalice\"},{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":20.0,\"Id\":\"8f0a0036-319f-49e6-83e7-f84971f9aa5c\",\"Name\":\"Eve\",\"Login\":\"eeve\"}],\"Name\":\"Chris\",\"Login\":\"cchandler\",\"Id\":\"fe875b98-0ef2-42c2-9c7f-94ab94432250\"}";
+
+			MockSerializer.Setup(x => x.RemoveKeyFrom(json, "doc_type"));
+			MockSerializer.Setup(x => x.RemoveKeyFrom(jsonMinusDocType, "_rev"));
+			MockSerializer.Setup(x => x.RemoveKeyFrom(jsonMinusRev, "_id"));
+			MockSerializer.Setup(x => x.AddKeyTo(jsonMinusId, "Id", Id.ToString()));
+
+			// Act
+			string result = Sut.MassageJsonForDeserialization(json, Id.ToString());
+
+			// Assert
+			MockSerializer.Verify(x => x.RemoveKeyFrom(json, "doc_type"));
+			MockSerializer.Verify(x => x.AddKeyTo(jsonMinusDocType, "Id", Id.ToString()));
+			Assert.AreEqual(jsonMassaged, result);
+		}
 	}
 }

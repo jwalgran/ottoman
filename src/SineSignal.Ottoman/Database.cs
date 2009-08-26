@@ -28,10 +28,12 @@ using SineSignal.Ottoman.Serializers;
 namespace SineSignal.Ottoman
 {
 	/// <summary>
-	/// 
+	/// Represents a database in CouchDB.  Use this class for saving, retrieving, and deleting documents.
 	/// </summary>
 	public class Database : IDatabase
 	{
+		private UriBuilder _root;
+		
 		/// <summary>
 		/// Gets or sets the server the database resides on.
 		/// </summary>
@@ -60,9 +62,7 @@ namespace SineSignal.Ottoman
 		{
 			get
 			{
-				UriBuilder uriBuilder = new UriBuilder(Server.Url);
-				uriBuilder.Path = Info.Name;
-				return uriBuilder.Uri;
+				return _root.Uri;
 			}
 		}
 
@@ -79,6 +79,9 @@ namespace SineSignal.Ottoman
 			Info = info;
 			RestClient = restClient;
 			Serializer = serializer;
+
+			_root = new UriBuilder(Server.Url);
+			_root.Path = Info.Name;
 		}
 
 		/// <summary>
@@ -93,7 +96,7 @@ namespace SineSignal.Ottoman
 		/// <summary>
 		/// Saves the document to the server.
 		/// </summary>
-		/// <typeparam name="T"></typeparam>
+		/// <typeparam name="T">The type of the object to serialize.</typeparam>
 		/// <param name="objectToPersist">The object to persist.</param>
 		public void SaveDocument<T>(T objectToPersist)
 		{
@@ -118,12 +121,50 @@ namespace SineSignal.Ottoman
 
 			IDocument document = Serializer.Deserialize<Document>(response.Body);
 		}
-		
+
+		/// <summary>
+		/// Gets a document by Id.
+		/// </summary>
+		/// <typeparam name="T">The type of the object to return.</typeparam>
+		/// <param name="id">The id of the document to retrieve.</param>
+		/// <returns>The deserialized object as the type specified.</returns>
+		public T GetDocument<T>(string id)
+		{
+			UriBuilder requestUrl = new UriBuilder(Root);
+			requestUrl.Path = requestUrl.Path + "/" + id;
+			
+			IHttpResponse response = RestClient.Get(requestUrl.Uri);
+
+			string json = MassageJsonForDeserialization(response.Body, id);
+
+			return Serializer.Deserialize<T>(json);
+		}
+
+		/// <summary>
+		/// Massages the json for sending.
+		/// </summary>
+		/// <param name="json">The json.</param>
+		/// <param name="docType">Type of the doc.</param>
+		/// <returns>The massaged JSON.</returns>
 		public string MassageJsonForSending(string json, string docType)
 		{
 			string result = Serializer.RemoveKeyFrom(json, "Id");
 			result = Serializer.AddKeyTo(result, "doc_type", docType);
 			return result;
+		}
+
+		/// <summary>
+		/// Massages the json for deserialization.
+		/// </summary>
+		/// <param name="json">The json.</param>
+		/// <param name="id">The id.</param>
+		/// <returns>The massaged JSON.</returns>
+		public string MassageJsonForDeserialization(string json, string id)
+		{
+			string result = Serializer.RemoveKeyFrom(json, "doc_type");
+			result = Serializer.RemoveKeyFrom(result, "_rev");
+			result = Serializer.RemoveKeyFrom(result, "_id");
+			return Serializer.AddKeyTo(result, "Id", id);
 		}
 	}
 }
