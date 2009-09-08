@@ -43,6 +43,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\CommonAssemblyInfo.cs">
+      <Link>Properties\CommonAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="Exceptions\CannotCreateDatabaseException.cs" />
     <Compile Include="Exceptions\CannotDeleteDatabaseException.cs" />
     <Compile Include="Exceptions\CannotGetDatabaseException.cs" />
