@@ -50,14 +50,14 @@
     <Compile Include="Exceptions\CannotDeleteDatabaseException.cs" />
     <Compile Include="Exceptions\CannotGetDatabaseException.cs" />
     <Compile Include="Database.cs" />
+    <Compile Include="Generators\RandomIntegerGenerator.cs" />
+    <Compile Include="Generators\RandomLongIntegerGenerator.cs" />
+    <Compile Include="Generators\SeededLongGenerator.cs" />
     <Compile Include="Model\ErrorInfo.cs" />
     <Compile Include="Exceptions\CouchException.cs" />
     <Compile Include="Model\DatabaseInfo.cs" />
     <Compile Include="Document.cs" />
     <Compile Include="Generators\GuidGenerator.cs" />
-    <Compile Include="Generators\RandomIntegerGenerator.cs" />
-    <Compile Include="Generators\RandomLongIntegerGenerator.cs" />
-    <Compile Include="Generators\SeededLongGenerator.cs" />
     <Compile Include="Generators\IGenerator.cs" />
     <Compile Include="Model\IDatabaseInfo.cs" />
     <Compile Include="IDocument.cs" />

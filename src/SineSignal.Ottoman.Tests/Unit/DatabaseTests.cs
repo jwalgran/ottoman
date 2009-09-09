@@ -38,83 +38,72 @@ namespace SineSignal.Ottoman.Tests.Unit
 		private string Url { get; set; }
 		private string DatabaseName { get; set; }
 		private Uri RequestUrl { get; set; }
-		private Mock<IServer> MockServer { get; set; }
-		private Mock<IDatabaseInfo> MockDatabaseInfo { get; set; }
+		private Mock<IServer> FakeServer { get; set; }
+		private Mock<IDatabaseInfo> FakeDatabaseInfo { get; set; }
 		private string Body { get; set; }
-		private Mock<IRestClient> MockRestProxy { get; set; }
-		private Mock<ISerializer> MockSerializer { get; set; }
+		private Mock<IRestClient> FakeRestClient { get; set; }
+		private Mock<ISerializer> FakeSerializer { get; set; }
 		
 		protected override Database EstablishContext()
 		{
-			// Arrange
 			Url = "http://127.0.0.1:5984/";
 			DatabaseName = "test";
 			RequestUrl = new Uri(Url + DatabaseName);
 			
-			MockServer = new Mock<IServer>();
-			MockServer.SetupGet(x => x.Address).Returns(new Uri(Url));
+			FakeServer = new Mock<IServer>();
+			FakeServer.SetupGet(x => x.Address).Returns(new Uri(Url));
 
-			MockDatabaseInfo = new Mock<IDatabaseInfo>();
-			MockDatabaseInfo.SetupGet(x => x.Name).Returns(DatabaseName);
+			FakeDatabaseInfo = new Mock<IDatabaseInfo>();
+			FakeDatabaseInfo.SetupGet(x => x.Name).Returns(DatabaseName);
 			
 			Body = "{\"db_name\":\"" + DatabaseName + "\",\"doc_count\":0,\"doc_del_count\":0,\"update_seq\":0,\"purge_seq\":0,\"compact_running\":false,\"disk_size\":79,\"instance_start_time\":\"1250175373642458\",\"disk_format_version\":4}";
-			MockRestProxy = new Mock<IRestClient>();
-			MockRestProxy.Setup(x => x.Get(RequestUrl)).Returns(new HttpResponse(HttpStatusCode.OK, Body));
+			FakeRestClient = new Mock<IRestClient>();
+			FakeRestClient.Setup(x => x.Get(RequestUrl)).Returns(new HttpResponse(HttpStatusCode.OK, Body));
 
-			MockSerializer = new Mock<ISerializer>();
-			MockSerializer.Setup(x => x.Deserialize<DatabaseInfo>(Body)).Returns(new DatabaseInfo(DatabaseName, 0, 0, 0, 0, false, 79, "1250175373642458", 4));
+			FakeSerializer = new Mock<ISerializer>();
+			FakeSerializer.Setup(x => x.Deserialize<DatabaseInfo>(Body)).Returns(new DatabaseInfo(DatabaseName, 0, 0, 0, 0, false, 79, "1250175373642458", 4));
 			
-			return new Database(MockServer.Object, MockDatabaseInfo.Object, MockRestProxy.Object, MockSerializer.Object);
+			return new Database(FakeServer.Object, FakeDatabaseInfo.Object, FakeRestClient.Object, FakeSerializer.Object);
 		}
 		
 		[Test]
 		public void Should_leverage_Server_to_retrieve_base_url()
 		{
-			// Act
 			Sut.UpdateInfo();
 			
-			// Assert
-			MockServer.VerifyGet(x => x.Address);
+			FakeServer.VerifyGet(x => x.Address);
 		}
 
 		[Test]
 		public void Should_leverage_DatabaseInfo_to_retrieve_database_name()
 		{
-			// Act
 			Sut.UpdateInfo();
 
-			// Assert
-			MockDatabaseInfo.VerifyGet(x => x.Name);
+			FakeDatabaseInfo.VerifyGet(x => x.Name);
 		}
 		
 		[Test]
 		[Row("test")]
 		public void Should_call_get_on_RestProxy_passing_the_database_name_on_the_url()
 		{
-			// Act
 			Sut.UpdateInfo();
 			
-			// Assert
-			MockRestProxy.Verify(x => x.Get(RequestUrl));
+			FakeRestClient.Verify(x => x.Get(RequestUrl));
 		}
 		
 		[Test]
 		public void Should_call_deserialize_on_Serializer_passing_the_response_body()
 		{
-			// Act
 			Sut.UpdateInfo();
 			
-			// Assert
-			MockSerializer.Verify(x => x.Deserialize<DatabaseInfo>(Body));
+			FakeSerializer.Verify(x => x.Deserialize<DatabaseInfo>(Body));
 		}
 		
 		[Test]
 		public void Should_set_DatabaseInfo_from_deserialized_body()
 		{
-			// Act
 			Sut.UpdateInfo();
 			
-			// Assert
 			Assert.AreEqual(DatabaseName, Sut.Info.Name);
 			Assert.AreEqual(0, Sut.Info.DocCount);
 			Assert.AreEqual(0, Sut.Info.DocDelCount);
@@ -131,37 +120,34 @@ namespace SineSignal.Ottoman.Tests.Unit
 	[Category("Unit")]
 	public class When_massaging_json_for_sending : OttomanSpecBase<Database>
 	{
-		private Mock<IServer> MockServer { get; set; }
-		private Mock<IDatabaseInfo> MockDatabaseInfo { get; set; }
-		private Mock<IRestClient> MockRestProxy { get; set; }
-		private Mock<ISerializer> MockSerializer { get; set; }
+		private Mock<IServer> FakeServer { get; set; }
+		private Mock<IDatabaseInfo> FakeDatabaseInfo { get; set; }
+		private Mock<IRestClient> FakeRestClient { get; set; }
+		private Mock<ISerializer> FakeSerializer { get; set; }
 		
 		protected override Database EstablishContext()
 		{
-			MockServer = new Mock<IServer>();
-			MockDatabaseInfo = new Mock<IDatabaseInfo>();
-			MockRestProxy = new Mock<IRestClient>();
-			MockSerializer = new Mock<ISerializer>();
+			FakeServer = new Mock<IServer>();
+			FakeDatabaseInfo = new Mock<IDatabaseInfo>();
+			FakeRestClient = new Mock<IRestClient>();
+			FakeSerializer = new Mock<ISerializer>();
 			
-			return new Database(MockServer.Object, MockDatabaseInfo.Object, MockRestProxy.Object, MockSerializer.Object);
+			return new Database(FakeServer.Object, FakeDatabaseInfo.Object, FakeRestClient.Object, FakeSerializer.Object);
 		}
 
 		public void Should_prep_json_by_removing_id_and_adding_doc_type()
 		{
-			// Arrange
 			string json = "{\"Id\":\"fe875b98-0ef2-42c2-9c7f-94ab94432250\",\"Subordinates\":[{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":40.0,\"Id\":\"4c5b075c-b87e-46b9-9108-6dd3a647953b\",\"Name\":\"Bob\",\"Login\":\"bbob\"},{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":40.0,\"Id\":\"b14818db-c975-4109-a94a-452632ee161b\",\"Name\":\"Alice\",\"Login\":\"aalice\"},{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":20.0,\"Id\":\"8f0a0036-319f-49e6-83e7-f84971f9aa5c\",\"Name\":\"Eve\",\"Login\":\"eeve\"}],\"Name\":\"Chris\",\"Login\":\"cchandler\"}";
 			string jsonMinusId = "{\"Subordinates\":[{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":40.0,\"Id\":\"4c5b075c-b87e-46b9-9108-6dd3a647953b\",\"Name\":\"Bob\",\"Login\":\"bbob\"},{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":40.0,\"Id\":\"b14818db-c975-4109-a94a-452632ee161b\",\"Name\":\"Alice\",\"Login\":\"aalice\"},{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":20.0,\"Id\":\"8f0a0036-319f-49e6-83e7-f84971f9aa5c\",\"Name\":\"Eve\",\"Login\":\"eeve\"}],\"Name\":\"Chris\",\"Login\":\"cchandler\"}";
 			string jsonMassaged = "{\"Subordinates\":[{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":40.0,\"Id\":\"4c5b075c-b87e-46b9-9108-6dd3a647953b\",\"Name\":\"Bob\",\"Login\":\"bbob\"},{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":40.0,\"Id\":\"b14818db-c975-4109-a94a-452632ee161b\",\"Name\":\"Alice\",\"Login\":\"aalice\"},{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":20.0,\"Id\":\"8f0a0036-319f-49e6-83e7-f84971f9aa5c\",\"Name\":\"Eve\",\"Login\":\"eeve\"}],\"Name\":\"Chris\",\"Login\":\"cchandler\",\"doc_type\":\"DocType\"}";
 
-			MockSerializer.Setup(x => x.RemoveKeyFrom(json, "Id"));
-			MockSerializer.Setup(x => x.AddKeyTo(jsonMinusId, "doc_type", "DocType"));
+			FakeSerializer.Setup(x => x.RemoveKeyFrom(json, "Id"));
+			FakeSerializer.Setup(x => x.AddKeyTo(jsonMinusId, "doc_type", "DocType"));
 			
-			// Act
 			string result = Sut.MassageJsonForSending(json, "DocType");
 			
-			// Assert
-			MockSerializer.Verify(x => x.RemoveKeyFrom(json, "Id"));
-			MockSerializer.Verify(x => x.AddKeyTo(jsonMinusId, "doc_type", "DocType"));
+			FakeSerializer.Verify(x => x.RemoveKeyFrom(json, "Id"));
+			FakeSerializer.Verify(x => x.AddKeyTo(jsonMinusId, "doc_type", "DocType"));
 			Assert.AreEqual(jsonMassaged, result);
 		}
 	}
@@ -195,35 +181,35 @@ namespace SineSignal.Ottoman.Tests.Unit
 			string jsonMinusId = "{\"Subordinates\":[{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":40.0,\"Id\":\"4c5b075c-b87e-46b9-9108-6dd3a647953b\",\"Name\":\"Bob\",\"Login\":\"bbob\"},{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":40.0,\"Id\":\"b14818db-c975-4109-a94a-452632ee161b\",\"Name\":\"Alice\",\"Login\":\"aalice\"},{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":20.0,\"Id\":\"8f0a0036-319f-49e6-83e7-f84971f9aa5c\",\"Name\":\"Eve\",\"Login\":\"eeve\"}],\"Name\":\"Chris\",\"Login\":\"cchandler\"}";
 		 	string jsonDocTypeAdded = "{\"Subordinates\":[{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":40.0,\"Id\":\"4c5b075c-b87e-46b9-9108-6dd3a647953b\",\"Name\":\"Bob\",\"Login\":\"bbob\"},{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":40.0,\"Id\":\"b14818db-c975-4109-a94a-452632ee161b\",\"Name\":\"Alice\",\"Login\":\"aalice\"},{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":20.0,\"Id\":\"8f0a0036-319f-49e6-83e7-f84971f9aa5c\",\"Name\":\"Eve\",\"Login\":\"eeve\"}],\"Name\":\"Chris\",\"Login\":\"cchandler\",\"doc_type\":\"" + docType + "\"}";
 		 	
-		 	var mockServer = new Mock<IServer>();
-		 	var mockDatabaseInfo = new Mock<IDatabaseInfo>();
-		 	var mockSerializer = new Mock<ISerializer>();
-		 	var mockRestProxy = new Mock<IRestClient>();
-		 	var mockHttpResponse = new Mock<IHttpResponse>();
-		 	var mockDocument = new Mock<IDocument>();
+		 	var fakeServer = new Mock<IServer>();
+		 	var fakeDatabaseInfo = new Mock<IDatabaseInfo>();
+		 	var fakeSerializer = new Mock<ISerializer>();
+		 	var fakeRestClient = new Mock<IRestClient>();
+		 	var fakeHttpResponse = new Mock<IHttpResponse>();
+		 	var fakeDocument = new Mock<IDocument>();
 
-		 	mockSerializer.Setup(x => x.Serialize(manager)).Returns(json);
-		 	mockSerializer.Setup(x => x.RemoveKeyFrom(json, "Id")).Returns(jsonMinusId);
-		 	mockSerializer.Setup(x => x.AddKeyTo(jsonMinusId, "doc_type", docType)).Returns(jsonDocTypeAdded);
-		 	mockSerializer.Setup(x => x.ContentType).Returns("application/json");
-			mockRestProxy.Setup(x => x.Put(It.IsAny<Uri>(), "application/json", jsonDocTypeAdded)).Returns(mockHttpResponse.Object);
-		 	mockServer.Setup(x => x.Address).Returns(new Uri(url));
-		 	mockDatabaseInfo.Setup(x => x.Name).Returns(databaseName);
-		 	mockHttpResponse.Setup(x => x.StatusCode).Returns(HttpStatusCode.Created);
-			mockHttpResponse.Setup(x => x.Body).Returns("{\"ok\":true,\"id\":\"fe875b98-0ef2-42c2-9c7f-94ab94432250\",\"rev\":\"1-0eb046deef235498747e44e63846b739\"}");
-			mockSerializer.Setup(x => x.Deserialize<Document>(mockHttpResponse.Object.Body)).Returns(new Document(new Guid("fe875b98-0ef2-42c2-9c7f-94ab94432250"), "1-0eb046deef235498747e44e63846b739"));
+		 	fakeSerializer.Setup(x => x.Serialize(manager)).Returns(json);
+		 	fakeSerializer.Setup(x => x.RemoveKeyFrom(json, "Id")).Returns(jsonMinusId);
+		 	fakeSerializer.Setup(x => x.AddKeyTo(jsonMinusId, "doc_type", docType)).Returns(jsonDocTypeAdded);
+		 	fakeSerializer.Setup(x => x.ContentType).Returns("application/json");
+			fakeRestClient.Setup(x => x.Put(It.IsAny<Uri>(), "application/json", jsonDocTypeAdded)).Returns(fakeHttpResponse.Object);
+		 	fakeServer.Setup(x => x.Address).Returns(new Uri(url));
+		 	fakeDatabaseInfo.Setup(x => x.Name).Returns(databaseName);
+		 	fakeHttpResponse.Setup(x => x.StatusCode).Returns(HttpStatusCode.Created);
+			fakeHttpResponse.Setup(x => x.Body).Returns("{\"ok\":true,\"id\":\"fe875b98-0ef2-42c2-9c7f-94ab94432250\",\"rev\":\"1-0eb046deef235498747e44e63846b739\"}");
+			fakeSerializer.Setup(x => x.Deserialize<Document>(fakeHttpResponse.Object.Body)).Returns(new Document(new Guid("fe875b98-0ef2-42c2-9c7f-94ab94432250"), "1-0eb046deef235498747e44e63846b739"));
 			
-			IDatabase database = new Database(mockServer.Object, mockDatabaseInfo.Object, mockRestProxy.Object, mockSerializer.Object);
+			IDatabase database = new Database(fakeServer.Object, fakeDatabaseInfo.Object, fakeRestClient.Object, fakeSerializer.Object);
 		 	database.SaveDocument<Manager>(manager);
 		 	
-		 	mockSerializer.Verify(x => x.Serialize(manager));
-		 	mockSerializer.VerifyGet(x => x.ContentType);
-		 	mockRestProxy.Verify(x => x.Put(It.IsAny<Uri>(), "application/json", jsonDocTypeAdded));
-		 	mockHttpResponse.Verify(x => x.StatusCode);
-		 	mockSerializer.Verify(x => x.Deserialize<Document>(mockHttpResponse.Object.Body));
+		 	fakeSerializer.Verify(x => x.Serialize(manager));
+		 	fakeSerializer.VerifyGet(x => x.ContentType);
+		 	fakeRestClient.Verify(x => x.Put(It.IsAny<Uri>(), "application/json", jsonDocTypeAdded));
+		 	fakeHttpResponse.Verify(x => x.StatusCode);
+		 	fakeSerializer.Verify(x => x.Deserialize<Document>(fakeHttpResponse.Object.Body));
 		 	
 		 	Assert.AreNotEqual(manager.Id, default(Guid));
-		 	Assert.AreEqual(mockHttpResponse.Object.StatusCode, HttpStatusCode.Created);
+		 	Assert.AreEqual(fakeHttpResponse.Object.StatusCode, HttpStatusCode.Created);
 		 }
 	}
 	
@@ -237,14 +223,13 @@ namespace SineSignal.Ottoman.Tests.Unit
 		private Uri RequestUrl { get; set; }
 		private string Body { get; set; }
 		private string Json { get; set; }
-		private Mock<IServer> MockServer { get; set; }
-		private Mock<IDatabaseInfo> MockDatabaseInfo { get; set; }
-		private Mock<IRestClient> MockRestClient { get; set; }
-		private Mock<ISerializer> MockSerializer { get; set; }
+		private Mock<IServer> FakeServer { get; set; }
+		private Mock<IDatabaseInfo> FakeDatabaseInfo { get; set; }
+		private Mock<IRestClient> FakeRestClient { get; set; }
+		private Mock<ISerializer> FakeSerializer { get; set; }
 		
 		protected override Database EstablishContext()
 		{
-			// Arrange
 			Url = "http://127.0.0.1:5984/";
 			DatabaseName = "test";
 			Id = new Guid("fe875b98-0ef2-42c2-9c7f-94ab94432250");
@@ -255,43 +240,39 @@ namespace SineSignal.Ottoman.Tests.Unit
 			string jsonMinusId = "{\"Subordinates\":[{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":40.0,\"Id\":\"4c5b075c-b87e-46b9-9108-6dd3a647953b\",\"Name\":\"Bob\",\"Login\":\"bbob\"},{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":40.0,\"Id\":\"b14818db-c975-4109-a94a-452632ee161b\",\"Name\":\"Alice\",\"Login\":\"aalice\"},{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":20.0,\"Id\":\"8f0a0036-319f-49e6-83e7-f84971f9aa5c\",\"Name\":\"Eve\",\"Login\":\"eeve\"}],\"Name\":\"Chris\",\"Login\":\"cchandler\"}";
 			Json = "{\"Subordinates\":[{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":40.0,\"Id\":\"4c5b075c-b87e-46b9-9108-6dd3a647953b\",\"Name\":\"Bob\",\"Login\":\"bbob\"},{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":40.0,\"Id\":\"b14818db-c975-4109-a94a-452632ee161b\",\"Name\":\"Alice\",\"Login\":\"aalice\"},{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":20.0,\"Id\":\"8f0a0036-319f-49e6-83e7-f84971f9aa5c\",\"Name\":\"Eve\",\"Login\":\"eeve\"}],\"Name\":\"Chris\",\"Login\":\"cchandler\",\"Id\":\"fe875b98-0ef2-42c2-9c7f-94ab94432250\"}";
 			
-			MockServer = new Mock<IServer>();
-			MockServer.SetupGet(x => x.Address).Returns(new Uri(Url));
+			FakeServer = new Mock<IServer>();
+			FakeServer.SetupGet(x => x.Address).Returns(new Uri(Url));
 			
-			MockDatabaseInfo = new Mock<IDatabaseInfo>();
-			MockDatabaseInfo.SetupGet(x => x.Name).Returns(DatabaseName);
+			FakeDatabaseInfo = new Mock<IDatabaseInfo>();
+			FakeDatabaseInfo.SetupGet(x => x.Name).Returns(DatabaseName);
 			
-			MockRestClient = new Mock<IRestClient>();
-			MockRestClient.Setup(x => x.Get(RequestUrl)).Returns(new HttpResponse(HttpStatusCode.OK, Body));
+			FakeRestClient = new Mock<IRestClient>();
+			FakeRestClient.Setup(x => x.Get(RequestUrl)).Returns(new HttpResponse(HttpStatusCode.OK, Body));
 			
-			MockSerializer = new Mock<ISerializer>();
-			MockSerializer.Setup(x => x.RemoveKeyFrom(Body, "doc_type")).Returns(jsonMinusDocType);
-			MockSerializer.Setup(x => x.RemoveKeyFrom(jsonMinusDocType, "_rev")).Returns(jsonMinusRev);
-			MockSerializer.Setup(x => x.RemoveKeyFrom(jsonMinusRev, "_id")).Returns(jsonMinusId);
-			MockSerializer.Setup(x => x.AddKeyTo(jsonMinusId, "Id", Id.ToString())).Returns(Json);
-			MockSerializer.Setup(x => x.Deserialize<Manager>(Json));
+			FakeSerializer = new Mock<ISerializer>();
+			FakeSerializer.Setup(x => x.RemoveKeyFrom(Body, "doc_type")).Returns(jsonMinusDocType);
+			FakeSerializer.Setup(x => x.RemoveKeyFrom(jsonMinusDocType, "_rev")).Returns(jsonMinusRev);
+			FakeSerializer.Setup(x => x.RemoveKeyFrom(jsonMinusRev, "_id")).Returns(jsonMinusId);
+			FakeSerializer.Setup(x => x.AddKeyTo(jsonMinusId, "Id", Id.ToString())).Returns(Json);
+			FakeSerializer.Setup(x => x.Deserialize<Manager>(Json));
 			
-			return new Database(MockServer.Object, MockDatabaseInfo.Object, MockRestClient.Object, MockSerializer.Object);
+			return new Database(FakeServer.Object, FakeDatabaseInfo.Object, FakeRestClient.Object, FakeSerializer.Object);
 		}
 		
 		[Test]
 		public void Should_call_get_and_pass_database_name_and_id_of_document_on_the_url()
 		{
-			// Act
 			Sut.GetDocument<Manager>(Id.ToString());
 			
-			// Assert
-			MockRestClient.Verify(x => x.Get(RequestUrl));
+			FakeRestClient.Verify(x => x.Get(RequestUrl));
 		}
 		
 		[Test]
 		public void Should_call_deserialize_with_massaged_json()
 		{
-			// Act
 			Sut.GetDocument<Manager>(Id.ToString());
 			
-			// Assert
-			MockSerializer.Verify(x => x.Deserialize<Manager>(Json));
+			FakeSerializer.Verify(x => x.Deserialize<Manager>(Json));
 		}
 	}
 
@@ -300,42 +281,39 @@ namespace SineSignal.Ottoman.Tests.Unit
 	public class When_massaging_json_for_deserialization : OttomanSpecBase<Database>
 	{
 		private Guid Id { get; set; }
-		private Mock<IServer> MockServer { get; set; }
-		private Mock<IDatabaseInfo> MockDatabaseInfo { get; set; }
-		private Mock<IRestClient> MockRestProxy { get; set; }
-		private Mock<ISerializer> MockSerializer { get; set; }
+		private Mock<IServer> FakeServer { get; set; }
+		private Mock<IDatabaseInfo> FakeDatabaseInfo { get; set; }
+		private Mock<IRestClient> FakeRestClient { get; set; }
+		private Mock<ISerializer> FakeSerializer { get; set; }
 
 		protected override Database EstablishContext()
 		{
 			Id = Guid.NewGuid();
-			MockServer = new Mock<IServer>();
-			MockDatabaseInfo = new Mock<IDatabaseInfo>();
-			MockRestProxy = new Mock<IRestClient>();
-			MockSerializer = new Mock<ISerializer>();
+			FakeServer = new Mock<IServer>();
+			FakeDatabaseInfo = new Mock<IDatabaseInfo>();
+			FakeRestClient = new Mock<IRestClient>();
+			FakeSerializer = new Mock<ISerializer>();
 
-			return new Database(MockServer.Object, MockDatabaseInfo.Object, MockRestProxy.Object, MockSerializer.Object);
+			return new Database(FakeServer.Object, FakeDatabaseInfo.Object, FakeRestClient.Object, FakeSerializer.Object);
 		}
 
 		public void Should_prep_json_by_removing_doc_type_and_adding_id()
 		{
-			// Arrange
 			string json = "{\"Subordinates\":[{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":40.0,\"Id\":\"4c5b075c-b87e-46b9-9108-6dd3a647953b\",\"Name\":\"Bob\",\"Login\":\"bbob\"},{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":40.0,\"Id\":\"b14818db-c975-4109-a94a-452632ee161b\",\"Name\":\"Alice\",\"Login\":\"aalice\"},{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":20.0,\"Id\":\"8f0a0036-319f-49e6-83e7-f84971f9aa5c\",\"Name\":\"Eve\",\"Login\":\"eeve\"}],\"Name\":\"Chris\",\"Login\":\"cchandler\",\"doc_type\":\"DocType\",\"_rev\":\"1-6854b67b702ecc50919aedea24a66499\",\"_id\":\"fe875b98-0ef2-42c2-9c7f-94ab94432250\"}";
 			string jsonMinusDocType = "{\"Subordinates\":[{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":40.0,\"Id\":\"4c5b075c-b87e-46b9-9108-6dd3a647953b\",\"Name\":\"Bob\",\"Login\":\"bbob\"},{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":40.0,\"Id\":\"b14818db-c975-4109-a94a-452632ee161b\",\"Name\":\"Alice\",\"Login\":\"aalice\"},{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":20.0,\"Id\":\"8f0a0036-319f-49e6-83e7-f84971f9aa5c\",\"Name\":\"Eve\",\"Login\":\"eeve\"}],\"Name\":\"Chris\",\"Login\":\"cchandler\",\"_rev\":\"1-6854b67b702ecc50919aedea24a66499\",\"_id\":\"fe875b98-0ef2-42c2-9c7f-94ab94432250\"}";
 			string jsonMinusRev = "{\"Subordinates\":[{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":40.0,\"Id\":\"4c5b075c-b87e-46b9-9108-6dd3a647953b\",\"Name\":\"Bob\",\"Login\":\"bbob\"},{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":40.0,\"Id\":\"b14818db-c975-4109-a94a-452632ee161b\",\"Name\":\"Alice\",\"Login\":\"aalice\"},{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":20.0,\"Id\":\"8f0a0036-319f-49e6-83e7-f84971f9aa5c\",\"Name\":\"Eve\",\"Login\":\"eeve\"}],\"Name\":\"Chris\",\"Login\":\"cchandler\",\"_id\":\"fe875b98-0ef2-42c2-9c7f-94ab94432250\"}";
 			string jsonMinusId = "{\"Subordinates\":[{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":40.0,\"Id\":\"4c5b075c-b87e-46b9-9108-6dd3a647953b\",\"Name\":\"Bob\",\"Login\":\"bbob\"},{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":40.0,\"Id\":\"b14818db-c975-4109-a94a-452632ee161b\",\"Name\":\"Alice\",\"Login\":\"aalice\"},{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":20.0,\"Id\":\"8f0a0036-319f-49e6-83e7-f84971f9aa5c\",\"Name\":\"Eve\",\"Login\":\"eeve\"}],\"Name\":\"Chris\",\"Login\":\"cchandler\"}";
 			string jsonMassaged = "{\"Subordinates\":[{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":40.0,\"Id\":\"4c5b075c-b87e-46b9-9108-6dd3a647953b\",\"Name\":\"Bob\",\"Login\":\"bbob\"},{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":40.0,\"Id\":\"b14818db-c975-4109-a94a-452632ee161b\",\"Name\":\"Alice\",\"Login\":\"aalice\"},{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":20.0,\"Id\":\"8f0a0036-319f-49e6-83e7-f84971f9aa5c\",\"Name\":\"Eve\",\"Login\":\"eeve\"}],\"Name\":\"Chris\",\"Login\":\"cchandler\",\"Id\":\"fe875b98-0ef2-42c2-9c7f-94ab94432250\"}";
 
-			MockSerializer.Setup(x => x.RemoveKeyFrom(json, "doc_type"));
-			MockSerializer.Setup(x => x.RemoveKeyFrom(jsonMinusDocType, "_rev"));
-			MockSerializer.Setup(x => x.RemoveKeyFrom(jsonMinusRev, "_id"));
-			MockSerializer.Setup(x => x.AddKeyTo(jsonMinusId, "Id", Id.ToString()));
+			FakeSerializer.Setup(x => x.RemoveKeyFrom(json, "doc_type"));
+			FakeSerializer.Setup(x => x.RemoveKeyFrom(jsonMinusDocType, "_rev"));
+			FakeSerializer.Setup(x => x.RemoveKeyFrom(jsonMinusRev, "_id"));
+			FakeSerializer.Setup(x => x.AddKeyTo(jsonMinusId, "Id", Id.ToString()));
 
-			// Act
 			string result = Sut.MassageJsonForDeserialization(json, Id.ToString());
 
-			// Assert
-			MockSerializer.Verify(x => x.RemoveKeyFrom(json, "doc_type"));
-			MockSerializer.Verify(x => x.AddKeyTo(jsonMinusDocType, "Id", Id.ToString()));
+			FakeSerializer.Verify(x => x.RemoveKeyFrom(json, "doc_type"));
+			FakeSerializer.Verify(x => x.AddKeyTo(jsonMinusDocType, "Id", Id.ToString()));
 			Assert.AreEqual(jsonMassaged, result);
 		}
 	}
