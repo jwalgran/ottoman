@@ -66,7 +66,6 @@
     <Compile Include="Model\UuidInfo.cs" />
     <Compile Include="Proxy\HttpMethod.cs" />
     <Compile Include="Server.cs" />
-    <Compile Include="ServerFactory.cs" />
     <Compile Include="IDatabase.cs" />
     <Compile Include="Model\IErrorInfo.cs" />
     <Compile Include="IServer.cs" />

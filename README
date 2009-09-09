@@ -19,9 +19,10 @@ machine.  You can download the one click installer for windows from here:
 
 	http://www.ruby-lang.org/en/downloads/
 	
-After installation, make sure you grab the rake gem by running at a command prompt:
+After installation, make sure you grab the required gems by running at a command prompt:
 
 	gem install rake
+	gem install activesupport
 
 Once you've cloned the repository to your local machine you're ready to run the automated 
 build scripts.  Open a command prompt and navigate to the directory of your cloned 
@@ -38,16 +39,14 @@ by typing without the quotes:
 	
 == Using/Examples
 
-I promise I will add integration tests soon.  The project is far enough along now, that they are 
-needed to make sure everything is working together.  The current state of Ottoman allows you to 
-manage databases on your CouchDB server and create documents.  All you need to get started, is 
-the URL to the CouchDB server you want to connect to:
+The current state of Ottoman allows you to manage databases on your CouchDB server and create documents.  
+All you need to get started, is the URL to the CouchDB server you want to connect to:
 
-	IServer couchServer = ServerFactory.Create("http://couchdb.domain.com:5984/");
+	IServer couchServer = Server.Connect("http://couchdb.domain.com:5984/");
 	
 	or
 	
-	IServer couchServer = ServerFactory.Create();  // Uses the default URL of http://127.0.0.1:5984/
+	IServer couchServer = Server.Connect();  // Uses the default Address of http://127.0.0.1:5984/
 
 Once you have an instance of Server, you can start manipulating the databases on your 
 CouchDB server.

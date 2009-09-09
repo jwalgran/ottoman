@@ -52,7 +52,7 @@ namespace SineSignal.Ottoman.Tests.Unit
 			RequestUrl = new Uri(Url + DatabaseName);
 			
 			MockServer = new Mock<IServer>();
-			MockServer.SetupGet(x => x.Url).Returns(new Uri(Url));
+			MockServer.SetupGet(x => x.Address).Returns(new Uri(Url));
 
 			MockDatabaseInfo = new Mock<IDatabaseInfo>();
 			MockDatabaseInfo.SetupGet(x => x.Name).Returns(DatabaseName);
@@ -74,7 +74,7 @@ namespace SineSignal.Ottoman.Tests.Unit
 			Sut.UpdateInfo();
 			
 			// Assert
-			MockServer.VerifyGet(x => x.Url);
+			MockServer.VerifyGet(x => x.Address);
 		}
 
 		[Test]
@@ -207,7 +207,7 @@ namespace SineSignal.Ottoman.Tests.Unit
 		 	mockSerializer.Setup(x => x.AddKeyTo(jsonMinusId, "doc_type", docType)).Returns(jsonDocTypeAdded);
 		 	mockSerializer.Setup(x => x.ContentType).Returns("application/json");
 			mockRestProxy.Setup(x => x.Put(It.IsAny<Uri>(), "application/json", jsonDocTypeAdded)).Returns(mockHttpResponse.Object);
-		 	mockServer.Setup(x => x.Url).Returns(new Uri(url));
+		 	mockServer.Setup(x => x.Address).Returns(new Uri(url));
 		 	mockDatabaseInfo.Setup(x => x.Name).Returns(databaseName);
 		 	mockHttpResponse.Setup(x => x.StatusCode).Returns(HttpStatusCode.Created);
 			mockHttpResponse.Setup(x => x.Body).Returns("{\"ok\":true,\"id\":\"fe875b98-0ef2-42c2-9c7f-94ab94432250\",\"rev\":\"1-0eb046deef235498747e44e63846b739\"}");
@@ -256,7 +256,7 @@ namespace SineSignal.Ottoman.Tests.Unit
 			Json = "{\"Subordinates\":[{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":40.0,\"Id\":\"4c5b075c-b87e-46b9-9108-6dd3a647953b\",\"Name\":\"Bob\",\"Login\":\"bbob\"},{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":40.0,\"Id\":\"b14818db-c975-4109-a94a-452632ee161b\",\"Name\":\"Alice\",\"Login\":\"aalice\"},{\"Address\":{\"Street\":\"123 Somewhere St.\",\"City\":\"Kalamazoo\",\"State\":\"MI\",\"Zip\":\"12345\"},\"Hours\":20.0,\"Id\":\"8f0a0036-319f-49e6-83e7-f84971f9aa5c\",\"Name\":\"Eve\",\"Login\":\"eeve\"}],\"Name\":\"Chris\",\"Login\":\"cchandler\",\"Id\":\"fe875b98-0ef2-42c2-9c7f-94ab94432250\"}";
 			
 			MockServer = new Mock<IServer>();
-			MockServer.SetupGet(x => x.Url).Returns(new Uri(Url));
+			MockServer.SetupGet(x => x.Address).Returns(new Uri(Url));
 			
 			MockDatabaseInfo = new Mock<IDatabaseInfo>();
 			MockDatabaseInfo.SetupGet(x => x.Name).Returns(DatabaseName);

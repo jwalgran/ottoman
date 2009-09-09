@@ -33,7 +33,7 @@ namespace SineSignal.Ottoman.Tests.Integration
 	{
 		protected override IServer EstablishContext()
 		{
-			return ServerFactory.Create();
+			return Server.Connect(Constants.DefaultAddress);
 		}
 
 		protected override void Because()
@@ -61,7 +61,7 @@ namespace SineSignal.Ottoman.Tests.Integration
 	{
 		protected override IServer EstablishContext()
 		{
-			return ServerFactory.Create();
+			return Server.Connect(Constants.DefaultAddress);
 		}
 
 		protected override void Because()
@@ -86,7 +86,7 @@ namespace SineSignal.Ottoman.Tests.Integration
 
 		protected override IServer EstablishContext()
 		{
-			return ServerFactory.Create();
+			return Server.Connect(Constants.DefaultAddress);
 		}
 
 		protected override void Because()
@@ -124,7 +124,7 @@ namespace SineSignal.Ottoman.Tests.Integration
 				Data[index] = Constants.DatabaseName + index;
 			}
 
-			return ServerFactory.Create();
+			return Server.Connect(Constants.DefaultAddress);
 		}
 
 		protected override void Because()
@@ -168,7 +168,7 @@ namespace SineSignal.Ottoman.Tests.Integration
 
 		protected override IServer EstablishContext()
 		{
-			return ServerFactory.Create();
+			return Server.Connect(Constants.DefaultAddress);
 		}
 
 		protected override void Because()
@@ -193,7 +193,7 @@ namespace SineSignal.Ottoman.Tests.Integration
 
 		protected override IServer EstablishContext()
 		{
-			return ServerFactory.Create();
+			return Server.Connect(Constants.DefaultAddress);
 		}
 
 		protected override void Because()

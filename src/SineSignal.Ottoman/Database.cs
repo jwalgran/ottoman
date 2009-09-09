@@ -80,7 +80,7 @@ namespace SineSignal.Ottoman
 			RestClient = restClient;
 			Serializer = serializer;
 
-			_root = new UriBuilder(Server.Url);
+			_root = new UriBuilder(Server.Address);
 			_root.Path = Info.Name;
 		}
 

@@ -33,104 +33,99 @@ namespace SineSignal.Ottoman.Tests.Unit
 {
 	[TestFixture]
 	[Category("Unit")]
-	public class When_instantiating_a_new_server_instance
+	public class When_connecting : OttomanSpecBase<Server>
 	{
 		[Test]
 		[Row(null)]
 		[Row("")]
 		[ExpectedArgumentNullException]
-		public void Should_throw_argument_null_exception_when_url_is_null_or_empty_string(string baseUrl)
+		public void Should_throw_argument_null_exception_when_url_is_null_or_empty_string(string baseAddress)
 		{
-			// Arrange
-			var mockRestProxy = new Mock<IRestClient>();
-			var mockSerializer = new Mock<ISerializer>();
-			
-			// Act
-			new Server(baseUrl, mockRestProxy.Object, mockSerializer.Object);
+			Server.Connect(baseAddress);
 		}
 
 		[Test]
 		[ExpectedException(typeof(UriFormatException), "The value is invalid, please pass a valid Uri.")]
 		public void Should_throw_uri_format_exception_when_url_is_a_random_string()
 		{
-			// Arrange
-			var mockRestProxy = new Mock<IRestClient>();
-			var mockSerializer = new Mock<ISerializer>();
-			
-			// Act
-			new Server("some string value", mockRestProxy.Object, mockSerializer.Object);
+			Server.Connect("some string value");
 		}
 
 		[Test]
 		[ExpectedException(typeof(UriFormatException), "The value is invalid, please pass a valid Uri.")]
 		public void Should_throw_uri_format_exception_when_url_is_relative()
 		{
-			// Arrange
-			var mockRestProxy = new Mock<IRestClient>();
-			var mockSerializer = new Mock<ISerializer>();
-			
-			// Act
-			new Server("../somepath", mockRestProxy.Object, mockSerializer.Object);
+			Server.Connect("../somepath");
 		}
 
 		[Test]
 		[Row("ftp://127.0.0.1/somepath")]
 		[Row("file:///C:/somepath")]
 		[ExpectedArgumentException]
-		public void Should_throw_argument_exception_when_url_is_not_using_http_or_https_scheme(string baseUrl)
+		public void Should_throw_argument_exception_when_url_is_not_using_http_or_https_scheme(string baseAddress)
 		{
-			// Arrange
-			var mockRestProxy = new Mock<IRestClient>();
-			var mockSerializer = new Mock<ISerializer>();
-			
-			// Act
-			new Server(baseUrl, mockRestProxy.Object, mockSerializer.Object);
+			Server.Connect(baseAddress);
 		}
 
 		[Test]
-		[ExpectedArgumentNullException]
-		public void Should_throw_argument_null_exception_when_proxy_is_null()
+		[Row("http://127.0.0.1:5984/")]
+		[Row("https://domain.com:5984/")]
+		public void Should_set_Address_when_given_an_address(string address)
 		{
 			// Arrange
-			string url = "http://127.0.0.1:5984/";
-			var mockSerializer = new Mock<ISerializer>();
-			
-			// Act
-			new Server(url, null, mockSerializer.Object);
-		}
-
-		[Test]
-		[ExpectedArgumentNullException]
-		public void Should_throw_argument_null_exception_when_serializer_is_null()
-		{
-			// Arrange
-			string url = "http://127.0.0.1:5984/";
-			var mockProxy = new Mock<IRestClient>();
-
-			// Act
-			new Server(url, mockProxy.Object, null);
-		}
-
-		[Test]
-		[Row("http://127.0.0.1:5984/", "http")]
-		[Row("https://domain.com:5984/", "https")]
-		public void Should_instantiate_when_given_valid_parameters(string baseUrl, string expectedScheme)
-		{
-			// Arrange
+			var parsedAddress = new Uri(address);
 			var mockRestProxy = new Mock<IRestClient>();
 			var mockSerializer = new Mock<ISerializer>();
 
 			// Act
-			IServer server = new Server(baseUrl, mockRestProxy.Object, mockSerializer.Object);
+			IServer server = new Server(parsedAddress, mockRestProxy.Object, mockSerializer.Object);
 
 			// Assert
-			Assert.IsNotNull(server.Url);
-			Assert.AreEqual(baseUrl, server.Url.ToString());
-			Assert.AreEqual(expectedScheme, server.Url.Scheme);
-			Assert.IsNotNull(server.RestClient);
+			Assert.AreEqual(parsedAddress, server.Address);
+		}
+
+		[Test]
+		[Row("http://127.0.0.1:5984/")]
+		[Row("https://domain.com:5984/")]
+		public void Should_set_RestClient_when_given_an_implementation_of_IRestClient(string address)
+		{
+			// Arrange
+			var parsedAddress = new Uri(address);
+			var mockRestProxy = new Mock<IRestClient>();
+			var mockSerializer = new Mock<ISerializer>();
+
+			// Act
+			IServer server = new Server(parsedAddress, mockRestProxy.Object, mockSerializer.Object);
+
+			// Assert
 			Assert.AreEqual(mockRestProxy.Object, server.RestClient);
-			Assert.IsNotNull(server.Serializer);
+		}
+
+		[Test]
+		[Row("http://127.0.0.1:5984/")]
+		[Row("https://domain.com:5984/")]
+		public void Should_set_Serializer_when_given_an_implemenation_of_ISerializer(string address)
+		{
+			// Arrange
+			var parsedAddress = new Uri(address);
+			var mockRestProxy = new Mock<IRestClient>();
+			var mockSerializer = new Mock<ISerializer>();
+
+			// Act
+			IServer server = new Server(parsedAddress, mockRestProxy.Object, mockSerializer.Object);
+
+			// Assert
 			Assert.AreEqual(mockSerializer.Object, server.Serializer);
+		}
+		
+		[Test]
+		public void Should_set_Address_to_default()
+		{
+			Uri defaultAddress = new Uri("http://127.0.0.1:5984/");
+			
+			IServer server = Server.Connect();
+
+			Assert.AreEqual(defaultAddress, server.Address);
 		}
 	}
 	
@@ -138,14 +133,13 @@ namespace SineSignal.Ottoman.Tests.Unit
 	[Category("Unit")]
 	public class When_creating_a_database : OttomanSpecBase<Server>
 	{
-		private string Url { get; set; }
+		private Uri Url { get; set; }
 		private Mock<IRestClient> MockRestProxy { get; set; }
 		private Mock<ISerializer> MockSerializer { get; set; }
 		
 		protected override Server EstablishContext()
 		{
-			// Arrange
-			Url = "http://127.0.0.1:5984/";
+			Url = new Uri("http://127.0.0.1:5984/");
 			MockRestProxy = new Mock<IRestClient>();
 			MockSerializer = new Mock<ISerializer>();
 
@@ -223,14 +217,14 @@ namespace SineSignal.Ottoman.Tests.Unit
 	[Category("Unit")]
 	public class When_deleting_a_database : OttomanSpecBase<Server>
 	{
-		private string Url { get; set; }
+		private Uri Url { get; set; }
 		private Mock<IRestClient> MockRestProxy { get; set; }
 		private Mock<ISerializer> MockSerializer { get; set; }
 
 		protected override Server EstablishContext()
 		{
 			// Arrange
-			Url = "http://127.0.0.1:5984/";
+			Url = new Uri("http://127.0.0.1:5984/");
 			MockRestProxy = new Mock<IRestClient>();
 			MockSerializer = new Mock<ISerializer>();
 
@@ -308,14 +302,14 @@ namespace SineSignal.Ottoman.Tests.Unit
 	[Category("Unit")]
 	public class When_retrieving_a_database : OttomanSpecBase<Server>
 	{
-		private string Url { get; set; }
+		private Uri Url { get; set; }
 		private Mock<IRestClient> MockRestProxy { get; set; }
 		private Mock<ISerializer> MockSerializer { get; set; }
 
 		protected override Server EstablishContext()
 		{
 			// Arrange
-			Url = "http://127.0.0.1:5984/";
+			Url = new Uri("http://127.0.0.1:5984/");
 			MockRestProxy = new Mock<IRestClient>();
 			MockSerializer = new Mock<ISerializer>();
 
@@ -439,7 +433,7 @@ namespace SineSignal.Ottoman.Tests.Unit
 	[Category("Unit")]
 	public class When_retrieving_a_list_of_databases : OttomanSpecBase<Server>
 	{
-		private string Url { get; set; }
+		private Uri Url { get; set; }
 		private Uri RequestUrl { get; set; }
 		private Mock<IRestClient> MockRestProxy { get; set; }
 		private Mock<ISerializer> MockSerializer { get; set; }
@@ -447,7 +441,7 @@ namespace SineSignal.Ottoman.Tests.Unit
 		protected override Server EstablishContext()
 		{
 			// Arrange
-			Url = "http://127.0.0.1:5984/";
+			Url = new Uri("http://127.0.0.1:5984/");
 			RequestUrl = new Uri(Url + "_all_dbs");
 			MockRestProxy = new Mock<IRestClient>();
 			MockSerializer = new Mock<ISerializer>();
@@ -511,16 +505,14 @@ namespace SineSignal.Ottoman.Tests.Unit
 	[Category("Unit")]
 	public class When_retrieving_info_about_the_server : OttomanSpecBase<Server>
 	{
-		private string Url { get; set; }
-		private Uri RequestUrl { get; set; }
+		private Uri Url { get; set; }
 		private Mock<IRestClient> MockRestProxy { get; set; }
 		private Mock<ISerializer> MockSerializer { get; set; }
 
 		protected override Server EstablishContext()
 		{
 			// Arrange
-			Url = "http://127.0.0.1:5984/";
-			RequestUrl = new Uri(Url);
+			Url = new Uri("http://127.0.0.1:5984/");
 			MockRestProxy = new Mock<IRestClient>();
 			MockSerializer = new Mock<ISerializer>();
 
@@ -533,14 +525,14 @@ namespace SineSignal.Ottoman.Tests.Unit
 			// Arrange
 			string body = "{\"couchdb\":\"Welcome\",\"version\":\"0.10.0a800465\"}";
 
-			MockRestProxy.Setup(x => x.Get(RequestUrl)).Returns(new HttpResponse(HttpStatusCode.OK, body));
+			MockRestProxy.Setup(x => x.Get(Url)).Returns(new HttpResponse(HttpStatusCode.OK, body));
 			MockSerializer.Setup(x => x.Deserialize<ServerInfo>(body)).Returns(new ServerInfo("Welcome", "0.10.0a800465"));
 
 			// Act
 			Sut.GetInfo();
 
 			// Assert
-			MockRestProxy.Verify(x => x.Get(RequestUrl));
+			MockRestProxy.Verify(x => x.Get(Url));
 		}
 		
 		[Test]
@@ -549,7 +541,7 @@ namespace SineSignal.Ottoman.Tests.Unit
 			// Arrange
 			string body = "{\"couchdb\":\"Welcome\",\"version\":\"0.10.0a800465\"}";
 
-			MockRestProxy.Setup(x => x.Get(RequestUrl)).Returns(new HttpResponse(HttpStatusCode.OK, body));
+			MockRestProxy.Setup(x => x.Get(Url)).Returns(new HttpResponse(HttpStatusCode.OK, body));
 			MockSerializer.Setup(x => x.Deserialize<ServerInfo>(body)).Returns(new ServerInfo("Welcome", "0.10.0a800465"));
 
 			// Act
@@ -565,7 +557,7 @@ namespace SineSignal.Ottoman.Tests.Unit
 			// Arrange
 			string body = "{\"couchdb\":\"Welcome\",\"version\":\"0.10.0a800465\"}";
 
-			MockRestProxy.Setup(x => x.Get(RequestUrl)).Returns(new HttpResponse(HttpStatusCode.OK, body));
+			MockRestProxy.Setup(x => x.Get(Url)).Returns(new HttpResponse(HttpStatusCode.OK, body));
 			MockSerializer.Setup(x => x.Deserialize<ServerInfo>(body)).Returns(new ServerInfo("Welcome", "0.10.0a800465"));
 
 			// Act
@@ -582,14 +574,14 @@ namespace SineSignal.Ottoman.Tests.Unit
 	[Category("Unit")]
 	public class When_retrieving_a_list_of_uuids : OttomanSpecBase<Server>
 	{
-		private string Url { get; set; }
+		private Uri Url { get; set; }
 		private Mock<IRestClient> MockRestProxy { get; set; }
 		private Mock<ISerializer> MockSerializer { get; set; }
 
 		protected override Server EstablishContext()
 		{
 			// Arrange
-			Url = "http://127.0.0.1:5984/";
+			Url = new Uri("http://127.0.0.1:5984/");
 			MockRestProxy = new Mock<IRestClient>();
 			MockSerializer = new Mock<ISerializer>();
 
