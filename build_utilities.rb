@@ -1,3 +1,34 @@
+require 'erb'
+require 'activesupport'
+require 'fileutils'
+
+class AsmInfoBuilder
+	attr_reader :buildnumber, :parameterless_attributes
+ 
+	def initialize(version, properties)
+		@properties = properties
+		@buildnumber = version
+		@properties['Version'] = @properties['FileVersion'] = buildnumber;
+		@parameterless_attributes = [:allow_partially_trusted_callers]
+	end
+ 
+	def write(file)
+		template = %q{using System.Reflection;
+using System.Security;
+ 
+<% @properties.each do |k, v| %>
+<% if @parameterless_attributes.include? k %>[assembly: <%= k.to_s.camelize %>]
+<% else %>[assembly: Assembly<%= k.to_s.camelize %>("<%= v %>")]
+<% end %><% end %>}.gsub(/^    /, '')
+ 
+	  erb = ERB.new(template, 0, "%<>")
+ 
+	  File.open(file, 'w') do |file|
+		  file.puts erb.result(binding) 
+	  end
+	end
+end
+
 class Compiler
 	def self.compile(attributes)
 		version = attributes.fetch(:clrversion, 'v3.5')
@@ -16,7 +47,6 @@ class Tester
 		@source_dir = items.fetch(:source_dir, 'src')
 		@filter_category = items.fetch(:filter_category, nil)
 		@gallio_dir = items.fetch(:gallio_dir, 'thirdparty/tools/gallio')
-		#TODO:  Rethink default name
 		@test_results_dir = items.fetch(:test_results_dir, 'artifacts')
 		@compile_target = items.fetch(:compile_target, 'debug')
 		@show_report = items.fetch(:show_report, false)

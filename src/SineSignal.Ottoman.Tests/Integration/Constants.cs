@@ -22,6 +22,7 @@ namespace SineSignal.Ottoman.Tests.Integration
 {
 	public class Constants
 	{
+		public const string DefaultAddress = "http://127.0.0.1:5984/";
 		public const string Prefix = "test_";
 		public const string DatabaseName = Prefix + "database";
 		public const string CouchDBMessage = "Welcome";

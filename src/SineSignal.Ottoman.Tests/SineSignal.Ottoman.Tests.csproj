@@ -59,6 +59,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\CommonAssemblyInfo.cs">
+      <Link>Properties\CommonAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="Integration\Constants.cs" />
     <Compile Include="Integration\ServerTests.cs" />
     <Compile Include="OttomanSpecBase.cs" />
@@ -73,7 +76,7 @@
     <Compile Include="Unit\Generators\RandomLongIntegerGeneratorTests.cs" />
     <Compile Include="Unit\ServerTests.cs" />
     <Compile Include="Unit\Proxy\RestClientTests.cs" />
-    <Compile Include="Unit\Serializers\JsonSerializerTests.cs" />
+    <Compile Include="Integration\Serializers\JsonSerializerTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SineSignal.Ottoman\SineSignal.Ottoman.csproj">

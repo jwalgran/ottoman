@@ -32,15 +32,13 @@ namespace SineSignal.Ottoman
 	/// A class for managing databases on a CouchDB server.  Use this class for creating, deleting, retrieving, and for listing databases on your CouchDB server.
 	/// </summary>
 	/// <remarks>Please use the ServerFactory.Create factory method for creating instances of this class.</remarks>
-	public class Server : IServer
+	public sealed class Server : IServer
 	{
-		private readonly Uri _url;
-
 		/// <summary>
-		/// Gets the URL of the CouchDB server being used by the API.
+		/// Gets the Address of the CouchDB server being used by the API.
 		/// </summary>
-		/// <value>The URL of the CouchDB server being used by the API.</value>
-		public Uri Url { get { return _url; } }
+		/// <value>The Address of the CouchDB server being used by the API.</value>
+		public Uri Address { get; private set; }
 
 		/// <summary>
 		/// Gets or sets the proxy to use for talking to the CouchDB server.
@@ -54,38 +52,47 @@ namespace SineSignal.Ottoman
 		/// <value>The serializer.</value>
 		public ISerializer Serializer { get; private set; }
 
+		internal Server(Uri address, IRestClient restClient, ISerializer serializer)
+		{
+			Address = address;
+			RestClient = restClient;
+			Serializer = serializer;
+		}
+
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Server"/> class.
+		/// A factory method for connecting a new <see cref="Server"/> instance to the default address.
 		/// </summary>
-		/// <param name="url">The URL of the CouchDB server to be used by the API.</param>
-		/// <param name="restClient">The proxy to use for talking to the CouchDB server.</param>
-		/// <param name="serializer">The serializer to use for deserializing responses from the proxy.</param>
+		/// <returns><see cref="Server"/></returns>
+		public static Server Connect()
+		{
+			return Connect("http://127.0.0.1:5984/");
+		}
+
+		/// <summary>
+		/// A factory method for connecting a new <see cref="Server"/> instance to the address given.
+		/// </summary>
+		/// <param name="address">The Address of the CouchDB server to be used by the API.</param>
 		/// <exception cref="ArgumentNullException">Throws an exception if the url parameter is null or empty string.</exception>
 		/// <exception cref="UriFormatException">Throws an exception if the url parameter is not a valid URI.</exception>
 		/// <exception cref="ArgumentException">Throws an exception if the url parameter doesn't use the HTTP or HTTPS protocol.</exception>
-		/// <exception cref="ArgumentNullException">Throws an exception if the restClient parameter is null.</exception>
-		/// <exception cref="ArgumentNullException">Throws an exception if the serializer parameter is null.</exception>
-		public Server(string url, IRestClient restClient, ISerializer serializer)
+		/// <returns><see cref="Server"/></returns>
+		public static Server Connect(string address)
 		{
-			// Validate input
-			if (String.IsNullOrEmpty(url))
-				throw new ArgumentNullException("url", "The value cannot be null or an empty string.");
+			if (String.IsNullOrEmpty(address))
+			    throw new ArgumentNullException("address", "The value cannot be null or an empty string.");
 
-			bool isValidUrl = Uri.TryCreate(url, UriKind.Absolute, out _url);
+			Uri parsedAddress;
+			bool isValidUrl = Uri.TryCreate(address, UriKind.Absolute, out parsedAddress);
 			if (!isValidUrl)
-				throw new UriFormatException("The value is invalid, please pass a valid Uri.");
+			    throw new UriFormatException("The value is invalid, please pass a valid Uri.");
 
-			if (!_url.Scheme.Equals("http") && !_url.Scheme.Equals("https"))
-				throw new ArgumentException("The value is not using the http or https protocol.  This is not allowed since CouchDB uses REST and Http for communication.", "url");
-				
-			if (restClient == null)
-			    throw new ArgumentNullException("restClient", "The value cannot be null.");
-			    
-			if (serializer == null)
-				throw new ArgumentNullException("serializer", "The value cannot be null.");
+			if (!parsedAddress.Scheme.Equals("http") && !parsedAddress.Scheme.Equals("https"))
+			    throw new ArgumentException("The value is not using the http or https protocol.  This is not allowed since CouchDB uses REST and Http for communication.", "url");
 
-			RestClient = restClient;
-			Serializer = serializer;
+			IRestClient restClient = new RestClient();
+			ISerializer serializer = new JsonSerializer();
+
+			return new Server(parsedAddress, restClient, serializer);
 		}
 
 		/// <summary>
@@ -177,7 +184,7 @@ namespace SineSignal.Ottoman
 		/// <returns><see cref="ServerInfo" /></returns>
 		public IServerInfo GetInfo()
 		{
-			IHttpResponse response = RestClient.Get(Url);
+			IHttpResponse response = RestClient.Get(Address);
 
 			return Serializer.Deserialize<ServerInfo>(response.Body);
 		}
@@ -209,7 +216,7 @@ namespace SineSignal.Ottoman
 			// TODO:  We need to UrlEncode the path, to take care of special character /.
 			// We just introduced a limitation with this API.  System.Uri, does not handle the encoding correctly of /.  Hold off on this for now.
 			// Until we can figure out a way to do this, we need a regex to check for this characters and throw an Exception
-			UriBuilder requestUrl = new UriBuilder(Url);
+			UriBuilder requestUrl = new UriBuilder(Address);
 			requestUrl.Path = path;
 			
 			if (!String.IsNullOrEmpty(query))

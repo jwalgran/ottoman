@@ -28,7 +28,7 @@ namespace SineSignal.Ottoman
 {
 	public interface IServer
 	{
-		Uri Url { get; }
+		Uri Address { get; }
 		IRestClient RestClient { get; }
 		ISerializer Serializer { get; }
 		void CreateDatabase(string name);

@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{5603262A-08E6-4203-8CB3-001F9446F054}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -43,17 +43,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\CommonAssemblyInfo.cs">
+      <Link>Properties\CommonAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="Exceptions\CannotCreateDatabaseException.cs" />
     <Compile Include="Exceptions\CannotDeleteDatabaseException.cs" />
     <Compile Include="Exceptions\CannotGetDatabaseException.cs" />
     <Compile Include="Database.cs" />
+    <Compile Include="Generators\RandomIntegerGenerator.cs" />
+    <Compile Include="Generators\RandomLongIntegerGenerator.cs" />
+    <Compile Include="Generators\SeededLongGenerator.cs" />
     <Compile Include="Model\ErrorInfo.cs" />
     <Compile Include="Exceptions\CouchException.cs" />
     <Compile Include="Model\DatabaseInfo.cs" />
     <Compile Include="Document.cs" />
     <Compile Include="Generators\GuidGenerator.cs" />
-    <Compile Include="Generators\RandomIntegerGenerator.cs" />
-    <Compile Include="Generators\RandomLongIntegerGenerator.cs" />
     <Compile Include="Generators\IGenerator.cs" />
     <Compile Include="Model\IDatabaseInfo.cs" />
     <Compile Include="IDocument.cs" />
@@ -62,7 +66,6 @@
     <Compile Include="Model\UuidInfo.cs" />
     <Compile Include="Proxy\HttpMethod.cs" />
     <Compile Include="Server.cs" />
-    <Compile Include="ServerFactory.cs" />
     <Compile Include="IDatabase.cs" />
     <Compile Include="Model\IErrorInfo.cs" />
     <Compile Include="IServer.cs" />
