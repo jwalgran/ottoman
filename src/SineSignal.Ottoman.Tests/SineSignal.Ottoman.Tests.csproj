@@ -72,7 +72,7 @@
     <Compile Include="SampleDomain\Worker.cs" />
     <Compile Include="Unit\DatabaseTests.cs" />
     <Compile Include="Unit\Generators\GuidGeneratorTests.cs" />
-    <Compile Include="Unit\Generators\IDGeneratorTests.cs" />
+    <Compile Include="Unit\Generators\IDFactoryTests.cs" />
     <Compile Include="Unit\Generators\RandomIntegerGeneratorTests.cs" />
     <Compile Include="Unit\Generators\RandomLongIntegerGeneratorTests.cs" />
     <Compile Include="Unit\ServerTests.cs" />

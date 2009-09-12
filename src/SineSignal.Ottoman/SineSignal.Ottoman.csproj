@@ -50,8 +50,8 @@
     <Compile Include="Exceptions\CannotDeleteDatabaseException.cs" />
     <Compile Include="Exceptions\CannotGetDatabaseException.cs" />
     <Compile Include="Database.cs" />
-    <Compile Include="Generators\IDGenerator.cs" />
-    <Compile Include="Generators\IIDGenerator.cs" />
+    <Compile Include="Generators\IDFactory.cs" />
+    <Compile Include="Generators\IIDFactory.cs" />
     <Compile Include="Generators\RandomIntegerGenerator.cs" />
     <Compile Include="Generators\RandomLongIntegerGenerator.cs" />
     <Compile Include="Generators\SeededLongGenerator.cs" />

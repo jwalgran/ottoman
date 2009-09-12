@@ -1,6 +1,6 @@
 ﻿#region License
 
-// <copyright file="IDGenerator.cs" company="SineSignal, LLC.">
+// <copyright file="IIDFactory.cs" company="SineSignal, LLC.">
 //   Copyright 2007-2009 SineSignal, LLC.
 //       Licensed under the Apache License, Version 2.0 (the "License");
 //       you may not use this file except in compliance with the License.
@@ -25,7 +25,8 @@ using System.Text;
 
 namespace SineSignal.Ottoman.Generators
 {
-    public class IDGenerator : IIDGenerator
+    interface IIDFactory
     {
+        void SetIDProperty(object item);
     }
 }
